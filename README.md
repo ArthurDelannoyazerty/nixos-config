@@ -1,5 +1,11 @@
 # Install
 
+With the setup script:
+```bash
+sudo sh ./setup.sh
+```
+
+Manually: 
 ```bash
 # Clone the repo in /mnt/etc/nixos
 git clone https://github.com/ArthurDelannoyazerty/nixos-config.git /mnt/etc/nixos
