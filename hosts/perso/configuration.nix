@@ -29,5 +29,6 @@
     ../../modules/hyprland
     ../../modules/terminal
     ../../modules/gaming
+    ../../modules/dev
   ];
 }
