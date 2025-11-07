@@ -7,10 +7,14 @@
   networking.hostName = "nixos-perso";
   time.timeZone = "Europe/Paris";
 
+  networking.networkmanager.enable = true;
+
+  i18n.defaultLocale = "en_US.UTF-8";
+
   # Define a user account
   users.users.arthur = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # sudo access
+    extraGroups = [ "wheel" "networkmanager" ]; # sudo access
     shell = pkgs.bash;
   };
 
@@ -21,6 +25,9 @@
   environment.systemPackages = with pkgs; [
     git
     firefox
+    vim
+    curl
+    wget
   ];
 
   # REUSABLE MODULES
