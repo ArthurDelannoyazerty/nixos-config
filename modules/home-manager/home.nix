@@ -17,6 +17,9 @@
     nvitop
   ];
 
+  # set the hyprland.conf to the right place
+  xdg.configFile."hypr/hyprland.conf".source = "${inputs.dotfiles}/hyprland/hyprland.conf";
+
   # --- BASH CONFIGURATION ---
   programs.bash = {
     enable = true;
