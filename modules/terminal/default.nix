@@ -7,7 +7,6 @@
     tree      # Directory listing tool
     nvitop    # GPU monitoring tool
     starship  # A nice cross-shell prompt (optional, configured via home-manager)
-    top
     htop
   ];
 
