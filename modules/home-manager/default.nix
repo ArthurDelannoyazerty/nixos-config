@@ -1,4 +1,4 @@
-{ ... }:
+{ inputs, ... }:
 
 {
   # Enable and configure home-manager as a NixOS module
