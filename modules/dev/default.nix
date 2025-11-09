@@ -17,24 +17,24 @@
 
     # --- Nix Language Support ---
     nixpkgs-fmt # Formatter for your Nix code, helps keep it clean
-  ];
-
+  ]
+  ++
   # =========================================================================
   # == PYTHON DEVELOPMENT
   #    Using `uv` for modern, fast package and virtual environment management.
   # =========================================================================
 
-  environment.systemPackages = with pkgs; [
+  [
     python3   # A system-wide Python interpreter
     uv        # The extremely fast Python package installer and resolver
-  ];
-
+  ]
+  ++
   # =========================================================================
   # == JAVA DEVELOPMENT
   #    Installs a Java Development Kit (JDK).
   # =========================================================================
 
-  environment.systemPackages = with pkgs; [
+  [
     # We install the latest Long-Term Support (LTS) version of OpenJDK.
     jdk21
 
@@ -52,5 +52,5 @@
   
   # Add your user to the 'docker' group to allow running docker commands
   # without needing to use `sudo`.
-  users.groups.docker.members = [ "arthur" ]; # <-- IMPORTANT: Change "your-user"
+  users.groups.docker.members = [ "arthur" ];
 }
