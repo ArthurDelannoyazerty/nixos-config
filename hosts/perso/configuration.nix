@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, home-manager, ... }:
 
 {
   # Basic system settings
@@ -32,6 +32,8 @@
 
   # REUSABLE MODULES
   imports = [
+    home-manager.nixosModules.home-manager
+
     ../../modules/home-manager
     ../../modules/hyprland
     ../../modules/terminal
