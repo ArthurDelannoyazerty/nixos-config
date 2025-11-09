@@ -42,6 +42,8 @@
   #    We only import the modules relevant for a headless server.
   # =========================================================================
   imports = [
+    home-manager.nixosModules.home-manager
+
     ../../modules/home-manager  # To manage your dotfiles
     ../../modules/terminal      # For a consistent shell experience
   ];
