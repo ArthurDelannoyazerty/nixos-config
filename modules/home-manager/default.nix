@@ -6,7 +6,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     # Tell home-manager where to find the user configuration
-    users.your-user = import ./home.nix;
+    users.arthur = import ./home.nix;
     # Pass down special arguments (like inputs)
     extraSpecialArgs = { inherit inputs; };
   };

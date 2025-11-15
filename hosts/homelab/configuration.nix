@@ -8,7 +8,7 @@
   time.timeZone = "Etc/UTC"; # Servers often use UTC
 
   # Define your user account
-  users.users.your-user = {
+  users.users.arthur = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # For sudo access
     shell = pkgs.bash;
