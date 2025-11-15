@@ -14,9 +14,6 @@
     xwayland.enable = true;
   };
 
-  # Link your hyprland.conf from your dotfiles repo
-  # xdg.configFile."hypr/hyprland.conf".source = "${inputs.dotfiles}/hyprland/hyprland.conf";
-
   # Install related packages
   environment.systemPackages = with pkgs; [
     waybar

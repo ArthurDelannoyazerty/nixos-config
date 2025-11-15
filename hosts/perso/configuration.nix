@@ -11,6 +11,17 @@
 
   i18n.defaultLocale = "en_US.UTF-8";
 
+  console.keyMap = "fr";
+  services.xserver.layout = "fr";
+  services.xserver.xkbVariant = ""; 
+
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.wayland.enable = true; 
+  # numpad ON in sddm
+  services.displayManager.sddm.autoNumlock = true;
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # Define a user account
   users.users.arthur = {
     isNormalUser = true;

@@ -29,3 +29,10 @@ sudo git commit -m "added hardware config file"
 # Install the flake (the '#' tell nix the right config to install)
 sudo nixos-rebuild switch --flake .#perso
 ```
+
+If you udpate the dotfile, then pdate it in your pc with : 
+```bash
+cd /etc/nixos
+sudo nix flake update dotfiles
+sudo nixos-rebuild switch --flake .#perso
+```
