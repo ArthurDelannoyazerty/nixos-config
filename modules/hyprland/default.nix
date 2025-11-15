@@ -20,7 +20,7 @@
   # Install related packages
   environment.systemPackages = with pkgs; [
     waybar
-    rofi-wayland
+    rofi
     kitty
   ];
 }
