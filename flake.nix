@@ -15,19 +15,36 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
-    nixosConfigurations = {
-      "perso" = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs home-manager; };
-        modules = [ ./hosts/perso ];
-      };
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+    let
+      # --- Smart Dotfiles Logic ---
+      localDotfilesPath = "/home/arthur/dotfiles";
+      localDotfilesExists = builtins.pathExists localDotfilesPath;    # Check if that directory exists
 
-      "homelab" = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs home-manager; };
-        modules = [ ./hosts/homelab ];
+      # Choose the source based on the check (github or local)
+      dotfilesSrc = if localDotfilesExists
+        then (builtins.path { path = localDotfilesPath; name = "dotfiles-local"; })
+        else inputs.dotfiles;
+
+    in {
+      nixosConfigurations = {
+        "perso" = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          # Pass our dynamically chosen `dotfilesSrc` to all modules as `dotfiles`.
+          specialArgs = { 
+            inherit inputs home-manager; 
+            dotfiles = dotfilesSrc;
+            dotfilesDir = localDotfilesPath;
+            isLocal = localDotfilesExists;
+          };
+          modules = [ ./hosts/perso ];
+        };
+
+        "homelab" = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs home-manager; dotfiles = dotfilesSrc; };
+          modules = [ ./hosts/homelab ];
+        };
       };
     };
-  };
 }
