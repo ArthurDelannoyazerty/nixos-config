@@ -38,4 +38,13 @@
   # correct location in your home directory.
   home.file.".pureline.job.conf".source = "${inputs.dotfiles}/pureline/.pureline.job.conf";
   home.file.".pureline.personal.conf".source = "${inputs.dotfiles}/pureline/.pureline.personal.conf";
+
+
+  # VSCODIUM
+  xdg.configFile."VSCodium/User/settings.json".source = "${inputs.dotfiles}/codium/settings.json";
+  xdg.configFile."VSCodium/User/settings.json".force  = true;        # Force replacement of existing files
+  xdg.configFile."VSCodium/User/keybindings.json".source = "${inputs.dotfiles}/codium/keybindings.json";
+  xdg.configFile."VSCodium/User/keybindings.json".force  = true;
+
+
 }
