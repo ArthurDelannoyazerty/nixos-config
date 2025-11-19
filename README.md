@@ -31,9 +31,15 @@ sudo git commit -m "added hardware config file"
 sudo nixos-rebuild switch --flake .#perso
 ```
 
-If you udpate the dotfile, then update it in your pc with : 
+# Dotfiles update 
 ```bash
 cd ~/nixos-config
 sudo nix flake update dotfiles
 sudo nixos-rebuild switch --flake .#perso
+```
+
+# Garbage Collector
+
+```bash
+sudo nix-collect-garbage -d
 ```
