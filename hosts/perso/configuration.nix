@@ -15,10 +15,9 @@
   services.xserver.layout = "fr";
   services.xserver.xkbVariant = ""; 
 
-  services.displayManager.sddm.enable = true;
-  services.displayManager.sddm.wayland.enable = true; 
-  # numpad ON in sddm
-  services.displayManager.sddm.autoNumlock = true;
+  services.displayManager.sddm.enable = false;
+
+  services.getty.autologinUser = "arthur";
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 

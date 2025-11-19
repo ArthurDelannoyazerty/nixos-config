@@ -19,5 +19,11 @@
     waybar
     rofi
     kitty
+    hyprlock
+
+    wl-clipboard  # Clipboard support for Wayland
+    dunst         # Notification daemon
+    grim          # Screenshot tool (region)
+    slurp         # Screenshot tool (selector)
   ];
 }

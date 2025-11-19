@@ -31,6 +31,7 @@ in
     btop
     tree
     nvitop
+    atuin
   ];
 
   # set the hyprland.conf to the right place
@@ -45,6 +46,11 @@ in
   programs.bash = {
     enable = true;
     initExtra = ''
+      # Start Hyprland automatically if in TTY1
+      if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+        exec Hyprland
+      fi
+
       # Logic to choose the right path for bash sourcing
       if [ -f "${dotfilesDir}/bash/.bashrc" ]; then
         source "${dotfilesDir}/bash/.bashrc"
