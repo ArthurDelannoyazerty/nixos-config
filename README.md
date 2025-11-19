@@ -10,17 +10,18 @@ If not available, install `git` :
 
 Then : 
 ```bash
+# Backup original nixos config
 sudo mv /etc/nixos /etc/nixos-backup
 
-# Clone the repo in /mnt/etc/nixos
-sudo git clone https://github.com/ArthurDelannoyazerty/nixos-config.git /etc/nixos
+# Clone the repo
+cd ~
+sudo git clone https://github.com/ArthurDelannoyazerty/nixos-config.git
+cd nixos-config
 
-# IF NO HARDWARE CONFIG FILE : Copy the hardware file from /mnt/etc/niox to the wanted repo nixos config
-sudo cp /etc/nixos-backup/hardware-configuration.nix /etc/nixos/hosts/perso/
+# IF NO HARDWARE CONFIG FILE IN "hosts/<HOST>/", then copy the hardware file to the right host
+sudo cp /etc/nixos-backup/hardware-configuration.nix ~/nixos-config/hosts/<HOST>/
 
-cd /etc/nixos
-
-# IF NO HARDWARE CONFIG FILE : add it to git
+# For every file change, add it to git
 sudo git add .
 (sudo git config --global user.name "USERNAME")
 (sudo git config --global user.email "EMAIL")
@@ -30,9 +31,9 @@ sudo git commit -m "added hardware config file"
 sudo nixos-rebuild switch --flake .#perso
 ```
 
-If you udpate the dotfile, then pdate it in your pc with : 
+If you udpate the dotfile, then update it in your pc with : 
 ```bash
-cd /etc/nixos
+cd ~/nixos-config
 sudo nix flake update dotfiles
 sudo nixos-rebuild switch --flake .#perso
 ```
