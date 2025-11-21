@@ -31,7 +31,7 @@ in
     btop
     tree
     nvitop
-    atuin
+    bash-preexec
   ];
 
   # set the hyprland.conf to the right place
@@ -73,5 +73,10 @@ in
   xdg.configFile."VSCodium/User/keybindings.json".source = link "codium/keybindings.json";
   xdg.configFile."VSCodium/User/keybindings.json".force  = true;
 
+
+  programs.atuin = {
+      enable = true;
+      enableBashIntegration = true; # This ensures the hooks are added to .bashrc
+    };
 
 }

@@ -27,15 +27,16 @@ sudo git add .
 (sudo git config --global user.email "EMAIL")
 sudo git commit -m "added hardware config file" 
 
-# Install the flake (the '#' tell nix the right config to install)
-sudo nixos-rebuild switch --flake .#perso
+# Install the flake (the '#' tell nix the right config to install) 
+# (--impure for the flake to link some dotfiles not to the nix store but to the give dotfile folder)
+sudo nixos-rebuild switch --flake .#perso --impure 
 ```
 
 # Dotfiles update 
 ```bash
 cd ~/nixos-config
 sudo nix flake update dotfiles
-sudo nixos-rebuild switch --flake .#perso
+sudo nixos-rebuild switch --flake .#perso --impure
 ```
 
 # Garbage Collector
