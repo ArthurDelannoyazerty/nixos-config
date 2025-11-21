@@ -32,6 +32,10 @@ in
     tree
     nvitop
     bash-preexec
+    
+    # Fonts
+    nerd-fonts.iosevka
+    nerd-fonts.iosevka-term
   ];
 
   # set the hyprland.conf to the right place
@@ -61,6 +65,19 @@ in
       # Append to history file immediately, don't overwrite it
       shopt -s histappend
     '';
+  };
+
+  programs.kitty = {
+    enable = true;
+    font = {
+      name = "IosevkaTerm Nerd Font Mono";
+      size = 12;
+    };
+    settings = {
+      # Optional: Add window padding or transparency if you like
+      window_padding_width = 4;
+      confirm_os_window_close = 0;
+    };
   };
 
   # --- PURELINE CONFIGURATION ---

@@ -8,6 +8,7 @@
     nvitop    # GPU monitoring tool
     starship  # A nice cross-shell prompt (optional, configured via home-manager)
     htop
+    killall
   ];
 
   # You could set a default system shell here if desired
