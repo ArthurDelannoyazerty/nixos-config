@@ -77,6 +77,11 @@ in
   programs.atuin = {
       enable = true;
       enableBashIntegration = true; # This ensures the hooks are added to .bashrc
-    };
+  };
+
+
+  # Waybar
+  xdg.configFile."waybar/config.jsonc".source = link "waybar/config.jsonc";
+  xdg.configFile."waybar/style.css".source = link "waybar/style.css";
 
 }
