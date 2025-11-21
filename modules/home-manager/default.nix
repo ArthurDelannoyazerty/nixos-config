@@ -5,6 +5,8 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    # Backup any existing config nixos doesn't own
+    backupFileExtension = "backup";
     # Tell home-manager where to find the user configuration
     users.arthur = import ./home.nix;
     # Pass down special arguments (like inputs)

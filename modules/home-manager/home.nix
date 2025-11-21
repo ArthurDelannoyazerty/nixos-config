@@ -57,6 +57,9 @@ in
       elif [ -f "${dotfiles}/bash/.bashrc" ]; then
         source "${dotfiles}/bash/.bashrc"
       fi
+
+      # Append to history file immediately, don't overwrite it
+      shopt -s histappend
     '';
   };
 
@@ -75,8 +78,19 @@ in
 
 
   programs.atuin = {
-      enable = true;
-      enableBashIntegration = true; # This ensures the hooks are added to .bashrc
+    enable = true;
+    enableBashIntegration = true; # This ensures the hooks are added to .bashrc
+    settings = {
+      # Disable all online sync features
+      auto_sync = false;
+      update_check = false;
+      sync_address = "";
+        
+      # UI Settings
+      style = "compact";
+      inline_height = 10;    # Limits height to 10 lines (cleaner)
+      show_preview = true;   # Shows context of the command
+    };
   };
 
 
