@@ -39,6 +39,8 @@ in
     nerd-fonts.iosevka
     nerd-fonts.iosevka-term
 
+    papirus-icon-theme
+
     pavucontrol      # GUI Volume Mixer (essential for fixing mic inputs)
     brightnessctl    # For laptop brightness keys
   ];
@@ -46,6 +48,8 @@ in
   # set the hyprland.conf to the right place
   # Note: We use the 'link' function and pass the path relative to the repo root
   xdg.configFile."hypr/hyprland.conf".source = link "hyprland/hyprland.conf";
+
+  xdg.configFile."rofi/config.rasi".source = link "rofi/config.rasi";
 
   # --- BASH ---
   # Bash is special because it uses 'source' inside the file, not a symlink.
@@ -123,8 +127,6 @@ in
       
       # === AI ===
       continue.continue
-      github.copilot
-      github.copilot-chat
       google.geminicodeassist
       
       # === REMOTE & SSH ===
