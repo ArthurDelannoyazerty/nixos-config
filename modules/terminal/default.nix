@@ -9,6 +9,11 @@
     starship  # A nice cross-shell prompt (optional, configured via home-manager)
     htop
     killall
+    duf
+    bat 
+    eza  
+    fzf 
+    tldr
   ];
 
   # You could set a default system shell here if desired

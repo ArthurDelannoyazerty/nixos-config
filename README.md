@@ -44,3 +44,10 @@ sudo nixos-rebuild switch --flake .#perso --impure
 ```bash
 sudo nix-collect-garbage -d
 ```
+
+# Optimise
+Compact current libs
+
+```bash
+nix-store --optimise
+```
