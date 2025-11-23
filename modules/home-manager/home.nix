@@ -38,6 +38,9 @@ in
     # Fonts
     nerd-fonts.iosevka
     nerd-fonts.iosevka-term
+
+    pavucontrol      # GUI Volume Mixer (essential for fixing mic inputs)
+    brightnessctl    # For laptop brightness keys
   ];
 
   # set the hyprland.conf to the right place
@@ -187,5 +190,18 @@ in
   # Waybar
   xdg.configFile."waybar/config.jsonc".source = link "waybar/config.jsonc";
   xdg.configFile."waybar/style.css".source = link "waybar/style.css";
+
+  # polkit daemon
+  systemd.user.services.polkit-gnome-authentication-agent-1 = {
+    Unit.Description = "polkit-gnome-authentication-agent-1";
+    Install.WantedBy = [ "graphical-session.target" ];
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+      Restart = "on-failure";
+      RestartSec = 1;
+      TimeoutStopSec = 10;
+    };
+  };
 
 }
