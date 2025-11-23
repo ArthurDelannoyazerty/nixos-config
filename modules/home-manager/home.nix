@@ -1,4 +1,4 @@
-{ pkgs, config, inputs, dotfiles, dotfilesDir, isLocal, ... }:
+{ pkgs, config, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, ... }:
 
 
 
@@ -14,13 +14,15 @@ let
       # Otherwise, use the store copy (Immutable / Safe for new installs)
       "${dotfiles}/${path}";
 
+  # Access the community extension marketplace
+  marketplace = pkgs.vscode-marketplace; 
 in
 
 {
   # Let Home Manager manage itself
   programs.home-manager.enable = true;
   # This needs to be set for Home Manager to work correctly
-  home.stateVersion = "23.11";
+  home.stateVersion = "25.05";
 
   # Set your home directory and username
   home.username = "arthur";
@@ -87,12 +89,84 @@ in
   home.file.".pureline.personal.conf".source = link "pureline/.pureline.personal.conf";
 
 
-  # VSCODIUM
-  xdg.configFile."VSCodium/User/settings.json".source = link "codium/settings.json";
-  xdg.configFile."VSCodium/User/settings.json".force  = true;        # Force replacement of existing files
-  xdg.configFile."VSCodium/User/keybindings.json".source = link "codium/keybindings.json";
-  xdg.configFile."VSCodium/User/keybindings.json".force  = true;
+  # ========================================================================
+  # == VS CODE CONFIGURATION
+  # ========================================================================
 
+  xdg.configFile."Code/User/settings.json".source = link "codium/settings.json";
+  xdg.configFile."Code/User/settings.json".force  = true;
+  
+  xdg.configFile."Code/User/keybindings.json".source = link "codium/keybindings.json";
+  xdg.configFile."Code/User/keybindings.json".force  = true;
+
+  programs.vscode = {
+    enable = true;
+    package = pkgs.vscode;
+    mutableExtensionsDir = true; 
+
+    extensions = with marketplace; [
+      # === PYTHON ===
+      ms-python.python
+      ms-python.debugpy
+      # ms-python.vscode-pylance
+      ms-python.vscode-python-envs
+      charliermarsh.ruff
+      njpwerner.autodocstring
+      njqdev.vscode-python-typehint
+      ms-toolsai.jupyter
+      ms-toolsai.jupyter-keymap
+      ms-toolsai.jupyter-renderers
+      ms-toolsai.vscode-jupyter-cell-tags
+      
+      # === AI ===
+      continue.continue
+      github.copilot
+      github.copilot-chat
+      google.geminicodeassist
+      
+      # === REMOTE & SSH ===
+      ms-vscode-remote.remote-ssh
+      ms-vscode-remote.remote-ssh-edit
+      # ms-vscode-remote.remote-explorer
+      ms-vscode.remote-server
+      ms-vscode.remote-repositories
+      ms-azuretools.vscode-containers
+
+      # === GIT ===
+      eamodio.gitlens
+      mhutchie.git-graph
+      ms-vscode.azure-repos
+
+      # === THEMES & ICONS ===
+      pkief.material-icon-theme
+      monokai.theme-monokai-pro-vscode
+      nicolaiverbaarschot.alabaster-variant-theme
+      tonsky.theme-alabaster
+      johnpapa.vscode-peacock
+
+      # === TOOLS ===
+      esbenp.prettier-vscode
+      mechatroner.rainbow-csv
+      hediet.vscode-drawio
+      mermaidchart.vscode-mermaid-chart
+      jnoortheen.nix-ide
+      christian-kohler.path-intellisense
+      ritwickdey.liveserver
+      tomoki1207.pdf
+      stackbreak.comment-divider
+      torreysmith.copyfilepathandcontent
+      irongeek.vscode-env
+      emilast.logfilehighlighter
+      alexcvzz.vscode-sqlite
+      qwtel.sqlite-viewer
+      rioj7.command-variable
+      
+      # === MISC ===
+      codediagram.codediagram # Check if this exists in marketplace, might be rare
+      marketplace."076923".python-image-preview # IDs starting with numbers can be tricky in Nix, 
+                                    # usually access like: marketplace."076923".python-image-preview
+    ];
+  };
 
   programs.atuin = {
     enable = true;

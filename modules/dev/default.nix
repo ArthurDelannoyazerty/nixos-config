@@ -10,10 +10,6 @@
     git       # Version control is non-negotiable
     gcc       # C compiler, needed by many tools and libraries
     gnumake   # The standard build tool
-    
-    # --- Editors ---
-    vscodium  # The FOSS build of VS Code. It works well on NixOS.
-              # For the official MS version, use `vscode` and ensure unfree is enabled.
 
     # --- Nix Language Support ---
     nixpkgs-fmt # Formatter for your Nix code, helps keep it clean

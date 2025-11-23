@@ -13,9 +13,11 @@
       url = "github:ArthurDelannoyazerty/dotfiles";
       flake = false;    # That repo doesn't have a flake.nix
     };
+    
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nix-vscode-extensions, ... }@inputs:
     let
       # --- Smart Dotfiles Logic ---
       localDotfilesPath = "/home/arthur/dotfiles";
@@ -32,12 +34,17 @@
           system = "x86_64-linux";
           # Pass our dynamically chosen `dotfilesSrc` to all modules as `dotfiles`.
           specialArgs = { 
-            inherit inputs home-manager; 
+            inherit inputs home-manager nix-vscode-extensions; 
             dotfiles = dotfilesSrc;
             dotfilesDir = localDotfilesPath;
             isLocal = localDotfilesExists;
           };
-          modules = [ ./hosts/perso ];
+          modules = [ 
+            ./hosts/perso 
+            {
+              nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
+            }
+          ];
         };
 
         "homelab" = nixpkgs.lib.nixosSystem {

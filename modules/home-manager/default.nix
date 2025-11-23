@@ -1,4 +1,4 @@
-{ inputs, dotfiles, dotfilesDir, isLocal, ... }:
+{ inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, ... }:
 
 {
   # Enable and configure home-manager as a NixOS module
@@ -10,6 +10,6 @@
     # Tell home-manager where to find the user configuration
     users.arthur = import ./home.nix;
     # Pass down special arguments (like inputs)
-    extraSpecialArgs = { inherit inputs dotfiles dotfilesDir isLocal; };
+    extraSpecialArgs = { inherit inputs dotfiles dotfilesDir isLocal nix-vscode-extensions; };
   };
 }
