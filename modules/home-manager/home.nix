@@ -51,6 +51,8 @@ in
 
   xdg.configFile."rofi/config.rasi".source = link "rofi/config.rasi";
 
+  xdg.configFile."hypr/hyprlock.conf".source = link "hyprlock/hyprlock.conf";
+
   # --- BASH ---
   # Bash is special because it uses 'source' inside the file, not a symlink.
   # We can keep using ${dotfiles} here because we just want to read the file.
