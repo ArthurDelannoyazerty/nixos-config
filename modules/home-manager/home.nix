@@ -108,7 +108,7 @@ in
       # === PYTHON ===
       ms-python.python
       ms-python.debugpy
-      # ms-python.vscode-pylance
+      ms-python.vscode-pylance
       ms-python.vscode-python-envs
       charliermarsh.ruff
       njpwerner.autodocstring
@@ -127,8 +127,7 @@ in
       # === REMOTE & SSH ===
       ms-vscode-remote.remote-ssh
       ms-vscode-remote.remote-ssh-edit
-      # ms-vscode-remote.remote-explorer
-      ms-vscode.remote-server
+      ms-vscode.remote-explorer
       ms-vscode.remote-repositories
       ms-azuretools.vscode-containers
 

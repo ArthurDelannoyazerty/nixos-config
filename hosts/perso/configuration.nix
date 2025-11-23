@@ -2,6 +2,7 @@
 
 {
   # Basic system settings
+  system.stateVersion = "25.05"; 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   networking.hostName = "nixos-perso";
