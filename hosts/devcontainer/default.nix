@@ -50,7 +50,7 @@ let
 
     # ------------------------------ VSCODE SETUP ------------------------------ 
 
-    EXTENSION_FILE="${DOTFILES_DIR}/codium/extensions.txt"
+    EXTENSION_FILE="$DOTFILES_DIR/codium/extensions.txt"
     
     echo "--- VS Code Extension Installer ---"
     
