@@ -121,6 +121,11 @@ pkgs.dockerTools.buildLayeredImage {
   fakeRootCommands = ''
     mkdir -p ./home/arthur
     mkdir -p ./tmp
+
+    # VS Code scripts look for /usr/bin/env, so we must link it manually
+    mkdir -p ./usr/bin
+    ln -sf ${pkgs.coreutils}/bin/env ./usr/bin/env
+    
     chown -R 1000:1000 ./home/arthur
     chown -R 1000:1000 ./tmp
     chmod 755 ./home/arthur
