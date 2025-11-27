@@ -61,6 +61,13 @@ pkgs.dockerTools.buildLayeredImage {
     curl
     wget
     iana-etc
+    zip
+    unzip
+    openssh
+    jq
+    pkg-config
+    nix-tree
+    nil
 
     # --- 4. ESSENTIAL LINUX TOOLS (ADDED) ---
     gnugrep   # Fixes 'grep: command not found'
