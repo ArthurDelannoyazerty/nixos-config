@@ -1,21 +1,43 @@
 { pkgs, ... }:
 
 let
-  # 1. We create a "package" that just contains the folder structure we need.
-  # Nix will merge this into the root of the Docker image.
-  dirSetup = pkgs.runCommand "dev-setup-dirs" { } ''
+  # 1. Create a setup package that provides /etc/passwd and the directory structure
+  devSetup = pkgs.runCommand "dev-setup" { } ''
+    # Create the directory structure
     mkdir -p $out/home/arthur
     mkdir -p $out/tmp
+    mkdir -p $out/etc
+
+    # 1. Fix Permissions
+    # We make the home directory writable by everyone (777).
+    # Since we can't 'chown' files to arthue inside the Nix store (files are owned by root/nixbld),
+    # making it writable ensures that when UID 1000 logs in, they can write to it 
+    # (unless a PVC is mounted on top, in which case the PVC permissions rule).
+    chmod 777 $out/home/arthur
     chmod 1777 $out/tmp
+
+    # 2. Fix Identity (Create /etc/passwd and /etc/group)
+    # This tells Linux that UID 1000 is "arthur" and Home is "/home/arthur"
+    echo "root:x:0:0:root:/root:/bin/bash" > $out/etc/passwd
+    echo "arthur:x:1000:1000:Arthur:/home/arthur:/bin/bash" >> $out/etc/passwd
+    
+    echo "root:x:0:" > $out/etc/group
+    echo "arthur:x:1000:" >> $out/etc/group
+    
+    # 3. Fix SSL/nsswitch (Standard for Nix containers to find DNS/Users)
+    echo "hosts: files dns" > $out/etc/nsswitch.conf
   '';
 in
 pkgs.dockerTools.buildLayeredImage {
   name = "nix-devcontainer";
   tag = "latest";
 
-  # 2. We add 'dirSetup' to the contents
+  # Remove fakeRootCommands (It causes the build error you saw)
+  # We handle permissions in 'devSetup' above.
+  
   contents = with pkgs; [
-    dirSetup # <--- This adds /home/arthur and /tmp
+    # Add our custom setup layer
+    devSetup 
     
     # --- Base Utils ---
     bashInteractive
@@ -48,17 +70,11 @@ pkgs.dockerTools.buildLayeredImage {
     ripgrep
     fd
     nix
+    uv
   ];
 
-  # 3. Use fakeRootCommands ONLY for permissions (not creation)
-  # '|| true' ensures the build doesn't crash if fakeroot acts weirdly, 
-  # but since we mount a PVC at /home/arthur anyway, the PVC permissions will take over.
-  fakeRootCommands = ''
-    chown -R 1000:1000 /home/arthur || true
-  '';
-
   config = {
-    User = "1000";
+    User = "arthur"; # Now that /etc/passwd exists, we can use the name
     WorkingDir = "/home/arthur";
     Env = [
       "USER=arthur"
@@ -66,6 +82,10 @@ pkgs.dockerTools.buildLayeredImage {
       "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "GIT_SSL_CAINFO=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "PATH=/bin:/usr/bin:/usr/local/bin"
+      
+      # Fix Local/Encoding issues (fixes btop error)
+      "LANG=C.UTF-8"
+      "LC_ALL=C.UTF-8"
     ];
     Cmd = [ "/bin/bash" ];
   };
