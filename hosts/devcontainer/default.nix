@@ -30,6 +30,23 @@ let
     exec "$@"
   '';
 
+    atuinConfig = pkgs.writeTextDir "etc/atuin/config.toml" ''
+    ## Server config ##
+    auto_sync = false
+    update_check = false
+    sync_address = ""
+
+    ## UI Settings ##
+    style = "auto"
+    inline_height = 10
+    show_preview = true
+    
+    ## Behavior ##
+    # This ensures Up Arrow stays as normal Bash history
+    # and Ctrl-R opens Atuin
+    enter_accept = true
+  '';
+
   devSetup = pkgs.runCommand "dev-setup" { } ''
     mkdir -p $out/etc
     echo "root:x:0:0:root:/root:/bin/bash" > $out/etc/passwd
@@ -98,7 +115,7 @@ pkgs.dockerTools.buildLayeredImage {
     nix
     uv
   ];
-  
+
   fakeRootCommands = ''
     mkdir -p ./home/arthur
     mkdir -p ./tmp
