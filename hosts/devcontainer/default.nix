@@ -41,6 +41,13 @@ let
     echo "root:x:0:" > $out/etc/group
     echo "arthur:x:1000:" >> $out/etc/group
     echo "hosts: files dns" > $out/etc/nsswitch.conf
+
+    # --- bash-preexec Symlink (ATUIN) ---
+    # We create the standard directory
+    mkdir -p $out/usr/share/bash-preexec
+    
+    # We link the file from the Nix store to the standard path
+    ln -s ${pkgs.bash-preexec}/share/bash-preexec/bash-preexec.sh $out/usr/share/bash-preexec/bash-preexec.sh
   '';
 
 in
