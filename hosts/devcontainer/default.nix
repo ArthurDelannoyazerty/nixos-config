@@ -38,7 +38,7 @@ let
 
     ## UI Settings ##
     style = "auto"
-    inline_height = 10
+    inline_height = 16
     show_preview = true
     
     ## Behavior ##
