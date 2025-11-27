@@ -1,75 +1,13 @@
 { pkgs, dotfilesInput, ... }:
 
 let
-  devContainerConf = pkgs.writeTextDir "home/arthur/.devcontainer/devcontainer.json" ''
-    {
-      "name": "Nix Rancher Dev",
-      "remoteUser": "arthur",
-      "postAttachCommand": "/bin/entrypoint.sh true",
-      "customizations": {
-        "vscode": {
-          "settings": {
-            "terminal.integrated.defaultProfile.linux": "bash",
-            "nix.enableLanguageServer": true,
-            "nix.serverPath": "nil",
-            "python.defaultInterpreterPath": "/usr/bin/python3"
-          },
-          "extensions": [
-            "alexcvzz.vscode-sqlite",
-            "antfu.theme-vitesse",
-            "charliermarsh.ruff",
-            "christian-kohler.path-intellisense",
-            "codediagram.codediagram",
-            "continue.continue",
-            "eamodio.gitlens",
-            "emilast.logfilehighlighter",
-            "esbenp.prettier-vscode",
-            "github.copilot",
-            "github.copilot-chat",
-            "google.geminicodeassist",
-            "hediet.vscode-drawio",
-            "irongeek.vscode-env",
-            "jnoortheen.nix-ide",
-            "johnpapa.vscode-peacock",
-            "mechatroner.rainbow-csv",
-            "meezilla.json",
-            "mermaidchart.vscode-mermaid-chart",
-            "mhutchie.git-graph",
-            "monokai.theme-monokai-pro-vscode",
-            "ms-azuretools.vscode-containers",
-            "ms-kubernetes-tools.vscode-kubernetes-tools",
-            "ms-python.debugpy",
-            "ms-python.python",
-            "ms-python.vscode-pylance",
-            "ms-python.vscode-python-envs",
-            "ms-toolsai.jupyter",
-            "ms-toolsai.jupyter-keymap",
-            "ms-toolsai.jupyter-renderers",
-            "ms-toolsai.tensorboard",
-            "ms-toolsai.vscode-jupyter-cell-tags",
-            "ms-vscode-remote.remote-containers",
-            "ms-vscode-remote.remote-ssh",
-            "ms-vscode-remote.remote-ssh-edit",
-            "ms-vscode-remote.remote-wsl",
-            "ms-vscode-remote.vscode-remote-extensionpack",
-            "ms-vscode.azure-repos",
-            "ms-vscode.remote-explorer",
-            "ms-vscode.remote-repositories",
-            "ms-vscode.remote-server",
-            "njpwerner.autodocstring",
-            "njqdev.vscode-python-typehint",
-            "pkief.material-icon-theme",
-            "qwtel.sqlite-viewer",
-            "redhat.vscode-yaml",
-            "rioj7.command-variable",
-            "ritwickdey.liveserver",
-            "stackbreak.comment-divider",
-            "tomoki1207.pdf",
-            "torreysmith.copyfilepathandcontent"
-          ]
-        }
-      }
-    }
+  devSetup = pkgs.runCommand "dev-setup" { } ''
+    mkdir -p $out/etc
+    echo "root:x:0:0:root:/root:/bin/bash" > $out/etc/passwd
+    echo "arthur:x:1000:1000:Arthur:/home/arthur:/bin/bash" >> $out/etc/passwd
+    echo "root:x:0:" > $out/etc/group
+    echo "arthur:x:1000:" >> $out/etc/group
+    echo "hosts: files dns" > $out/etc/nsswitch.conf
   '';
 
   dotfilesLayer = pkgs.runCommand "dotfiles-layer" { } ''
@@ -77,7 +15,7 @@ let
     cp -r ${dotfilesInput} $out/opt/dotfiles
   '';
 
-  entrypointScript = pkgs.writeScriptBin "entrypoint.sh" ''
+  devContainerSetupScript = pkgs.writeScriptBin "setup_devcontainer.sh" ''
     #!${pkgs.bash}/bin/bash
     set -e
     DOTFILES_DIR="/home/arthur/.dotfiles"
@@ -110,6 +48,37 @@ let
       echo "Dotfiles setup already performed. Skipping."
     fi
 
+    # ------------------------------ VSCODE SETUP ------------------------------ 
+
+    EXTENSION_FILE="${DOTFILES_DIR}/codium/extensions.txt"
+    
+    echo "--- VS Code Extension Installer ---"
+    
+    # Check if we are actually inside VS Code
+    if ! command -v code &> /dev/null; then
+        echo "Error: 'code' command not found."
+        echo "You must run this script INSIDE the VS Code Integrated Terminal."
+        exit 1
+    fi
+
+    if [ ! -f "$EXTENSION_FILE" ]; then
+        echo "Error: Extension list not found at $EXTENSION_FILE"
+        exit 1
+    fi
+
+    # Loop through the file and install
+    echo "Reading extensions from $EXTENSION_FILE..."
+    while IFS= read -r ext || [ -n "$ext" ]; do
+        # Skip empty lines or comments
+        [[ $ext =~ ^# ]] && continue
+        [[ -z $ext ]] && continue
+        
+        echo "Installing $ext..."
+        code --install-extension "$ext" --force
+    done < "$EXTENSION_FILE"
+    
+    echo "--- All extensions installed! Reload window to apply. ---"
+
     # --- 3. Execute Command (if arguments provided) ---
     # This allows the script to still be used as a Docker Entrypoint
     if [ "$#" -gt 0 ]; then
@@ -132,15 +101,6 @@ let
     enter_accept = true
   '';
 
-  devSetup = pkgs.runCommand "dev-setup" { } ''
-    mkdir -p $out/etc
-    echo "root:x:0:0:root:/root:/bin/bash" > $out/etc/passwd
-    echo "arthur:x:1000:1000:Arthur:/home/arthur:/bin/bash" >> $out/etc/passwd
-    echo "root:x:0:" > $out/etc/group
-    echo "arthur:x:1000:" >> $out/etc/group
-    echo "hosts: files dns" > $out/etc/nsswitch.conf
-  '';
-
 in
 pkgs.dockerTools.buildLayeredImage {
   name = "nix-devcontainer";
@@ -149,9 +109,8 @@ pkgs.dockerTools.buildLayeredImage {
   contents = with pkgs; [
     devSetup
     dotfilesLayer
-    entrypointScript
+    devContainerSetupScript
     atuinConfig
-    devContainerConf 
     
     # --- Base Utils ---
     bashInteractive
