@@ -92,7 +92,7 @@ pkgs.dockerTools.buildLayeredImage {
     glibc
     findutils 
     binutils
-    glibc.bin
+    # glibc.bin
     stdenv.cc.cc.lib
     
     # --- Terminal Tools ---
@@ -129,41 +129,53 @@ pkgs.dockerTools.buildLayeredImage {
     mkdir -p ./usr/bin
 
     # --- 1. CLEANUP ---
+    # Remove existing library dirs and any ldconfig that might have snuck in
     rm -rf ./lib ./lib64 ./usr/lib64
+    rm -f ./bin/ldconfig ./sbin/ldconfig ./usr/sbin/ldconfig
 
     # --- 2. FHS DIRECTORY STRUCTURE ---
-    mkdir -p ./usr/lib ./usr/bin ./sbin ./usr/sbin
+    mkdir -p ./usr/lib ./usr/bin ./sbin ./usr/sbin ./bin ./etc
+    
     ln -sf usr/lib lib
     ln -sf usr/lib lib64
     ln -sf lib usr/lib64
 
-    # --- 3. TOOLS COMPATIBILITY ---
-    ln -sf ${pkgs.coreutils}/bin/env ./usr/bin/env
+    # --- 3. CONFIGURE LDCONFIG (THE FIX) ---
     
-    # Link ldconfig to where scripts expect it
-    ln -sf ${pkgs.glibc.bin}/bin/ldconfig ./sbin/ldconfig
-    ln -sf ${pkgs.glibc.bin}/bin/ldconfig ./usr/sbin/ldconfig
+    # A. Create the config file telling ldconfig to look in /usr/lib
+    echo "/usr/lib" > ./etc/ld.so.conf
+    
+    # B. Generate the cache NOW (during build)
+    # This creates a valid ./etc/ld.so.cache that VS Code can read later
+    ${pkgs.glibc.bin}/bin/ldconfig -r . -f /etc/ld.so.conf -C /etc/ld.so.cache || echo "Cache gen warning"
+
+    # C. Create the Wrapper Script
+    # VS Code calls 'ldconfig'. We intercept it and force it to use our 
+    # valid cache file instead of the read-only Nix store path.
+    cat <<EOF > ./bin/ldconfig
+#!/bin/sh
+exec ${pkgs.glibc.bin}/bin/ldconfig -C /etc/ld.so.cache "\$@"
+EOF
+    chmod +x ./bin/ldconfig
+    
+    # D. Symlink the wrapper to sbin (where VS Code looks)
+    ln -sf ../bin/ldconfig ./sbin/ldconfig
+    ln -sf ../bin/ldconfig ./usr/sbin/ldconfig
 
     # --- 4. POPULATE LIBRARIES ---
+    
+    # VS Code Scripts compatibility
+    ln -sf ${pkgs.coreutils}/bin/env ./usr/bin/env
+
     # Dynamic Loader
     ln -sf ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./usr/lib/ld-linux-x86-64.so.2
 
-    # Libstdc++ (C++)
-    # We follow symlinks (-L) to ensure we get the actual .so file if needed
+    # Standard Libraries (Libstdc++, Glibc, GCC)
     find ${pkgs.stdenv.cc.cc.lib} -name "libstdc++.so.6*" -exec ln -sf {} ./usr/lib/ \;
-
-    # Glibc (C)
     find ${pkgs.glibc}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
-    
-    # GCC Libs
     find ${pkgs.stdenv.cc.cc.lib} -name "libgcc_s.so.1" -exec ln -sf {} ./usr/lib/ \;
 
     # ----------------------------------------------
-    
-    # Create an ld.so.cache so ldconfig doesn't complain (optional but good)
-    # We try to run ldconfig to generate the cache for the libs we just linked
-    # We need to use the fake root path
-    ${pkgs.glibc.bin}/bin/ldconfig -f /etc/ld.so.conf -C ./etc/ld.so.cache -r . || true
 
     # Permission setup
     chown -R 1000:1000 ./home/arthur
