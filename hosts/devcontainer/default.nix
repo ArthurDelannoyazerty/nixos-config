@@ -91,6 +91,8 @@ pkgs.dockerTools.buildLayeredImage {
     gawk
     which
     util-linux
+    glibc
+    stdenv.cc.cc.lib 
     
     # --- Terminal Tools ---
     atuin
@@ -122,10 +124,31 @@ pkgs.dockerTools.buildLayeredImage {
     mkdir -p ./home/arthur
     mkdir -p ./tmp
 
-    # VS Code scripts look for /usr/bin/env, so we must link it manually
+    # --- 1. SETUP ENV ---
     mkdir -p ./usr/bin
     ln -sf ${pkgs.coreutils}/bin/env ./usr/bin/env
+
+    # --- 2. SETUP LIBRARIES (The Heavy Lifting) ---
+    mkdir -p ./usr/lib ./lib64
+
+    # A. The Dynamic Loader (CRITICAL: VS Code cannot start without this)
+    # This must be in /lib64 specifically
+    ln -sf ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./lib64/ld-linux-x86-64.so.2
+
+    # B. Bulk Link Libraries
+    # Instead of picking files one by one, we link ALL libraries from these packages
+    # into /usr/lib. This fixes libc, libstdc++, libgcc, libpthread, etc.
     
+    find ${pkgs.glibc}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
+    find ${pkgs.stdenv.cc.cc.lib}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
+    
+    # Optional: Add zlib/openssl if extensions fail later
+    # find ${pkgs.zlib}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
+
+    # C. Compatibility Link (Your Suggestion)
+    # Now that /usr/lib is full, we point /lib to it.
+    ln -sfn ./usr/lib ./lib
+
     chown -R 1000:1000 ./home/arthur
     chown -R 1000:1000 ./tmp
     chmod 755 ./home/arthur
