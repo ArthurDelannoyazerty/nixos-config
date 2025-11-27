@@ -61,9 +61,18 @@ pkgs.dockerTools.buildLayeredImage {
     curl
     wget
     iana-etc
+
+    # --- 4. ESSENTIAL LINUX TOOLS (ADDED) ---
+    gnugrep   # Fixes 'grep: command not found'
+    gnused    # Essential for scripts (sed)
+    findutils # Essential for scripts (find, xargs)
+    gawk      # awk
+    which     # Useful to check paths
     util-linux
     
     # --- Terminal Tools ---
+    bash-preexec
+    atuin
     btop
     tree
     nvitop
@@ -116,6 +125,7 @@ pkgs.dockerTools.buildLayeredImage {
       "PATH=/bin:/usr/bin:/usr/local/bin"
       "LANG=C.UTF-8"
       "LC_ALL=C.UTF-8"
+      "ATUIN_NO_SYNC=true"
     ];
   };
 }
