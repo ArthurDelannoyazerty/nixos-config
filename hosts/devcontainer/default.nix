@@ -124,30 +124,38 @@ pkgs.dockerTools.buildLayeredImage {
     mkdir -p ./home/arthur
     mkdir -p ./tmp
 
-    # --- 1. SETUP ENV ---
-    mkdir -p ./usr/bin
+    # --- 1. FHS DIRECTORY STRUCTURE ---
+    # We create /usr/lib and make everyone else point to it.
+    # This matches standard Linux (Ubuntu/Debian) behavior.
+    mkdir -p ./usr/lib ./usr/bin
+    ln -s usr/lib lib
+    ln -s usr/lib lib64
+    ln -s lib usr/lib64
+
+    # --- 2. SETUP /usr/bin/env ---
+    # Required for VS Code scripts
     ln -sf ${pkgs.coreutils}/bin/env ./usr/bin/env
 
-    # --- 2. SETUP LIBRARIES (The Heavy Lifting) ---
-    mkdir -p ./usr/lib ./lib64
-
-    # A. The Dynamic Loader (CRITICAL: VS Code cannot start without this)
-    # This must be in /lib64 specifically
-    ln -sf ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./lib64/ld-linux-x86-64.so.2
-
-    # B. Bulk Link Libraries
-    # Instead of picking files one by one, we link ALL libraries from these packages
-    # into /usr/lib. This fixes libc, libstdc++, libgcc, libpthread, etc.
+    # --- 3. POPULATE LIBRARIES ---
     
+    # A. The Dynamic Loader (The "Brain")
+    # VS Code looks for /lib64/ld-linux-x86-64.so.2
+    # Since /lib64 -> /usr/lib, we link it there.
+    ln -sf ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./usr/lib/ld-linux-x86-64.so.2
+
+    # B. The C++ Standard Library (The Error You Are Seeing)
+    # We use 'find' to locate it regardless of whether it's in /lib or /lib64 inside the Nix store
+    find ${pkgs.stdenv.cc.cc.lib} -name "libstdc++.so.6*" -exec ln -sf {} ./usr/lib/ \;
+
+    # C. The C Standard Library (glibc)
+    # Linking all .so files from glibc to /usr/lib
     find ${pkgs.glibc}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
-    find ${pkgs.stdenv.cc.cc.lib}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
     
-    # Optional: Add zlib/openssl if extensions fail later
-    # find ${pkgs.zlib}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
+    # D. GCC Libs (libgcc_s.so.1)
+    # Often needed alongside libstdc++
+    find ${pkgs.stdenv.cc.cc.lib} -name "libgcc_s.so.1" -exec ln -sf {} ./usr/lib/ \;
 
-    # C. Compatibility Link (Your Suggestion)
-    # Now that /usr/lib is full, we point /lib to it.
-    ln -sfn ./usr/lib ./lib
+    # ----------------------------------------------
 
     chown -R 1000:1000 ./home/arthur
     chown -R 1000:1000 ./tmp
