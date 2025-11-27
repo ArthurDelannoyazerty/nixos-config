@@ -90,6 +90,10 @@ pkgs.dockerTools.buildLayeredImage {
     which
     util-linux
     glibc
+    findutils 
+    binutils
+    glibc.bin
+    stdenv.cc.cc.lib
     
     # --- Terminal Tools ---
     atuin
@@ -123,9 +127,43 @@ pkgs.dockerTools.buildLayeredImage {
     mkdir -p ./home/arthur
     mkdir -p ./tmp
     mkdir -p ./usr/bin
-    
-    # Setup /usr/bin/env (Crucial for scripts)
+
+    # --- 1. CLEANUP ---
+    rm -rf ./lib ./lib64 ./usr/lib64
+
+    # --- 2. FHS DIRECTORY STRUCTURE ---
+    mkdir -p ./usr/lib ./usr/bin ./sbin
+    ln -sf usr/lib lib
+    ln -sf usr/lib lib64
+    ln -sf lib usr/lib64
+
+    # --- 3. TOOLS COMPATIBILITY ---
     ln -sf ${pkgs.coreutils}/bin/env ./usr/bin/env
+    
+    # Link ldconfig to where scripts expect it
+    ln -sf ${pkgs.glibc.bin}/bin/ldconfig ./sbin/ldconfig
+    ln -sf ${pkgs.glibc.bin}/bin/ldconfig ./usr/sbin/ldconfig
+
+    # --- 4. POPULATE LIBRARIES ---
+    # Dynamic Loader
+    ln -sf ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./usr/lib/ld-linux-x86-64.so.2
+
+    # Libstdc++ (C++)
+    # We follow symlinks (-L) to ensure we get the actual .so file if needed
+    find ${pkgs.stdenv.cc.cc.lib} -name "libstdc++.so.6*" -exec ln -sf {} ./usr/lib/ \;
+
+    # Glibc (C)
+    find ${pkgs.glibc}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
+    
+    # GCC Libs
+    find ${pkgs.stdenv.cc.cc.lib} -name "libgcc_s.so.1" -exec ln -sf {} ./usr/lib/ \;
+
+    # ----------------------------------------------
+    
+    # Create an ld.so.cache so ldconfig doesn't complain (optional but good)
+    # We try to run ldconfig to generate the cache for the libs we just linked
+    # We need to use the fake root path
+    ${pkgs.glibc.bin}/bin/ldconfig -f /etc/ld.so.conf -C ./etc/ld.so.cache -r . || true
 
     # Permission setup
     chown -R 1000:1000 ./home/arthur
@@ -143,6 +181,7 @@ pkgs.dockerTools.buildLayeredImage {
     Env = [
       "USER=arthur"
       "HOME=/home/arthur"
+      "PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin" # Added sbin for ldconfig
       "HISTFILE=/home/arthur/.bash_history"
       "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "GIT_SSL_CAINFO=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
@@ -150,13 +189,7 @@ pkgs.dockerTools.buildLayeredImage {
       "LANG=C.UTF-8"
       "LC_ALL=C.UTF-8"
       "ATUIN_CONFIG_DIR=/etc/atuin" 
-      
-      # --- THE FIX ---
-      # This points the dynamic linker to the Nix stores containing C and C++ libraries
-      "LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath [
-        pkgs.stdenv.cc.cc.lib  # Provides libstdc++.so.6
-        pkgs.glibc             # Provides libc.so.6, libm.so.6, etc.
-      ]}"
+      "LD_LIBRARY_PATH=/usr/lib"
     ];
   };
 }
