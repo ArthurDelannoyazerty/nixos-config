@@ -82,8 +82,9 @@ pkgs.dockerTools.buildLayeredImage {
     pkg-config
     nix-tree
     nil
-
-    # --- 4. ESSENTIAL LINUX TOOLS (ADDED) ---
+    gnutar
+    gzip
+    procps 
     gnugrep
     gnused
     findutils
