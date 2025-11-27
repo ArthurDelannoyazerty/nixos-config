@@ -30,7 +30,7 @@ let
     exec "$@"
   '';
 
-    atuinConfig = pkgs.writeTextDir "etc/atuin/config.toml" ''
+  atuinConfig = pkgs.writeTextDir "etc/atuin/config.toml" ''
     ## Server config ##
     auto_sync = false
     update_check = false
@@ -42,8 +42,6 @@ let
     show_preview = true
     
     ## Behavior ##
-    # This ensures Up Arrow stays as normal Bash history
-    # and Ctrl-R opens Atuin
     enter_accept = true
   '';
 
@@ -92,7 +90,6 @@ pkgs.dockerTools.buildLayeredImage {
     which
     util-linux
     glibc
-    stdenv.cc.cc.lib 
     
     # --- Terminal Tools ---
     atuin
@@ -120,43 +117,17 @@ pkgs.dockerTools.buildLayeredImage {
     uv
   ];
 
+  # You can keep your fakeRootCommands for /usr/bin/env compatibility,
+  # but we rely less on the library symlinks now.
   fakeRootCommands = ''
     mkdir -p ./home/arthur
     mkdir -p ./tmp
-
-    # --- 1. FHS DIRECTORY STRUCTURE ---
-    # We create /usr/lib and make everyone else point to it.
-    # This matches standard Linux (Ubuntu/Debian) behavior.
-    mkdir -p ./usr/lib ./usr/bin
-    ln -s usr/lib lib
-    ln -s usr/lib lib64
-    ln -s lib usr/lib64
-
-    # --- 2. SETUP /usr/bin/env ---
-    # Required for VS Code scripts
+    mkdir -p ./usr/bin
+    
+    # Setup /usr/bin/env (Crucial for scripts)
     ln -sf ${pkgs.coreutils}/bin/env ./usr/bin/env
 
-    # --- 3. POPULATE LIBRARIES ---
-    
-    # A. The Dynamic Loader (The "Brain")
-    # VS Code looks for /lib64/ld-linux-x86-64.so.2
-    # Since /lib64 -> /usr/lib, we link it there.
-    ln -sf ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./usr/lib/ld-linux-x86-64.so.2
-
-    # B. The C++ Standard Library (The Error You Are Seeing)
-    # We use 'find' to locate it regardless of whether it's in /lib or /lib64 inside the Nix store
-    find ${pkgs.stdenv.cc.cc.lib} -name "libstdc++.so.6*" -exec ln -sf {} ./usr/lib/ \;
-
-    # C. The C Standard Library (glibc)
-    # Linking all .so files from glibc to /usr/lib
-    find ${pkgs.glibc}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
-    
-    # D. GCC Libs (libgcc_s.so.1)
-    # Often needed alongside libstdc++
-    find ${pkgs.stdenv.cc.cc.lib} -name "libgcc_s.so.1" -exec ln -sf {} ./usr/lib/ \;
-
-    # ----------------------------------------------
-
+    # Permission setup
     chown -R 1000:1000 ./home/arthur
     chown -R 1000:1000 ./tmp
     chmod 755 ./home/arthur
@@ -172,7 +143,6 @@ pkgs.dockerTools.buildLayeredImage {
     Env = [
       "USER=arthur"
       "HOME=/home/arthur"
-      # Explicitly set history file location for Bash
       "HISTFILE=/home/arthur/.bash_history"
       "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "GIT_SSL_CAINFO=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
@@ -180,6 +150,13 @@ pkgs.dockerTools.buildLayeredImage {
       "LANG=C.UTF-8"
       "LC_ALL=C.UTF-8"
       "ATUIN_CONFIG_DIR=/etc/atuin" 
+      
+      # --- THE FIX ---
+      # This points the dynamic linker to the Nix stores containing C and C++ libraries
+      "LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath [
+        pkgs.stdenv.cc.cc.lib  # Provides libstdc++.so.6
+        pkgs.glibc             # Provides libc.so.6, libm.so.6, etc.
+      ]}"
     ];
   };
 }
