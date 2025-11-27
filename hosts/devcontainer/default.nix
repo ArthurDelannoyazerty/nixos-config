@@ -132,7 +132,7 @@ pkgs.dockerTools.buildLayeredImage {
     rm -rf ./lib ./lib64 ./usr/lib64
 
     # --- 2. FHS DIRECTORY STRUCTURE ---
-    mkdir -p ./usr/lib ./usr/bin ./sbin
+    mkdir -p ./usr/lib ./usr/bin ./sbin ./usr/sbin
     ln -sf usr/lib lib
     ln -sf usr/lib lib64
     ln -sf lib usr/lib64
