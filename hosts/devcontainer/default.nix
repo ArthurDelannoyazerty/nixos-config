@@ -134,6 +134,8 @@ pkgs.dockerTools.buildLayeredImage {
     Env = [
       "USER=arthur"
       "HOME=/home/arthur"
+      "HISTFILE=/home/arthur/.bash_history"
+      "BASH_PREEXEC_PATH=${pkgs.bash-preexec}/share/bash-preexec/bash-preexec.sh"
       "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "GIT_SSL_CAINFO=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "PATH=/bin:/usr/bin:/usr/local/bin"
