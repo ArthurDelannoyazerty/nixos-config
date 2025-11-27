@@ -38,7 +38,10 @@
     in {
       # Devcontainer
       packages.${system} = {
-        devcontainer = import ./hosts/devcontainer/default.nix { inherit pkgs; };
+        devcontainer = import ./hosts/devcontainer/default.nix { 
+          inherit pkgs;
+          dotfilesInput = inputs.dotfiles; 
+        };
       };
 
       nixosConfigurations = {
