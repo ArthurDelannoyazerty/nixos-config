@@ -65,6 +65,7 @@ pkgs.dockerTools.buildLayeredImage {
     devSetup
     dotfilesLayer
     entrypointScript
+    atuinConfig
     
     # --- Base Utils ---
     bashInteractive
