@@ -1,6 +1,77 @@
 { pkgs, dotfilesInput, ... }:
 
 let
+  devContainerConf = pkgs.writeTextDir "home/arthur/.devcontainer/devcontainer.json" ''
+    {
+      "name": "Nix Rancher Dev",
+      "remoteUser": "arthur",
+      "postAttachCommand": "/bin/entrypoint.sh true",
+      "customizations": {
+        "vscode": {
+          "settings": {
+            "terminal.integrated.defaultProfile.linux": "bash",
+            "nix.enableLanguageServer": true,
+            "nix.serverPath": "nil",
+            "python.defaultInterpreterPath": "/usr/bin/python3"
+          },
+          "extensions": [
+            "alexcvzz.vscode-sqlite",
+            "antfu.theme-vitesse",
+            "charliermarsh.ruff",
+            "christian-kohler.path-intellisense",
+            "codediagram.codediagram",
+            "continue.continue",
+            "eamodio.gitlens",
+            "emilast.logfilehighlighter",
+            "esbenp.prettier-vscode",
+            "github.copilot",
+            "github.copilot-chat",
+            "google.geminicodeassist",
+            "hediet.vscode-drawio",
+            "irongeek.vscode-env",
+            "jnoortheen.nix-ide",
+            "johnpapa.vscode-peacock",
+            "mechatroner.rainbow-csv",
+            "meezilla.json",
+            "mermaidchart.vscode-mermaid-chart",
+            "mhutchie.git-graph",
+            "monokai.theme-monokai-pro-vscode",
+            "ms-azuretools.vscode-containers",
+            "ms-kubernetes-tools.vscode-kubernetes-tools",
+            "ms-python.debugpy",
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "ms-python.vscode-python-envs",
+            "ms-toolsai.jupyter",
+            "ms-toolsai.jupyter-keymap",
+            "ms-toolsai.jupyter-renderers",
+            "ms-toolsai.tensorboard",
+            "ms-toolsai.vscode-jupyter-cell-tags",
+            "ms-vscode-remote.remote-containers",
+            "ms-vscode-remote.remote-ssh",
+            "ms-vscode-remote.remote-ssh-edit",
+            "ms-vscode-remote.remote-wsl",
+            "ms-vscode-remote.vscode-remote-extensionpack",
+            "ms-vscode.azure-repos",
+            "ms-vscode.remote-explorer",
+            "ms-vscode.remote-repositories",
+            "ms-vscode.remote-server",
+            "njpwerner.autodocstring",
+            "njqdev.vscode-python-typehint",
+            "pkief.material-icon-theme",
+            "qwtel.sqlite-viewer",
+            "redhat.vscode-yaml",
+            "rioj7.command-variable",
+            "ritwickdey.liveserver",
+            "stackbreak.comment-divider",
+            "tomoki1207.pdf",
+            "torreysmith.copyfilepathandcontent"
+          ]
+        }
+      }
+    }
+  '';
+
   dotfilesLayer = pkgs.runCommand "dotfiles-layer" { } ''
     mkdir -p $out/opt
     cp -r ${dotfilesInput} $out/opt/dotfiles
@@ -11,7 +82,9 @@ let
     set -e
     DOTFILES_DIR="/home/arthur/.dotfiles"
     BACKUP_SOURCE="/opt/dotfiles"
+    MARKER_FILE="/home/arthur/.dotfiles_setup_complete"
 
+    # --- 1. Clone/Restore Dotfiles (Idempotent: Only if dir doesn't exist) ---
     if [ ! -d "$DOTFILES_DIR" ]; then
       echo "--- First run detected: Installing Dotfiles ---"
       if git clone https://github.com/ArthurDelannoyazerty/dotfiles.git "$DOTFILES_DIR"; then
@@ -21,13 +94,27 @@ let
         cp -rL "$BACKUP_SOURCE" "$DOTFILES_DIR"
         chmod -R +w "$DOTFILES_DIR"
       fi
-      
+    fi
+    
+    # --- 2. Run Setup Script (Idempotent: Only if marker file doesn't exist) ---
+    if [ ! -f "$MARKER_FILE" ]; then
       if [ -f "$DOTFILES_DIR/setup.sh" ]; then
         echo "Running setup.sh..."
+        # Run setup.sh. If it fails, script exits (set -e) and marker is NOT created.
         sh "$DOTFILES_DIR/setup.sh"
+        echo "Setup complete."
       fi
+      # Create marker so we don't run this next time
+      touch "$MARKER_FILE"
+    else
+      echo "Dotfiles setup already performed. Skipping."
     fi
-    exec "$@"
+
+    # --- 3. Execute Command (if arguments provided) ---
+    # This allows the script to still be used as a Docker Entrypoint
+    if [ "$#" -gt 0 ]; then
+      exec "$@"
+    fi
   '';
 
   atuinConfig = pkgs.writeTextDir "etc/atuin/config.toml" ''
@@ -64,6 +151,7 @@ pkgs.dockerTools.buildLayeredImage {
     dotfilesLayer
     entrypointScript
     atuinConfig
+    devContainerConf 
     
     # --- Base Utils ---
     bashInteractive
