@@ -19,6 +19,13 @@
 
   outputs = { self, nixpkgs, home-manager, nix-vscode-extensions, ... }@inputs:
     let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+        overlays = [ nix-vscode-extensions.overlays.default ];
+      };
+
       # --- Smart Dotfiles Logic ---
       localDotfilesPath = "/home/arthur/dotfiles";
       localDotfilesExists = builtins.pathExists localDotfilesPath;    # Check if that directory exists
