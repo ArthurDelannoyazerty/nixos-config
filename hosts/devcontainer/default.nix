@@ -142,7 +142,7 @@ pkgs.dockerTools.buildLayeredImage {
       "PATH=/bin:/usr/bin:/usr/local/bin"
       "LANG=C.UTF-8"
       "LC_ALL=C.UTF-8"
-      "ATUIN_NO_SYNC=true"
+      "ATUIN_CONFIG_DIR=/etc/atuin" 
     ];
   };
 }
