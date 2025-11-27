@@ -29,6 +29,11 @@
         else inputs.dotfiles;
 
     in {
+      # Devcontainer
+      packages.${system} = {
+        devcontainer = import ./hosts/devcontainer/default.nix { inherit pkgs; };
+      };
+
       nixosConfigurations = {
         "perso" = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
