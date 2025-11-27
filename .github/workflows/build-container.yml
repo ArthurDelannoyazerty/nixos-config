@@ -8,7 +8,7 @@ on:
       - 'hosts/devcontainer/**'
       - 'flake.nix'
       - 'flake.lock'
-  workflow_dispatch: # Allows manual trigger button
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -30,9 +30,13 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
       
-      - name: Lowercase Image Name
+      - name: Prepare Variables (Lowercase Name & Short SHA)
         run: |
+          # 1. Convert IMAGE_NAME to lowercase
           echo "IMAGE_NAME=${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+          
+          # 2. Get the first 7 characters of the commit hash
+          echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
@@ -49,9 +53,10 @@ jobs:
           # Load the result (which is a tarball) into Docker
           docker load < result
           
-          # The image name is defined in your nix file (nix-devcontainer:latest)
-          # We tag it for the registry
+          # --- PUSH 1: LATEST ---
           docker tag nix-devcontainer:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          
-          # Push to GitHub Container Registry
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          
+          # --- PUSH 2: COMMIT HASH ---
+          docker tag nix-devcontainer:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}

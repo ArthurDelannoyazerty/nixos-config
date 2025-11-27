@@ -1,55 +1,41 @@
-{ pkgs, dotfilesInput, ... }: # <--- Add dotfilesInput here
+{ pkgs, dotfilesInput, ... }:
 
 let
-  # 1. Prepare the dotfiles in a safe place (Read-Only in the image)
+  # 1. Dotfiles Storage (Read-Only)
   dotfilesLayer = pkgs.runCommand "dotfiles-layer" { } ''
     mkdir -p $out/opt
-    # Copy the dotfiles input to /opt/dotfiles
     cp -r ${dotfilesInput} $out/opt/dotfiles
   '';
 
-  # 2. Create a "Startup Script" (Entrypoint)
-  # This script runs every time the container starts.
+  # 2. Entrypoint Script
   entrypointScript = pkgs.writeScriptBin "entrypoint.sh" ''
     #!${pkgs.bash}/bin/bash
     set -e
-
     DOTFILES_DIR="/home/arthur/.dotfiles"
     BACKUP_SOURCE="/opt/dotfiles"
 
-    # Check if dotfiles are already installed in the PVC
     if [ ! -d "$DOTFILES_DIR" ]; then
       echo "--- First run detected: Installing Dotfiles ---"
-      
-      # Option A: Try to Git Clone (Best for updates/pushing)
       if git clone https://github.com/ArthurDelannoyazerty/dotfiles.git "$DOTFILES_DIR"; then
         echo "Git clone successful."
       else
-        # Option B: Fallback to the baked-in files (Offline mode)
-        echo "Git clone failed (no network?), using baked-in copy..."
+        echo "Git clone failed, using baked-in copy..."
         cp -rL "$BACKUP_SOURCE" "$DOTFILES_DIR"
-        # Make them writable (copied from read-only store)
         chmod -R +w "$DOTFILES_DIR"
       fi
-
-      # Run your setup script
+      
       if [ -f "$DOTFILES_DIR/setup.sh" ]; then
         echo "Running setup.sh..."
         sh "$DOTFILES_DIR/setup.sh"
       fi
     fi
-
-    # Execute the command passed to docker (usually /bin/bash)
     exec "$@"
   '';
 
-  # 3. Existing Setup (User/Permissions)
+  # 3. System Config (Passwd/Group)
+  # We ONLY do /etc files here. We do NOT create /home here.
   devSetup = pkgs.runCommand "dev-setup" { } ''
-    mkdir -p $out/home/arthur
-    mkdir -p $out/tmp
     mkdir -p $out/etc
-    chmod 777 $out/home/arthur
-    chmod 1777 $out/tmp
     echo "root:x:0:0:root:/root:/bin/bash" > $out/etc/passwd
     echo "arthur:x:1000:1000:Arthur:/home/arthur:/bin/bash" >> $out/etc/passwd
     echo "root:x:0:" > $out/etc/group
@@ -101,15 +87,25 @@ pkgs.dockerTools.buildLayeredImage {
     nix
     uv
   ];
+  # 4. FIX PERMISSIONS HERE
+  # We use relative paths (./home) because this script runs in the build root.
+  fakeRootCommands = ''
+    mkdir -p ./home/arthur
+    mkdir -p ./tmp
+
+    # Set ownership to 1000 (arthur)
+    chown -R 1000:1000 ./home/arthur
+    chown -R 1000:1000 ./tmp
+    
+    # Set permissions (Owner can write)
+    chmod 755 ./home/arthur
+    chmod 1777 ./tmp
+  '';
 
   config = {
     User = "arthur";
     WorkingDir = "/home/arthur";
-    
-    # Set the ENTRYPOINT to our script
     Entrypoint = [ "/bin/entrypoint.sh" ];
-    
-    # Default command (passed to entrypoint)
     Cmd = [ "/bin/bash" ];
     
     Env = [
