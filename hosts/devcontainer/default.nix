@@ -166,6 +166,7 @@ pkgs.dockerTools.buildLayeredImage {
     fd
     nix
     uv
+    docker
   ];
 
   # You can keep your fakeRootCommands for /usr/bin/env compatibility,
