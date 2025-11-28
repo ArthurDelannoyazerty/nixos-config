@@ -260,7 +260,7 @@ EOF
       "HISTFILE=/home/arthur/.bash_history"
       "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "GIT_SSL_CAINFO=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-      "PATH=/bin:/usr/bin:/usr/local/bin"
+      "PATH=${nixProfile}/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin"
       "LANG=C.UTF-8"
       "LC_ALL=C.UTF-8"
       "ATUIN_CONFIG_DIR=/etc/atuin" 
