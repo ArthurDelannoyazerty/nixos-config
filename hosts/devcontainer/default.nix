@@ -66,12 +66,11 @@ let
     paths = myPackages;
   };
 
-  # This script will be placed in /etc/profile.d/ and sourced by new shells.
-  envSetupScript = pkgs.runCommand "env-setup-script" { } ''
-    mkdir -p $out/etc/profile.d
-    # This line sets the PATH to include our Nix profile, followed by a standard default.
-    # It ensures that Nix packages are found first.
-    echo 'export PATH="${nixProfile}/bin:/bin:/usr/bin:/sbin:/usr/sbin"' > $out/etc/profile.d/nix-env.sh
+  # This script will be placed in /etc/profile.d/ and sourced by new shells/user bashrc.
+  nixEnvLoader = pkgs.runCommand "nix-env-loader" { } ''
+    mkdir -p $out/etc
+    # This script prepends the Nix path to whatever PATH already exists.
+    echo 'export PATH="${nixProfile}/bin:$PATH"' > $out/etc/nix-profile.sh
   '';
 
   devSetup = pkgs.runCommand "dev-setup" { } ''
@@ -184,7 +183,7 @@ pkgs.dockerTools.buildLayeredImage {
     dotfilesLayer
     devContainerSetupScript
     atuinConfig
-    envSetupScript
+    nixEnvLoader
   ] ++ myPackages;
 
   # You can keep your fakeRootCommands for /usr/bin/env compatibility,
