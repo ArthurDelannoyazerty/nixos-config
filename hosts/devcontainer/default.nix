@@ -174,7 +174,6 @@ pkgs.dockerTools.buildLayeredImage {
     dotfilesLayer
     devContainerSetupScript
     atuinConfig
-    nixEnvLoader
   ] ++ myPackages;
 
   # You can keep your fakeRootCommands for /usr/bin/env compatibility,
