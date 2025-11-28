@@ -1,6 +1,65 @@
 { pkgs, dotfilesInput, ... }:
 
 let
+  myPackages = with pkgs; [
+    # --- Base Utils ---
+    bashInteractive
+    coreutils
+    git
+    cacert
+    curl
+    wget
+    iana-etc
+    zip
+    unzip
+    openssh
+    jq
+    pkg-config
+    nix-tree
+    nil
+    gnutar
+    gzip
+    procps 
+    gnugrep
+    gnused
+    findutils
+    gawk
+    which
+    util-linux
+    glibc
+    findutils 
+    binutils
+    # glibc.bin
+    stdenv.cc.cc.lib
+    dotnet-sdk
+    
+    # --- Terminal Tools ---
+    atuin
+    btop
+    tree
+    nvitop
+    starship
+    htop
+    killall
+    duf
+    bat
+    eza
+    fzf
+    tldr
+    
+    # --- Dev Tools ---
+    vim
+    python3
+    nodejs
+    gnumake
+    gcc
+    ripgrep
+    fd
+    nix
+    uv
+    docker
+  ];
+
   # This builds an environment that contains symlinks to all our packages.
   nixProfile = pkgs.buildEnv {
     name = "nix-profile";
@@ -126,64 +185,7 @@ pkgs.dockerTools.buildLayeredImage {
     devContainerSetupScript
     atuinConfig
     envSetupScript
-    
-    # --- Base Utils ---
-    bashInteractive
-    coreutils
-    git
-    cacert
-    curl
-    wget
-    iana-etc
-    zip
-    unzip
-    openssh
-    jq
-    pkg-config
-    nix-tree
-    nil
-    gnutar
-    gzip
-    procps 
-    gnugrep
-    gnused
-    findutils
-    gawk
-    which
-    util-linux
-    glibc
-    findutils 
-    binutils
-    # glibc.bin
-    stdenv.cc.cc.lib
-    dotnet-sdk
-    
-    # --- Terminal Tools ---
-    atuin
-    btop
-    tree
-    nvitop
-    starship
-    htop
-    killall
-    duf
-    bat
-    eza
-    fzf
-    tldr
-    
-    # --- Dev Tools ---
-    vim
-    python3
-    nodejs
-    gnumake
-    gcc
-    ripgrep
-    fd
-    nix
-    uv
-    docker
-  ];
+  ] ++ myPackages;
 
   # You can keep your fakeRootCommands for /usr/bin/env compatibility,
   # but we rely less on the library symlinks now.
