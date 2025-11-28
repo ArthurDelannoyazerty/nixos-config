@@ -242,7 +242,6 @@ EOF
     Env = [
       "USER=arthur"
       "HOME=/home/arthur"
-      "PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin" # Added sbin for ldconfig
       "HISTFILE=/home/arthur/.bash_history"
       "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "GIT_SSL_CAINFO=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
