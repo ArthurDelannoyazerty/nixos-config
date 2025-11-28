@@ -32,6 +32,8 @@ let
     # glibc.bin
     stdenv.cc.cc.lib
     dotnet-sdk
+    openssl
+    gnupg 
     
     # --- Terminal Tools ---
     atuin
@@ -122,34 +124,29 @@ let
 
     # ------------------------------ VSCODE SETUP ------------------------------ 
 
+    # VSCODE SETUP 
     EXTENSION_FILE="$DOTFILES_DIR/codium/extensions.txt"
-    
     echo "--- VS Code Extension Installer ---"
     
-    # Check if we are actually inside VS Code
     if ! command -v code &> /dev/null; then
-        echo "Error: 'code' command not found."
-        echo "You must run this script INSIDE the VS Code Integrated Terminal."
-        exit 1
+        echo "Warning: 'code' command not found. Skipping extension install."
+        # Don't exit 1 here, or the container might crashloop if just checking logs
+    else
+        if [ ! -f "$EXTENSION_FILE" ]; then
+            echo "Error: Extension list not found at $EXTENSION_FILE"
+        else
+            echo "Reading extensions from $EXTENSION_FILE..."
+            while IFS= read -r ext || [ -n "$ext" ]; do
+                [[ $ext =~ ^# ]] && continue
+                [[ -z $ext ]] && continue
+                
+                echo "Installing $ext..."
+                # Try/Catch the install so one failure doesn't stop the loop
+                code --install-extension "$ext" --force || echo "Failed to install $ext"
+            done < "$EXTENSION_FILE"
+            echo "--- Extension installation loop complete ---"
+        fi
     fi
-
-    if [ ! -f "$EXTENSION_FILE" ]; then
-        echo "Error: Extension list not found at $EXTENSION_FILE"
-        exit 1
-    fi
-
-    # Loop through the file and install
-    echo "Reading extensions from $EXTENSION_FILE..."
-    while IFS= read -r ext || [ -n "$ext" ]; do
-        # Skip empty lines or comments
-        [[ $ext =~ ^# ]] && continue
-        [[ -z $ext ]] && continue
-        
-        echo "Installing $ext..."
-        code --install-extension "$ext" --force
-    done < "$EXTENSION_FILE"
-    
-    echo "--- All extensions installed! Reload window to apply. ---"
 
     # --- 3. Execute Command (if arguments provided) ---
     # This allows the script to still be used as a Docker Entrypoint
@@ -239,6 +236,7 @@ EOF
     find ${pkgs.stdenv.cc.cc.lib} -name "libstdc++.so.6*" -exec ln -sf {} ./usr/lib/ \;
     find ${pkgs.glibc}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
     find ${pkgs.stdenv.cc.cc.lib} -name "libgcc_s.so.1" -exec ln -sf {} ./usr/lib/ \;
+    find ${pkgs.openssl.out}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
 
     # ----------------------------------------------
 
