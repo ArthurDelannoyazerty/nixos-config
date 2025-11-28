@@ -68,12 +68,6 @@ let
     paths = myPackages;
   };
 
-  # This script will be placed in /etc/profile.d/ and sourced by new shells/user bashrc.
-  nixEnvLoader = pkgs.runCommand "nix-env-loader" { } ''
-    mkdir -p $out/etc
-    # This script prepends the Nix path to whatever PATH already exists.
-    echo 'export PATH="${nixProfile}/bin:$PATH"' > $out/etc/nix-profile.sh
-  '';
 
   devSetup = pkgs.runCommand "dev-setup" { } ''
     mkdir -p $out/etc
