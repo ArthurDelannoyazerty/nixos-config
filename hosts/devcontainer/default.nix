@@ -1,6 +1,20 @@
 { pkgs, dotfilesInput, ... }:
 
 let
+  # This builds an environment that contains symlinks to all our packages.
+  nixProfile = pkgs.buildEnv {
+    name = "nix-profile";
+    paths = myPackages;
+  };
+
+  # This script will be placed in /etc/profile.d/ and sourced by new shells.
+  envSetupScript = pkgs.runCommand "env-setup-script" { } ''
+    mkdir -p $out/etc/profile.d
+    # This line sets the PATH to include our Nix profile, followed by a standard default.
+    # It ensures that Nix packages are found first.
+    echo 'export PATH="${nixProfile}/bin:/bin:/usr/bin:/sbin:/usr/sbin"' > $out/etc/profile.d/nix-env.sh
+  '';
+
   devSetup = pkgs.runCommand "dev-setup" { } ''
     mkdir -p $out/etc
     echo "root:x:0:0:root:/root:/bin/bash" > $out/etc/passwd
@@ -111,6 +125,7 @@ pkgs.dockerTools.buildLayeredImage {
     dotfilesLayer
     devContainerSetupScript
     atuinConfig
+    envSetupScript
     
     # --- Base Utils ---
     bashInteractive
@@ -236,7 +251,6 @@ EOF
   config = {
     User = "arthur";
     WorkingDir = "/home/arthur";
-    Entrypoint = [ "/bin/entrypoint.sh" ];
     Cmd = [ "/bin/bash" ];
     
     Env = [
