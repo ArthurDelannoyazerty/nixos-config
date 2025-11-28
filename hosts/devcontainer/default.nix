@@ -141,6 +141,7 @@ pkgs.dockerTools.buildLayeredImage {
     binutils
     # glibc.bin
     stdenv.cc.cc.lib
+    dotnet-sdk
     
     # --- Terminal Tools ---
     atuin
