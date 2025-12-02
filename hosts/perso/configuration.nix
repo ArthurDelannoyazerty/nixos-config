@@ -1,6 +1,31 @@
-{ pkgs, home-manager, ... }:
+{ pkgs, home-manager, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, ... }:
 
 {
+  imports = [
+    home-manager.nixosModules.home-manager    
+    
+    # hardware
+    ./hardware-configuration.nix
+
+    # modules
+    ../../modules/terminal
+    ../../modules/dev
+    ../../modules/hyprland
+    ../../modules/gaming
+
+    # users
+    ../../users/arthur/default.nix
+  ];
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    backupFileExtension = "backup";
+    extraSpecialArgs = {
+      inherit inputs dotfiles dotfilesDir isLocal nix-vscode-extensions;
+    };
+  };
+
   # Basic system settings
   system.stateVersion = "25.05"; 
   boot.loader.systemd-boot.enable = true;
@@ -21,13 +46,6 @@
   services.getty.autologinUser = "arthur";
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  # Define a user account
-  users.users.arthur = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ]; # sudo access
-    shell = pkgs.bash;
-  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -52,14 +70,4 @@
     wget
   ];
 
-  # REUSABLE MODULES
-  imports = [
-    home-manager.nixosModules.home-manager
-
-    ../../modules/home-manager
-    ../../modules/hyprland
-    ../../modules/terminal
-    ../../modules/gaming
-    ../../modules/dev
-  ];
 }

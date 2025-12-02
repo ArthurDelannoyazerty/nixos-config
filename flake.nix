@@ -55,7 +55,7 @@
             isLocal = localDotfilesExists;
           };
           modules = [ 
-            ./hosts/perso 
+            ./hosts/perso/configuration.nix
             {
               nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
             }
