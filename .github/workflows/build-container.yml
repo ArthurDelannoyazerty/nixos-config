@@ -1,13 +1,13 @@
 name: Build and Push DevContainer
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'hosts/devcontainer/**'
-      - 'flake.nix'
-      - 'flake.lock'
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - 'hosts/devcontainer/**'
+#      - 'flake.nix'
+#      - 'flake.lock'
   workflow_dispatch:
 
 env:
