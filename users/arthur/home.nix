@@ -41,7 +41,6 @@ in
 
     papirus-icon-theme
 
-    pavucontrol      # GUI Volume Mixer (essential for fixing mic inputs)
     brightnessctl    # For laptop brightness keys
 
     swayosd     # On-screen display for brightness/volume changes 

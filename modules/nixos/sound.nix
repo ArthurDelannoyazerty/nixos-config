@@ -13,4 +13,10 @@
     pulse.enable = true; # Enables PulseAudio compatibility
     jack.enable = true;  # For music production tools
   };
+
+
+  environment.systemPackages = with pkgs; [
+    pavucontrol      # GUI Volume Mixer
+    pulseaudio       # CLI tools
+  ];
 }
