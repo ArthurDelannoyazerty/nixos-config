@@ -4,7 +4,7 @@
   # Define the user in NixOS
   users.users.arthur = {
     isNormalUser = true;
-    description = "Arthur Delannoy";
+    # description = "Arthur Delannoy";
     extraGroups = [ "wheel" "networkmanager" "docker" ]; 
     shell = pkgs.bash;
   };

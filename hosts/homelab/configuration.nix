@@ -1,50 +1,37 @@
-{ pkgs, ... }:
+{ pkgs, home-manager, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, ... }:
 
 {
-  # Basic system settings for a server
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  networking.hostName = "nixos-homelab"; # Set a unique hostname
-  time.timeZone = "Etc/UTC"; # Servers often use UTC
+  imports = [
+    home-manager.nixosModules.home-manager    
+    
+    # hardware
+    ./hardware-configuration.nix
 
-  # Define your user account
-  users.users.arthur = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ]; # For sudo access
-    shell = pkgs.bash;
+    # modules
+    ../../modules/nixos/base.nix
+    ../../modules/terminal
+    ../../modules/dev
+    ../../modules/nixos/server.nix
+
+    # users
+    ../../users/arthur-homelab/default.nix
+  ];
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    backupFileExtension = "backup";
+    extraSpecialArgs = {
+      inherit inputs dotfiles dotfilesDir isLocal nix-vscode-extensions;
+    };
   };
 
-  # =========================================================================
-  # == SERVER CONFIGURATION
-  # =========================================================================
+  # Basic system settings
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
-  # Enable the OpenSSH daemon for remote access
-  services.openssh.enable = true;
+  networking.hostName = "nixos-homelab";
+  networking.networkmanager.enable = true; 
 
-  # Configure the firewall to only allow SSH connections
-  networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 ];
-
-  # This is a server, so we don't need sound or a graphical interface
-  sound.enable = false;
-  services.xserver.enable = false;
-
-  # System-wide packages for server administration
-  environment.systemPackages = with pkgs; [
-    git
-    vim
-    htop
-    wget
-  ];
-
-  # =========================================================================
-  # == IMPORT REUSABLE MODULES
-  #    We only import the modules relevant for a headless server.
-  # =========================================================================
-  imports = [
-    home-manager.nixosModules.home-manager
-
-    ../../modules/home-manager  # To manage your dotfiles
-    ../../modules/terminal      # For a consistent shell experience
-  ];
+  console.keyMap = "fr";
 }

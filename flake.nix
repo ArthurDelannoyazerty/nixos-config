@@ -62,10 +62,21 @@
           ];
         };
 
+        
         "homelab" = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          specialArgs = { inherit inputs home-manager; dotfiles = dotfilesSrc; };
-          modules = [ ./hosts/homelab ];
+          specialArgs = { 
+            inherit inputs home-manager nix-vscode-extensions; 
+            dotfiles = dotfilesSrc;
+            dotfilesDir = localDotfilesPath;
+            isLocal = localDotfilesExists;
+          };
+          modules = [ 
+            ./hosts/homelab/configuration.nix
+            {
+              nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
+            }
+          ];
         };
       };
     };

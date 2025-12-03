@@ -16,7 +16,7 @@
     ../../modules/gaming
 
     # users
-    ../../users/arthur/default.nix
+    ../../users/arthur-perso/default.nix
   ];
 
   home-manager = {
