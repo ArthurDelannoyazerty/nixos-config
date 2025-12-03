@@ -35,8 +35,8 @@
   networking.hostName = "nixos-perso";
 
   console.keyMap = "fr";
-  services.xserver.layout = "fr";
-  services.xserver.xkbVariant = ""; 
+  services.xserver.xkb.layout  = "fr";
+  services.xserver.xkb.variant = ""; 
 
   services.getty.autologinUser = "arthur";
 

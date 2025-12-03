@@ -7,8 +7,10 @@
   # =========================================================================
 
   # Enable 32-bit application support
-  hardware.opengl.enable = true;
-  hardware.opengl.driSupport32Bit = true;
+  hardware.graphics = {
+      enable = true;
+      enable32Bit = true;
+  };
 
   # --- Choose your GPU driver ---
   # Uncomment the section corresponding to your graphics card.

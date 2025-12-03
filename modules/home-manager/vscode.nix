@@ -12,7 +12,7 @@ programs.vscode = {
     package = pkgs.vscode;
     mutableExtensionsDir = true; 
 
-    extensions = with marketplace; [
+    profiles.default.extensions = with marketplace; [
       # === PYTHON ===
       ms-python.python
       ms-python.debugpy

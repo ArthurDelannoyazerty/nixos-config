@@ -45,23 +45,43 @@ in
 
   # set the hyprland.conf to the right place
   # Note: We use the 'link' function and pass the path relative to the repo root
-  xdg.configFile."hypr/hyprland.conf".source = link "hyprland/hyprland.conf";
-  xdg.configFile."hypr/hyprlock.conf".source = link "hyprlock/hyprlock.conf";
-  xdg.configFile."rofi/config.rasi".source = link "rofi/config.rasi";
+  xdg.configFile."hypr/hyprland.conf" = {
+    source = link "hyprland/hyprland.conf";
+    force = true;
+  };
+  xdg.configFile."hypr/hyprlock.conf" = {
+    source = link "hyprlock/hyprlock.conf";
+    force = true;
+  };
+  xdg.configFile."rofi/config.rasi" = {
+    source = link "rofi/config.rasi";
+    force = true;
+  };
   
   # pureline
   home.file.".pureline.job.conf".source      = link "pureline/.pureline.job.conf";
   home.file.".pureline.personal.conf".source = link "pureline/.pureline.personal.conf";
 
   # VSCode
-  xdg.configFile."Code/User/settings.json".source = link "codium/settings.json";
-  xdg.configFile."Code/User/settings.json".force  = true;
-  xdg.configFile."Code/User/keybindings.json".source = link "codium/keybindings.json";
-  xdg.configFile."Code/User/keybindings.json".force  = true;
+  xdg.configFile."Code/User/settings.json" = {
+    source = link "codium/settings.json";
+    force  = true;
+  };
+  xdg.configFile."Code/User/keybindings.json" = {
+    source = link "codium/keybindings.json";
+    force  = true;
+  };
+
 
   # Waybar
-  xdg.configFile."waybar/config.jsonc".source = link "waybar/config.jsonc";
-  xdg.configFile."waybar/style.css".source = link "waybar/style.css";
+  xdg.configFile."waybar/config.jsonc" = {
+    source = link "waybar/config.jsonc";
+    force = true;
+  };
+  xdg.configFile."waybar/style.css" = {
+    source = link "waybar/style.css";
+    force = true;
+  };
 
   # polkit daemon
   systemd.user.services.polkit-gnome-authentication-agent-1 = {
