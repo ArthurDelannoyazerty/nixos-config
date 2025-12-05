@@ -2,6 +2,15 @@
 
 Install a fresh nixos system if not already done.
 
+Connect to wifi :
+```bash
+nmcli device
+nmcli connection show
+nmcli radio
+nmcli device wifi list
+sudo nmcli device wifi connect "SSID_Name" password "Your_Password"
+```
+
 If not available, install `git` :
 1. `sudo nano /etc/nixos/configuration.nix`
 2. Add `git` to the field `environment.systemPackages`
