@@ -1,3 +1,8 @@
+# For devcontainer
+To create the docker image, use the github action.
+
+The first time your start the container, execute `sh /bin/setup_devcontainer.sh` to init the dotfiles and install the vscode extensions.
+
 # Install on a new machine
 
 Install a fresh nixos system if not already done.
