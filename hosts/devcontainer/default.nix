@@ -72,9 +72,9 @@ let
   devSetup = pkgs.runCommand "dev-setup" { } ''
     mkdir -p $out/etc
     echo "root:x:0:0:root:/root:/bin/bash" > $out/etc/passwd
-    echo "arthur:x:1000:1000:Arthur:/home/arthur:/bin/bash" >> $out/etc/passwd
+    echo "arthur:x:999:999:Arthur:/home/arthur:/bin/bash" >> $out/etc/passwd
     echo "root:x:0:" > $out/etc/group
-    echo "arthur:x:1000:" >> $out/etc/group
+    echo "arthur:x:999:" >> $out/etc/group
     echo "hosts: files dns" > $out/etc/nsswitch.conf
   '';
 
@@ -234,8 +234,8 @@ EOF
     # ----------------------------------------------
 
     # Permission setup
-    chown -R 1000:1000 ./home/arthur
-    chown -R 1000:1000 ./tmp
+    chown -R 999:999 ./home/arthur
+    chown -R 999:999 ./tmp
     chmod 755 ./home/arthur
     chmod 1777 ./tmp
   '';
