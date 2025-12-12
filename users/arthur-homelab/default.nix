@@ -11,4 +11,8 @@
 
   # Import Home Manager for this user automatically
   home-manager.users.arthur = import ./home.nix;
+
+  openssh.authorizedKeys.keys = [
+      (builtins.fetchurl "https://github.com/ArthurDelannoyazerty.keys")
+  ];
 }
