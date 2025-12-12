@@ -29,6 +29,7 @@
   # Basic system settings
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.plymouth.enable = false;
 
   networking.hostName = "nixos-homelab";
   networking.networkmanager.enable = true; 
