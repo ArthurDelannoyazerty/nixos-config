@@ -7,12 +7,12 @@
     # description = "Arthur Delannoy";
     extraGroups = [ "wheel" "networkmanager" "docker" ]; 
     shell = pkgs.bash;
+    
+    openssh.authorizedKeys.keys = [
+      (builtins.fetchurl "https://github.com/ArthurDelannoyazerty.keys")
+    ];
   };
 
   # Import Home Manager for this user automatically
   home-manager.users.arthur = import ./home.nix;
-
-  openssh.authorizedKeys.keys = [
-      (builtins.fetchurl "https://github.com/ArthurDelannoyazerty.keys")
-  ];
 }
