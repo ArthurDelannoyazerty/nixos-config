@@ -1,6 +1,16 @@
 # /modules/home-manager/shell.nix
-{ pkgs, dotfilesDir, dotfiles, ... }:
+{ pkgs, dotfilesDir, dotfiles, osConfig, ... }:
 
+let
+  # Define the auto-start script conditionally.
+  # It checks if 'programs.hyprland.enable' is set to true in the NixOS system config.
+  hyprlandAutoStart = if osConfig.programs.hyprland.enable then ''
+    # Start Hyprland automatically if in TTY1
+    if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+      exec Hyprland
+    fi
+  '' else "";
+in
 {
   home.packages = with pkgs; [
     btop
@@ -24,10 +34,8 @@
   programs.bash = {
     enable = true;
     initExtra = ''
-      # Start Hyprland automatically if in TTY1
-      if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-        exec Hyprland
-      fi
+      # Insert the conditional Hyprland script here
+      ${hyprlandAutoStart}
 
       # Logic to choose the right path for bash sourcing
       if [ -f "${dotfilesDir}/bash/.bashrc" ]; then
