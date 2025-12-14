@@ -35,4 +35,18 @@
   networking.networkmanager.enable = true; 
 
   console.keyMap = "fr";
+
+  # Do not sleep when the lid is closed
+  services.logind = {
+    lidSwitch = "ignore";
+    lidSwitchDocked = "ignore";
+    lidSwitchExternalPower = "ignore";
+  };
+  
+  # Optional: Prevent the system from sleeping automatically due to inactivity
+  systemd.targets.sleep.enable = false;
+  systemd.targets.suspend.enable = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
+
 }
