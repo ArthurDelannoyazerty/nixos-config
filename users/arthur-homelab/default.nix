@@ -8,7 +8,7 @@
     extraGroups = [ "wheel" "networkmanager" "docker" ]; 
     shell = pkgs.bash;
     
-    openssh.authorizedKeys.keys = [
+    openssh.authorizedKeys.keyFiles = [
       (builtins.fetchurl "https://github.com/ArthurDelannoyazerty.keys")
     ];
   };
