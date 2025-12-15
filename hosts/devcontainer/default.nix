@@ -60,6 +60,7 @@ let
     nix
     uv
     docker
+    tailscale
   ];
 
   # This builds an environment that contains symlinks to all our packages.
