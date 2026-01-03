@@ -31,10 +31,10 @@ let
     - Server:
         - System Stats:
             icon: mdi-server
-            # We link this card to the 'my-docker' socket defined in docker.yaml
-            server: my-docker 
+            # Connects to the Glances container we just created
             widget:
-              type: resources
+              type: glances
+              url: http://172.17.0.1:61208
               cpu: true
               memory: true
               disk: /
