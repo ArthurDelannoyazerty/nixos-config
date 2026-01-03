@@ -23,5 +23,6 @@
     vim
     curl
     wget
+    openssl
   ];
 }

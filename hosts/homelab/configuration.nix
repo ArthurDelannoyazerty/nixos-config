@@ -19,6 +19,7 @@
     ../../modules/services/glances/glances.nix
     ../../modules/services/power-monitor/power-monitor.nix
     # ../../modules/services/netdata/netdata.nix
+    ../../modules/services/vikunja/vikunja.nix
     
     # users
     ../../users/arthur-homelab/default.nix
