@@ -2,6 +2,7 @@
 
 let
   port = 3000;
+  glancesPort = 61208;
 
   # 1. SETTINGS
   settingsYaml = pkgs.writeText "settings.yaml" ''
@@ -29,15 +30,11 @@ let
             container: local-finance
 
     - Server:
-        - System Stats:
-            icon: mdi-server
-            widget:
-              type: netdata
-              url: http://172.17.0.1:19999
-              cpu: true
-              memory: true
-              disk: /
-
+        - Glances:
+            icon: mdi-server-network
+            href: http://${config.networking.hostName}:${toString glancesPort}
+            description: Htop view
+            server: my-docker 
   
   '';
 
