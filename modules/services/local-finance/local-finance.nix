@@ -76,7 +76,6 @@ in
     ];
     extraOptions = [
       "--pull=never"  # Force using the locally built image
-      "--restart=always"
     ];
   };
   
