@@ -27,7 +27,7 @@ let
 
     # replace classic polar with long term support because old pc
     RUN uv pip uninstall --system polars
-    RUN uv pip install --system polars-lts-cpu
+    RUN uv pip install --system polars[rtcompat]
 
     EXPOSE ${toString servicePort}
 
