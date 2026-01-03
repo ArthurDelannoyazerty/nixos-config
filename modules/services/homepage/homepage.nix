@@ -36,7 +36,7 @@ let
             description: Htop view
             server: my-docker 
         - Power Costs:
-            description: Estimated Power & Cost
+            description: Estimated Power (W) & Cost (€/month)
             widget:
               type: customapi
               url: http://${config.networking.hostName}:9100
@@ -46,7 +46,7 @@ let
                 - field: Usage
                   label: Power
                 - field: Cost
-                  label: Est.
+                  label: Estimation
   '';
 
   # 3. BOOKMARKS: Empty list to remove the default "Developer/Social/Entertainment" links

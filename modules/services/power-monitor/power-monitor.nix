@@ -1,10 +1,9 @@
 { config, pkgs, ... }:
 
 let
-  # Adjustable Settings
   port = 9100;
-  kwhPrice = 0.22; # Approx price in France (€/kWh)
-  idleOffset = 15; # Estimated watts for Mobo/SSD/Fans not measured by CPU sensor
+  kwhPrice = 0.22; # Price in €/kWh
+  idleOffset = 15; # Watt offset for non-CPU components (Motherboard, RAM, Fans)
 
   powerScript = pkgs.writeScriptBin "power-monitor" ''
     #!${pkgs.python3}/bin/python3
@@ -14,12 +13,9 @@ let
     import json
     import os
 
-    # Path to Intel RAPL (Running Average Power Limit) sensor
-    # rapl:0 is usually the "package-0" (CPU + integrated graphics + memory controller)
+    # Path to Intel RAPL sensor
     RAPL_PATH = "/sys/class/powercap/intel-rapl/intel-rapl:0/energy_uj"
     
-    current_watts = 0
-
     def read_energy():
         try:
             with open(RAPL_PATH, "r") as f:
@@ -27,37 +23,39 @@ let
         except:
             return 0
 
-    # Background thread logic simulated in request for simplicity
-    # Ideally we compare two reads with a known time delta
     def get_instant_watts():
-        t1 = time.time()
-        e1 = read_energy()
-        time.sleep(0.2) # Short pause to measure delta
-        t2 = time.time()
-        e2 = read_energy()
-        
-        # Energy is in microjoules. 1 Joule/sec = 1 Watt
-        # (e2 - e1) / 1000000 / (t2 - t1)
-        joules_delta = (e2 - e1) / 1_000_000
-        time_delta = t2 - t1
-        return joules_delta / time_delta
+        try:
+            t1 = time.time()
+            e1 = read_energy()
+            time.sleep(0.25) # Wait 250ms to measure consumption
+            t2 = time.time()
+            e2 = read_energy()
+            
+            # 1. Prevent division by zero
+            # 2. Handle sensor wrapping/reset
+            if e2 < e1 or (t2 - t1) == 0: 
+                return 0
+                
+            joules_delta = (e2 - e1) / 1_000_000
+            time_delta = t2 - t1
+            return joules_delta / time_delta
+        except:
+            return 0
 
     class Handler(http.server.SimpleHTTPRequestHandler):
         def do_GET(self):
-            # Calculate metrics
             cpu_watts = get_instant_watts()
+            
+            # If RAPL fails (returns 0), we still show the idle offset
             total_watts = cpu_watts + ${toString idleOffset}
             
-            # Monthly Cost: (Watts / 1000) * Price * 24h * 30d
+            # Monthly Cost Calculation
             monthly_cost = (total_watts / 1000) * ${toString kwhPrice} * 24 * 30
 
-            # Homepage Custom API Format
-            # We can use 'fields' to display multiple stats
+            # Return a FLAT JSON object so Homepage can find the keys
             data = {
-                "fields": [
-                    { "name": "Usage", "value": f"{total_watts:.1f} W" },
-                    { "name": "Cost", "value": f"{monthly_cost:.2f}€ /mo" }
-                ]
+                "Usage": f"{total_watts:.1f} W",
+                "Cost": f"{monthly_cost:.2f}€"
             }
 
             self.send_response(200)
@@ -65,28 +63,24 @@ let
             self.end_headers()
             self.wfile.write(json.dumps(data).encode())
 
-    # Allow port reuse
+    # Allow the port to be reused immediately if service restarts
     socketserver.TCPServer.allow_reuse_address = True
+    
     with socketserver.TCPServer(("", ${toString port}), Handler) as httpd:
         print(f"Serving power stats on port ${toString port}")
         httpd.serve_forever()
   '';
 in
 {
-  # 1. Load Kernel Modules for Sensors
   boot.kernelModules = [ "msr" "powercap" "intel_rapl_common" ];
-
-  # 2. Open Firewall
   networking.firewall.allowedTCPPorts = [ port ];
 
-  # 3. Create the Service
   systemd.services.power-monitor = {
     description = "Simple Power Monitor API";
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       ExecStart = "${powerScript}/bin/power-monitor";
       Restart = "always";
-      # It needs to read /sys files, so we can't restrict it too much
       User = "root"; 
     };
   };
