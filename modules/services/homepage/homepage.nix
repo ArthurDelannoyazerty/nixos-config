@@ -31,13 +31,14 @@ let
     - Server:
         - System Stats:
             icon: mdi-server
-            # Connects to the Glances container we just created
             widget:
-              type: glances
-              url: http://172.17.0.1:61208
+              type: netdata
+              url: http://172.17.0.1:19999
               cpu: true
               memory: true
               disk: /
+
+  
   '';
 
   # 3. BOOKMARKS: Empty list to remove the default "Developer/Social/Entertainment" links

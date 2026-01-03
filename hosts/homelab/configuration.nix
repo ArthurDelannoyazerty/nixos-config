@@ -16,7 +16,8 @@
     # services
     ../../modules/services/homepage/homepage.nix
     ../../modules/services/local-finance/local-finance.nix
-    ../../modules/services/glances/glances.nix
+    # ../../modules/services/glances/glances.nix
+    ../../modules/services/netdata/netdata.nix
     
     # users
     ../../users/arthur-homelab/default.nix
