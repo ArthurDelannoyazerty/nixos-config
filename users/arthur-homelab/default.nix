@@ -9,7 +9,10 @@
     shell = pkgs.bash;
     
     openssh.authorizedKeys.keyFiles = [
-      (builtins.fetchurl "https://github.com/ArthurDelannoyazerty.keys")
+      (builtins.fetchurl {
+        url = "https://github.com/ArthurDelannoyazerty.keys";
+        sha256 = "015yna27qs3jgm4v0xgq5pr8kapad3b126f4309m4p712h6mr14w";
+      })
     ];
   };
 

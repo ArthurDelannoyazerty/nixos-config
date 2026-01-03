@@ -64,3 +64,8 @@ Compact current libs
 ```bash
 nix-store --optimise
 ```
+# Analyze build
+
+```bash
+nix shell nixpkgs#nix-output-monitor --command nom build .#nixosConfigurations.homelab.config.system.build.toplevel
+```
