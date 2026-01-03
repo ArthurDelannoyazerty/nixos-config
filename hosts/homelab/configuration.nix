@@ -13,6 +13,10 @@
     ../../modules/dev
     ../../modules/nixos/server.nix
 
+    # services
+    ../../modules/services/homepage/homepage.nix
+    ../../modules/services/local-finance/local-finance.nix
+
     # users
     ../../users/arthur-homelab/default.nix
   ];
