@@ -25,6 +25,10 @@ let
     # We check if uv.lock exists, otherwise we just use pyproject.toml
     RUN uv pip install --system -r pyproject.toml || uv pip install --system .
 
+    # replace classic polar with long term support because old pc
+    RUN uv pip uninstall --system polars
+    RUN uv pip install --system polars-lts-cpu
+
     EXPOSE ${toString servicePort}
 
     # Run Streamlit
