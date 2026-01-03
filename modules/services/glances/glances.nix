@@ -6,7 +6,7 @@
   virtualisation.oci-containers.containers.glances = {
     image = "nicolargo/glances:latest-full";
     # Run in Web Server mode (-w)
-    cmd = [ "-w" ];
+    cmd = [ "glances" "-w" ];
     ports = [ "61208:61208" ];
     # Essential for monitoring the actual Host
     extraOptions = [ "--pid=host" ];
