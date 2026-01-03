@@ -55,6 +55,11 @@ in
   virtualisation.oci-containers.containers.homepage = {
     image = "ghcr.io/gethomepage/homepage:latest";
     ports = [ "80:${toString port}" ];
+    environment = {
+      # Allow any hostname (e.g. nixos-homelab, tailscale ip, localhost)
+      HOMEPAGE_ALLOWED_HOSTS = "*"; 
+      LOG_LEVEL = "debug";
+    };
     volumes = [
       # Mount the Nix store paths directly to the container paths
       "${settingsYaml}:/app/config/settings.yaml"

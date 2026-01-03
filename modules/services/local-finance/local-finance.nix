@@ -74,11 +74,14 @@ in
       # Mount a data directory if your app writes to a local SQLite file
       "/var/lib/${serviceName}/data:/app/data"
     ];
-    extraOptions = [ "--pull=never" ]; # Force using the locally built image
+    extraOptions = [
+      "--pull=never"  # Force using the locally built image
+      "--restart=always"
+    ];
   };
   
   # Ensure the data directory exists on the host
   systemd.tmpfiles.rules = [
-    "d /var/lib/${serviceName}/data 0755 root root -"
+    "d /var/lib/${serviceName}/data 0777 root root -"
   ];
 }
