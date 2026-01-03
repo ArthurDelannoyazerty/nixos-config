@@ -35,7 +35,18 @@ let
             href: http://${config.networking.hostName}:${toString glancesPort}
             description: Htop view
             server: my-docker 
-  
+        - Power Costs:
+            description: Estimated Power & Cost
+            widget:
+              type: customapi
+              url: http://${config.networking.hostName}:9100
+              refresh: 2000 # Refresh every 2 seconds
+              # Map the fields we defined in Python
+              mappings:
+                - field: Usage
+                  label: Power
+                - field: Cost
+                  label: Est.
   '';
 
   # 3. BOOKMARKS: Empty list to remove the default "Developer/Social/Entertainment" links
