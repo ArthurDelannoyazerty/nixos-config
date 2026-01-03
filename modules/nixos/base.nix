@@ -14,6 +14,9 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
+  # run dynamically linked binaries 
+  programs.nix-ld.enable = true;
+
   # Install common system-wide packages
   environment.systemPackages = with pkgs; [
     git
