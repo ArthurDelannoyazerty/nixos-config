@@ -18,6 +18,8 @@
   # Allow the magic DNS to work
   networking.firewall.checkReversePath = "loose";
 
+  virtualisation.oci-containers.backend = "docker";
+
   # Useful Homelab/Server CLI Tools
   environment.systemPackages = with pkgs; [
     # Network Debugging
