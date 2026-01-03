@@ -13,6 +13,11 @@
       url = "github:ArthurDelannoyazerty/dotfiles";
       flake = false;    # That repo doesn't have a flake.nix
     };
+
+    local-finance = {
+      url = "github:ArthurDelannoyazerty/local-finance";
+      flake = false;
+    };
     
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
