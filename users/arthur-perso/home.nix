@@ -57,10 +57,6 @@ in
     source = link "rofi/config.rasi";
     force = true;
   };
-  
-  # pureline
-  home.file.".pureline.job.conf".source      = link "pureline/.pureline.job.conf";
-  home.file.".pureline.personal.conf".source = link "pureline/.pureline.personal.conf";
 
   # VSCode
   xdg.configFile."Code/User/settings.json" = {

@@ -36,15 +36,15 @@ in
     nerd-fonts.iosevka-term
   ];
 
-  # pureline
-  home.file.".pureline.job.conf".source      = link "pureline/.pureline.job.conf";
-  home.file.".pureline.personal.conf".source = link "pureline/.pureline.personal.conf";
 
   # VSCode
-  xdg.configFile."Code/User/settings.json".source = link "codium/settings.json";
-  xdg.configFile."Code/User/settings.json".force  = true;
-  xdg.configFile."Code/User/keybindings.json".source = link "codium/keybindings.json";
-  xdg.configFile."Code/User/keybindings.json".force  = true;
-
+  xdg.configFile."Code/User/settings.json" = {
+    source = link "codium/settings.json";
+    force  = true;
+  };
+  xdg.configFile."Code/User/keybindings.json" = {
+    source = link "codium/keybindings.json";
+    force  = true;
+  };
 
 }
