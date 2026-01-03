@@ -3,7 +3,7 @@
 let
   port = 3000;
 
-  # Define configuration files as variables
+  # 1. SETTINGS
   settingsYaml = pkgs.writeText "settings.yaml" ''
     title: Arthur's Homelab
     background:
@@ -18,24 +18,21 @@ let
         columns: 2
   '';
 
+  # 2. SERVICES
   servicesYaml = pkgs.writeText "services.yaml" ''
     - Finance:
         - My Finance:
             icon: mdi-cash-multiple
-            # Link for the browser (use hostname or IP)
             href: http://${config.networking.hostName}:8501
             description: Streamlit Finance Tracker
             server: my-docker
             container: local-finance
-            widget:
-              type: customapi
-              # Link for the Homepage container to fetch stats
-              # We use the docker bridge IP (172.17.0.1) to talk to the host
-              url: http://172.17.0.1:8501/_stcore/health
-              method: GET
 
     - Server:
         - System Stats:
+            icon: mdi-server
+            # We link this card to the 'my-docker' socket defined in docker.yaml
+            server: my-docker 
             widget:
               type: resources
               cpu: true
@@ -43,28 +40,34 @@ let
               disk: /
   '';
 
+  # 3. BOOKMARKS: Empty list to remove the default "Developer/Social/Entertainment" links
+  bookmarksYaml = pkgs.writeText "bookmarks.yaml" ''
+    []
+  '';
+
+  # 4. DOCKER: Defines the connection to the host
   dockerYaml = pkgs.writeText "docker.yaml" ''
     my-docker:
       socket: /var/run/docker.sock
   '';
 in
 {
-  # Open Firewall
   networking.firewall.allowedTCPPorts = [ 80 ];
 
   virtualisation.oci-containers.containers.homepage = {
     image = "ghcr.io/gethomepage/homepage:latest";
     ports = [ "80:${toString port}" ];
+    
     environment = {
-      # Allow any hostname (e.g. nixos-homelab, tailscale ip, localhost)
       HOMEPAGE_ALLOWED_HOSTS = "*"; 
-      LOG_LEVEL = "debug";
     };
+
     volumes = [
-      # Mount the Nix store paths directly to the container paths
       "${settingsYaml}:/app/config/settings.yaml"
       "${servicesYaml}:/app/config/services.yaml"
       "${dockerYaml}:/app/config/docker.yaml"
+      # Mount the empty bookmarks file
+      "${bookmarksYaml}:/app/config/bookmarks.yaml" 
       "/var/run/docker.sock:/var/run/docker.sock"
     ];
   };
