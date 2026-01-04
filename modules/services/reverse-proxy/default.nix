@@ -1,11 +1,37 @@
-{ config, pkgs, ... }:
+{ config, pkgs, myConstants, lib, ... }:
 
 let
-  domain = "arthur-lab.duckdns.org"; # Your Domain
+  domain = myConstants.domain;
   
   # LLDAP Settings
   ldapBaseDN = "dc=arthur-lab,dc=duckdns,dc=org";
   ldapAdmin = "admin";
+
+  # Define the Authelia Block logic once
+  autheliaBlock = ''
+    forward_auth http://127.0.0.1:9091 {
+        uri /api/verify?rd=https://auth.${domain}
+        copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+    }
+  '';
+
+  # Helper to generate a proxy block for a service
+  mkProxy = service: {
+    extraConfig = ''
+      ${autheliaBlock}
+      reverse_proxy http://127.0.0.1:${toString service.port}
+    '';
+  };
+
+  # 1. Filter services that have a subdomain defined
+  servicesWithWeb = lib.filterAttrs (n: v: v ? subdomain) myConstants.services;
+
+  # 2. Map them to Caddy configuration format
+  # Result: { "vikunja.domain" = { ... }; "finance.domain" = { ... }; }
+  dynamicHosts = lib.mapAttrs' (name: service: 
+    lib.nameValuePair "${service.subdomain}.${domain}" (mkProxy service)
+  ) servicesWithWeb;
+
 in
 {
   # ==========================================================
@@ -81,7 +107,7 @@ in
         rules = [
           { domain = "auth.${domain}"; policy = "bypass"; }
           # Allow all authenticated users to access services
-          { domain = "*.${domain}"; policy = "one_factor"; }
+          { domain = "*.${domain}"; policy = "two_factor"; }
         ];
       };
     };
@@ -102,40 +128,13 @@ in
 
   services.caddy = {
     enable = true;
-    virtualHosts = {
-      # Authelia Portal
-      "auth.${domain}".extraConfig = ''
-        reverse_proxy http://127.0.0.1:9091
-      '';
-
-      # LLDAP User Management GUI (Where you create users)
-      "users.${domain}".extraConfig = ''
-        # We PROTECT this interface so random people can't try to login as admin
-        forward_auth http://127.0.0.1:9091 {
-            uri /api/verify?rd=https://auth.${domain}
-            copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
-        }
-        reverse_proxy http://127.0.0.1:17170
-      '';
-
-      # Your Apps
-      "vikunja.${domain}".extraConfig = ''
-        forward_auth http://127.0.0.1:9091 {
-            uri /api/verify?rd=https://auth.${domain}
-            copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
-        }
-        reverse_proxy http://127.0.0.1:3456
-      '';
-      
-      "finance.${domain}".extraConfig = ''
-        forward_auth http://127.0.0.1:9091 {
-            uri /api/verify?rd=https://auth.${domain}
-            copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
-        }
-        reverse_proxy http://127.0.0.1:8501
-      '';
-    };
-  };
-  
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
+    virtualHosts = 
+      # Merge our manual hosts (auth) with dynamic ones
+      dynamicHosts // {
+        # Manual override for Auth (since it doesn't need the Authelia Block)
+        "auth.${domain}".extraConfig = ''
+          reverse_proxy http://127.0.0.1:9091
+        '';
+      };
+  };  
 }

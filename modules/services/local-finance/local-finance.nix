@@ -1,10 +1,10 @@
 # /modules/services/local-finance/local-finance.nix
 
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, myConstants, ... }:
 
 let
   serviceName = "local-finance";
-  servicePort = 8501;
+  servicePort = myConstants.services.finance.port;
   
   # The source code comes from flake inputs
   src = inputs.local-finance;
@@ -28,8 +28,6 @@ let
 
 in
 {
-  networking.firewall.allowedTCPPorts = [ servicePort ];
-
   systemd.services."build-${serviceName}-image" = {
     description = "Build Docker image for ${serviceName}";
     before = [ "docker-${serviceName}.service" ];
@@ -86,7 +84,7 @@ in
 
   virtualisation.oci-containers.containers."${serviceName}" = {
     image = "${serviceName}:latest";
-    ports = [ "${toString servicePort}:${toString servicePort}" ];
+    ports = [ (myConstants.bind servicePort) ];
     volumes = [ "/var/lib/${serviceName}/data:/app/data" ];
     extraOptions = [ "--pull=never" ];
   };

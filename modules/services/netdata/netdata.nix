@@ -1,9 +1,8 @@
-{ ... }:
+{myConstants, ... }:
 {
-  networking.firewall.allowedTCPPorts = [ 19999 ];
   virtualisation.oci-containers.containers.netdata = {
     image = "netdata/netdata:latest";
-    ports = [ "19999:19999" ];
+    ports = [ (myConstants.bind myConstants.services.netdata.port) ];
     extraOptions = [ "--cap-add=SYS_PTRACE" "--security-opt=apparmor=unconfined" ];
     volumes = [
       "/proc:/host/proc:ro"

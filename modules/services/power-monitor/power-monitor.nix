@@ -1,7 +1,7 @@
-{ config, pkgs, ... }:
+{ config, pkgs, myConstants, ... }:
 
 let
-  port = 9100;
+  port = myConstants.services.power-monitor.port;
   kwhPrice = 0.22; # Price in €/kWh
   idleOffset = 15; # Watt offset for non-CPU components (Motherboard, RAM, Fans)
 
@@ -66,14 +66,13 @@ let
     # Allow the port to be reused immediately if service restarts
     socketserver.TCPServer.allow_reuse_address = True
     
-    with socketserver.TCPServer(("", ${toString port}), Handler) as httpd:
+    with socketserver.TCPServer(("127.0.0.1", ${toString port}), Handler) as httpd:
         print(f"Serving power stats on port ${toString port}")
         httpd.serve_forever()
   '';
 in
 {
   boot.kernelModules = [ "msr" "powercap" "intel_rapl_common" ];
-  networking.firewall.allowedTCPPorts = [ port ];
 
   systemd.services.power-monitor = {
     description = "Simple Power Monitor API";

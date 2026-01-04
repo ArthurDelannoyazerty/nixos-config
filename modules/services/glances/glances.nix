@@ -1,13 +1,11 @@
-{ pkgs, ... }:
+{ pkgs, myConstants, ... }:
 
 let
-  glancesVersion = "4.4.1-full";
+  cfg = myConstants.services.glances; 
 in
 {
-  networking.firewall.allowedTCPPorts = [ 61208 ];
-
   virtualisation.oci-containers.containers.glances = {
-    image = "nicolargo/glances:${glancesVersion}";
+    image = "nicolargo/glances:${cfg.version}";
     # Run in Web Server mode (-w)
     cmd = [ 
       "glances" 
@@ -16,7 +14,7 @@ in
       "--disable-plugin" "all" 
       "--enable-plugin" "cpu,mem,fs,processlist,uptime,sensors,wifi,containers" 
     ];
-    ports = [ "61208:61208" ];
+    ports = [ (myConstants.bind cfg.port) ];
     # Essential for monitoring the actual Host
     extraOptions = [ "--pid=host" ];
     volumes = [

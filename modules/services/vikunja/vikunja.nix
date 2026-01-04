@@ -1,18 +1,12 @@
 # /modules/services/vikunja/vikunja.nix
-{ config, pkgs, ... }:
+{ config, pkgs, myConstants, ... }:
 
-let
-  vikunjaPort = 3456;
-  vikunjaVersion = "1.0.0-rc3";
-in
 {
-  # 1. Open Firewall
-  networking.firewall.allowedTCPPorts = [ vikunjaPort ];
 
-  # 2. Container Configuration
+  # Container Configuration
   virtualisation.oci-containers.containers.vikunja = {
-    image = "vikunja/vikunja:${vikunjaVersion}";
-    ports = [ "${toString vikunjaPort}:3456" ];
+    image = "vikunja/vikunja:${myConstants.services.vikunja.version}";
+    ports = [ (myConstants.bind myConstants.services.vikunja.port) ];
 
     environmentFiles = [
       "/var/lib/vikunja/secret.env"
@@ -20,7 +14,7 @@ in
     
     environment = {
       # The URL is required for the API to function correctly
-      VIKUNJA_SERVICE_PUBLICURL = "http://${config.networking.hostName}:${toString vikunjaPort}/";
+      VIKUNJA_SERVICE_PUBLICURL = "http://${config.networking.hostName}:${toString myConstants.services.vikunja.port}/";
       # Use SQLite for a simple single-container setup
       VIKUNJA_DATABASE_TYPE = "sqlite"; 
       VIKUNJA_DATABASE_PATH = "/app/vikunja/db/vikunja.db";

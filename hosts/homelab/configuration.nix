@@ -1,4 +1,4 @@
-{ pkgs, home-manager, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, ... }:
+{ pkgs, home-manager, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, myConstants, ... }:
 
 {
   imports = [
@@ -20,6 +20,10 @@
     ../../modules/services/power-monitor/power-monitor.nix
     # ../../modules/services/netdata/netdata.nix
     ../../modules/services/vikunja/vikunja.nix
+    
+    # Network services
+    ../../modules/services/reverse-proxy/default.nix
+    ../../modules/security-watchdog.nix
     
     # users
     ../../users/arthur-homelab/default.nix

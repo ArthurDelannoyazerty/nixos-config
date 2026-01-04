@@ -39,6 +39,8 @@
       dotfilesSrc = if localDotfilesExists
         then (builtins.path { path = localDotfilesPath; name = "dotfiles-local"; })
         else inputs.dotfiles;
+      
+      myConstants = import ./modules/constants.nix;
 
     in {
       # Devcontainer
@@ -75,6 +77,7 @@
             dotfiles = dotfilesSrc;
             dotfilesDir = localDotfilesPath;
             isLocal = localDotfilesExists;
+            myConstants = myConstants;
           };
           modules = [ 
             ./hosts/homelab/configuration.nix

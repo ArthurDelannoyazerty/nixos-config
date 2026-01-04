@@ -1,11 +1,8 @@
-{ config, pkgs, ... }:
+{ config, pkgs, myConstants, ... }:
 
 let
-  homepageVersion = "v1.8.0";
-  homepagePort = 3000;
-  glancesPort  = 61208;
-  vikunjaPort  = 3456;
-
+  domain = myConstants.domain; 
+  
   # 1. SETTINGS
   settingsYaml = pkgs.writeText "settings.yaml" ''
     title: Arthur's Homelab
@@ -26,13 +23,13 @@ let
     - Services:
         - My Finance:
             icon: mdi-cash-multiple
-            href: http://${config.networking.hostName}:8501
+            href: https://${myConstants.services.finance.subdomain}.${domain}
             description: Streamlit Finance Tracker
             server: my-docker
             container: local-finance
         - Vikunja:
             icon: mdi-checkbox-marked-outline
-            href: http://${config.networking.hostName}:${toString vikunjaPort}
+            href: https://${myConstants.services.vikunja.subdomain}.${domain}
             description: To-Do & Projects
             server: my-docker
             container: vikunja
@@ -40,14 +37,18 @@ let
     - Server:
         - Glances:
             icon: mdi-server-network
-            href: http://${config.networking.hostName}:${toString glancesPort}
+            href: https://${myConstants.services.glances.subdomain}.${domain}
             description: Htop view
             server: my-docker 
+        - Netdata:
+            icon: mdi-chart-line
+            href: https://${myConstants.services.netdata.subdomain}.${domain}
         - Power Costs:
             description: Estimated Power (W) & Cost (€/month)
             widget:
               type: customapi
-              url: http://${config.networking.hostName}:9100
+              # url internal because not publicly exposed
+              url: http://172.17.0.1:${toString myConstants.services.power-monitor.port}
               refresh: 2000 # Refresh every 2 seconds
               # Map the fields we defined in Python
               mappings:
@@ -69,11 +70,9 @@ let
   '';
 in
 {
-  networking.firewall.allowedTCPPorts = [ 80 ];
-
   virtualisation.oci-containers.containers.homepage = {
-    image = "ghcr.io/gethomepage/homepage:${homepageVersion}";
-    ports = [ "80:${toString homepagePort}" ];
+    image = "ghcr.io/gethomepage/homepage:${myConstants.services.homepage.version}";
+    ports = [ (myConstants.bind myConstants.services.homepage.port) ];
     
     environment = {
       HOMEPAGE_ALLOWED_HOSTS = "*"; 
