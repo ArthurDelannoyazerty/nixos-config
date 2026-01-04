@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
 
 let
+  homepageVersion = "v1.8.0";
   homepagePort = 3000;
   glancesPort  = 61208;
   vikunjaPort  = 3456;
@@ -71,7 +72,7 @@ in
   networking.firewall.allowedTCPPorts = [ 80 ];
 
   virtualisation.oci-containers.containers.homepage = {
-    image = "ghcr.io/gethomepage/homepage:latest";
+    image = "ghcr.io/gethomepage/homepage:${homepageVersion}";
     ports = [ "80:${toString homepagePort}" ];
     
     environment = {

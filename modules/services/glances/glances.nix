@@ -1,10 +1,13 @@
 { pkgs, ... }:
 
+let
+  glancesVersion = "4.4.1-full";
+in
 {
   networking.firewall.allowedTCPPorts = [ 61208 ];
 
   virtualisation.oci-containers.containers.glances = {
-    image = "nicolargo/glances:latest-full";
+    image = "nicolargo/glances:${glancesVersion}";
     # Run in Web Server mode (-w)
     cmd = [ 
       "glances" 
