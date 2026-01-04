@@ -42,6 +42,7 @@ git commit -m "added hardware config file"
 
 # Install the flake (the '#' tell nix the right config to install) 
 # (--impure for the flake to link some dotfiles not to the nix store but to the give dotfile folder)
+# (you can add "--fast" to not reinstall the bootloader for common rebuild)
 sudo nixos-rebuild switch --flake .#perso --impure 
 ```
 
@@ -49,7 +50,7 @@ sudo nixos-rebuild switch --flake .#perso --impure
 ```bash
 cd ~/nixos-config
 sudo nix flake update dotfiles
-sudo nixos-rebuild switch --flake .#perso --impure
+sudo nixos-rebuild switch --flake .#perso --impure --fast
 ```
 
 # Garbage Collector

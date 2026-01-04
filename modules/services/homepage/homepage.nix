@@ -22,26 +22,19 @@ let
 
   # 2. SERVICES
   servicesYaml = pkgs.writeText "services.yaml" ''
-    - Finance:
+    - Services:
         - My Finance:
             icon: mdi-cash-multiple
             href: http://${config.networking.hostName}:8501
             description: Streamlit Finance Tracker
             server: my-docker
             container: local-finance
-
-    - Productivity:
         - Vikunja:
             icon: mdi-checkbox-marked-outline
             href: http://${config.networking.hostName}:${toString vikunjaPort}
             description: To-Do & Projects
             server: my-docker
             container: vikunja
-            widget:
-                type: vikunja
-                url: http://${config.networking.hostName}:${toString vikunjaPort}
-                # To make the widget work, you'll need an API token from Vikunja later
-                # key: YOUR_API_KEY 
 
     - Server:
         - Glances:
