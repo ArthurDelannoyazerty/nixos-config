@@ -9,21 +9,27 @@
 
     # modules
     ../../modules/nixos/base.nix
-    ../../modules/terminal
-    ../../modules/dev
     ../../modules/nixos/server.nix
 
-    # services
-    ../../modules/services/homepage/homepage.nix
-    ../../modules/services/local-finance/local-finance.nix
-    ../../modules/services/glances/glances.nix
-    ../../modules/services/power-monitor/power-monitor.nix
-    # ../../modules/services/netdata/netdata.nix
-    ../../modules/services/vikunja/vikunja.nix
-    
+    ../../modules/terminal
+    ../../modules/dev
+
+    # --- INFRASTRUCTURE ---
+    ../../modules/services/caddy.nix
+    ../../modules/services/docker-socket-proxy.nix
+    ../../modules/services/headscale.nix
+    ../../modules/services/headscale-ui.nix
+    ../../modules/services/cloudflared.nix
+
+    # --- APPS ---
+    ../../modules/services/homepage.nix
+    ../../modules/services/local-finance.nix
+    ../../modules/services/glances.nix
+    ../../modules/services/power-monitor.nix
+    ../../modules/services/vikunja.nix
+
     # Network services
-    ../../modules/services/reverse-proxy/default.nix
-    ../../modules/security-watchdog.nix
+    ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet
     
     # users
     ../../users/arthur-homelab/default.nix

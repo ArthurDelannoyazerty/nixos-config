@@ -1,6 +1,10 @@
 # /modules/constants.nix
 {
-  domain = "arthur-lab.duckdns.org";
+  # Internal domain for services
+  domain = "home.arpa";
+
+  # Public domain (for headscale for now)
+  publicDomain = "arthur-lab.duckdns.org"; 
   
   # A helper function to make 127.0.0.1 binding lazy/easy
   # Usage: bind 8501 -> "127.0.0.1:8501:8501"
@@ -10,8 +14,8 @@
   services = {
     vikunja = {
       port = 3456;
-      version = "1.0.0-rc3";
       subdomain = "vikunja";
+      version = "1.0.0-rc3";
     };
     finance = {
       port = 8501;
@@ -19,17 +23,17 @@
     };
     homepage = {
       port = 3000;
+      subdomain = "homepage";
       version = "v1.8.0";
-      subdomain = "homepage"; # Optional: if you want homepage exposed
     };
     glances = {
       port = 61208;
+      subdomain = "glances";
       version = "4.4.1-full";
-      subdomain = "glances"; # Optional: usually internal only
     };
     lldap = {
-      port = 17170;
-      subdomain = "users";
+      port = 17171;
+      subdomain = "lldap";
     };
     netdata = {
       port = 19999;
@@ -37,7 +41,15 @@
     };
     power-monitor = {
       port = 9100;
-      # No subdomain here because not puclicly exposed
     };
+    headscale = {
+      port = 8080;
+      subdomain = "headscale";
+    }
+    headscale-ui = {
+      port = 9443;
+      subdomain = "headscale-ui";
+      version = "latest";
+    }
   };
 }

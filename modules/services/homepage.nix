@@ -1,8 +1,8 @@
 { config, pkgs, myConstants, ... }:
 
 let
-  domain = myConstants.domain; 
-  
+  baseUrl = "http://${config.networking.hostName}"; 
+
   # 1. SETTINGS
   settingsYaml = pkgs.writeText "settings.yaml" ''
     title: Arthur's Homelab
@@ -16,6 +16,14 @@ let
       Server:
         style: row
         columns: 2
+
+    providers:
+      lldap:
+        url: http://127.0.0.1:17171 # Talk to LLDAP via localhost
+        bindDN: uid=admin,ou=people,dc=home,dc=arpa
+        bindPassword: "adminpassword"
+        searchDN: ou=people,dc=home,dc=arpa
+        searchFilter: (uid={{user}})
   '';
 
   # 2. SERVICES
@@ -23,13 +31,13 @@ let
     - Services:
         - My Finance:
             icon: mdi-cash-multiple
-            href: https://${myConstants.services.finance.subdomain}.${domain}
+            href: ${baseUrl}:${toString myConstants.services.finance.port}
             description: Streamlit Finance Tracker
             server: my-docker
             container: local-finance
         - Vikunja:
             icon: mdi-checkbox-marked-outline
-            href: https://${myConstants.services.vikunja.subdomain}.${domain}
+            href: https://${toString myConstants.services.vikunja.port}
             description: To-Do & Projects
             server: my-docker
             container: vikunja
@@ -37,18 +45,18 @@ let
     - Server:
         - Glances:
             icon: mdi-server-network
-            href: https://${myConstants.services.glances.subdomain}.${domain}
+            href: ${baseUrl}:${toString myConstants.services.vikunja.port}
             description: Htop view
             server: my-docker 
         - Netdata:
             icon: mdi-chart-line
-            href: https://${myConstants.services.netdata.subdomain}.${domain}
+            href: https://${toString myConstants.services.netdata.port}
         - Power Costs:
             description: Estimated Power (W) & Cost (€/month)
             widget:
               type: customapi
               # url internal because not publicly exposed
-              url: http://172.17.0.1:${toString myConstants.services.power-monitor.port}
+              url: ${baseUrl}:${toString myConstants.services.power-monitor.port}
               refresh: 2000 # Refresh every 2 seconds
               # Map the fields we defined in Python
               mappings:
@@ -66,7 +74,7 @@ let
   # 4. DOCKER: Defines the connection to the host
   dockerYaml = pkgs.writeText "docker.yaml" ''
     my-docker:
-      socket: /var/run/docker.sock
+      socket: tcp://127.0.0.1:2375
   '';
 in
 {
