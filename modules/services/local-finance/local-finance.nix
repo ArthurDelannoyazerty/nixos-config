@@ -37,7 +37,7 @@ in
     serviceConfig = {
       Type = "oneshot";
       User = "root";
-      TimeoutStartSec = "600"; 
+      TimeoutStartSec = "1600";
     };
 
     path = with pkgs; [ docker coreutils bash ];

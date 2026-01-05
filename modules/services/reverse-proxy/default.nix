@@ -71,9 +71,6 @@ in
       jwtSecretFile = "/var/lib/authelia/secrets/jwt_secret";
       storageEncryptionKeyFile = "/var/lib/authelia/secrets/storage_key";
       sessionSecretFile = "/var/lib/authelia/secrets/session_secret";
-      # Authelia needs the LLDAP admin password to read the database
-      # We reuse the same file we created for LLDAP
-      "ldap_password" = "/var/lib/lldap/secrets/admin_password"; 
     };
 
     settings = {
@@ -113,6 +110,11 @@ in
     };
   };
 
+  systemd.services.authelia-main.environment = {
+    # We point to a NEW file inside authelia's folder (see Step 2)
+    AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = "/var/lib/authelia/secrets/ldap_password";
+  };
+  
   # ==========================================================
   # 3. CADDY - Reverse Proxy
   # ==========================================================
