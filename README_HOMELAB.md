@@ -62,3 +62,25 @@ sudo vim /var/lib/authelia/users_database.yml
 sudo chmod 600 /var/lib/authelia/secrets/*
 sudo chown -R authelia-main:authelia-main /var/lib/authelia/secrets
 ```
+
+
+## Cloudflared
+
+```bash
+nix shell nixpkgs#cloudflared
+cloudflared tunnel login
+cloudflared tunnel create homelab-tunnel
+
+sudo mkdir -p /var/lib/cloudflared
+sudo cp ~/.cloudflared/<YOUR-UUID>.json /var/lib/cloudflared/cert.json
+sudo chmod 600 /var/lib/cloudflared/cert.json
+
+# After the rebuild, when cloudflared wil turn on :
+sudo chown cloudflared:cloudflared /var/lib/cloudflared/cert.json
+```
+
+Then when al is ready we can point the tunnels to the right endpoint
+```bash
+cloudflared tunnel route dns homelab-tunnel authentik.arthur-lab.com
+cloudflared tunnel route dns homelab-tunnel headscale.arthur-lab.com
+```

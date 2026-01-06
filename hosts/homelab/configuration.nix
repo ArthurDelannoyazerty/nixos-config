@@ -15,11 +15,13 @@
     ../../modules/dev
 
     # --- INFRASTRUCTURE ---
+    ../../modules/services/authentik.nix
     ../../modules/services/caddy.nix
     ../../modules/services/docker-socket-proxy.nix
     ../../modules/services/headscale.nix
     ../../modules/services/headscale-ui.nix
     ../../modules/services/cloudflared.nix
+    ../../modules/services/ldap.nix
 
     # --- APPS ---
     ../../modules/services/homepage.nix
@@ -67,4 +69,11 @@
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
 
+  # Add 4GB of emergency swap memory  
+  swapDevices = [ {
+    device = "/var/lib/swapfile";
+    size = 4096; # 4GB
+  } ];
+
+  
 }

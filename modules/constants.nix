@@ -3,8 +3,8 @@
   # Internal domain for services
   domain = "home.arpa";
 
-  # Public domain (for headscale for now)
-  publicDomain = "arthur-lab.duckdns.org"; 
+  # Public domain
+  publicDomain = "arthur-lab.com"; 
   
   # A helper function to make 127.0.0.1 binding lazy/easy
   # Usage: bind 8501 -> "127.0.0.1:8501:8501"
@@ -32,7 +32,8 @@
       version = "4.4.1-full";
     };
     lldap = {
-      port = 17171;
+      port = 3890;
+      html-port = 17171;
       subdomain = "lldap";
     };
     netdata = {
@@ -45,11 +46,15 @@
     headscale = {
       port = 8080;
       subdomain = "headscale";
-    }
+    };
     headscale-ui = {
       port = 9443;
       subdomain = "headscale-ui";
       version = "latest";
-    }
+    };
+    authentik = {
+      port = 9000;
+      subdomain = "authentik";
+    };
   };
 }

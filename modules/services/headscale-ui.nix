@@ -10,6 +10,4 @@
     };
   };
 
-  # Add this to your Caddy configuration (server.nix or caddy.nix)
-  # http://headscale-ui.home.arpa -> internal 9443
 }

@@ -1,5 +1,5 @@
 # /modules/services/headscale.nix
-{ config, pkgs, myConstants ... }:
+{ config, pkgs, myConstants, ... }:
 let
   publicUrl = "https://${myConstants.services.headscale.subdomain}.${myConstants.publicDomain}";
 in
@@ -10,12 +10,15 @@ in
     port = myConstants.services.headscale.port;
     settings = {
       server_url = publicUrl;
-      dns_config.base_domain = myConstants.domain;
-      # For reverse proxying
-      ip_prefixes = [
-        "fd7a:115c:a1e0::/48"
-        "100.64.0.0/10"
-      ];
+      dns = {
+        base_domain = myConstants.domain;
+        magic_dns = true;
+      };
+      oidc = {
+        issuer = "https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/application/o/headscale/";
+        client_id = "some-id-from-authentik";
+        client_secret = "some-secret";
+      };
     };
   };
 

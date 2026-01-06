@@ -2,9 +2,7 @@
 { config, pkgs, myConstants, ... }:
 
 let
-  # The tunnel ID and credentials file location
-  # You get these by running `cloudflared tunnel create my-tunnel` locally
-  tunnelID = "YOUR-TUNNEL-UUID-HERE"; 
+  tunnelID = "f9408fae-a6b0-420a-a348-cc974402228f"; 
   credsFile = "/var/lib/cloudflared/cert.json"; # You must copy the credentials here manually once
 in
 {
@@ -13,20 +11,14 @@ in
     tunnels = {
       "${tunnelID}" = {
         credentialsFile = credsFile;
-        default_ingress = {
-          service = "http_status:404";
-        };
+        default = "http://localhost:80"; 
         ingress = {
-          # 1. Public Headscale Endpoint (Traffic goes to Caddy or direct)
-          "${myConstants.services.headscale.subdomain}.${myConstants.publicDomain}" = {
-            service = "http://localhost:${toString myConstants.services.headscale.port}";
-          };
+          # Route the Auth portal directly
+          "${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}" = "http://localhost:${toString myConstants.services.authentik.port}";
           
-          # 2. Public Headscale UI (So you can approve users from anywhere)
-          "${myConstants.services.headscale-ui.subdomain}.${myConstants.publicDomain}" = {
-             service = "http://localhost:${toString myConstants.services.headscale-ui.port}";
+          # Headscale needs to be public for the Highway path
+          "${myConstants.services.headscale.subdomain}.${myConstants.publicDomain}" = "http://localhost:${toString myConstants.services.headscale.port}";
           };
-        };
       };
     };
   };

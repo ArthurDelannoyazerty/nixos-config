@@ -7,14 +7,14 @@
     virtualHosts = {
       
       # Homepage
-      "http://${myConstants.services.homapage.subdomain}.${myConstants.domain}" = {
+      "http://${myConstants.services.homepage.subdomain}.${myConstants.publicDomain}" = {
         extraConfig = ''
           reverse_proxy 127.0.0.1:${toString myConstants.services.homepage.port}
         '';
       };
 
       # Finance
-      "http://${myConstants.services.finance.subdomain}.${myConstants.domain}" = {
+      "http://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}" = {
         extraConfig = ''
           # In a real setup, add Authelia middleware here
           reverse_proxy 127.0.0.1:${toString myConstants.services.finance.port}
@@ -22,7 +22,7 @@
       };
 
       # Glances
-      "http://${myConstants.services.glances.subdomain}.${myConstants.domain}" = {
+      "http://${myConstants.services.glances.subdomain}.${myConstants.publicDomain}" = {
         extraConfig = ''
           # Basic Auth: User "arthur", Password "password" (hashed)
           # Use `caddy hash-password` to generate the hash
@@ -34,9 +34,9 @@
       };
       
       # LLDAP
-      "http://${myConstants.services.lldap.subdomain}.${myConstants.domain}" = {
+      "http://${myConstants.services.lldap.subdomain}.${myConstants.publicDomain}" = {
         extraConfig = ''
-             reverse_proxy 127.0.0.1:${toString myConstants.services.lldap.port}
+             reverse_proxy 127.0.0.1:${toString myConstants.services.lldap.html-port}
         '';
       };
 
