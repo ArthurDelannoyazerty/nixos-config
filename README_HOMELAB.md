@@ -26,41 +26,26 @@ tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 64 | sudo tee /var/lib/lldap/secrets
 sudo chmod 700 /var/lib/lldap/secrets
 ```
 
-## Authelia
+## Authetik
 Require : LLDPA
 
-
-It require secrets (to be readed in files).
-
 ```bash
-sudo mkdir -p /var/lib/authelia/secrets
+sudo mkdir -p /var/lib/authentik
 
-# Generate random secrets directly into the files
-tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 64 | sudo tee /var/lib/authelia/secrets/jwt_secret > /dev/null
-tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 64 | sudo tee /var/lib/authelia/secrets/session_secret > /dev/null
-tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 64 | sudo tee /var/lib/authelia/secrets/storage_key > /dev/null
+# Create a fresh file or overwrite the broken one
+# Generate a new random password and key
+PW=$(openssl rand -base64 24)
+KEY=$(openssl rand -base64 36)
 
-# Generate the hash password by executing:
-# nix run nixpkgs#authelia -- crypto hash generate argon2
-# copy the hashed password for the next step
+# Write them to the file using both variable names
+sudo bash -c "cat <<EOF > /var/lib/authentik/secrets.env
+AUTHENTIK_SECRET_KEY=$KEY
+AUTHENTIK_POSTGRESQL__PASSWORD=$PW
+POSTGRES_PASSWORD=$PW
+EOF"
 
-# Create the user db
-sudo vim /var/lib/authelia/users_database.yml
-
-# An copy the following into that file (and modify the values, especially the password that must bethe previous hashed password):
-#
-# users:
-#   arthur:
-#     displayname: Arthur
-#     # Paste the hash you generated interactively here:
-#     password: "$argon2id$v=19$m=65536,t=3,p=4$DnF1c+/aA+yS+n7YSeS1bg$wD0I/..."
-#     email: arthur@example.com
-#     groups:
-#       - admins
-
-
-sudo chmod 600 /var/lib/authelia/secrets/*
-sudo chown -R authelia-main:authelia-main /var/lib/authelia/secrets
+# Secure the file
+sudo chmod 600 /var/lib/authentik/secrets.env
 ```
 
 
@@ -79,7 +64,19 @@ sudo chmod 600 /var/lib/cloudflared/cert.json
 sudo chown cloudflared:cloudflared /var/lib/cloudflared/cert.json
 ```
 
-Then when al is ready we can point the tunnels to the right endpoint
+Before opening the server to all the internet, we need to verify that it work well.However for that we still need a working DNS record. So we create one but that only us can use with a one time PIN
+
+1. Go to cloudflare zero trust dashboard
+2. 'Access control' -> 'Application' -> 'Add an application' -> 'Self Hosted'
+3. Application name = "Authentik Admin"
+4. Public Hostname: authentik.YOUR-DNS-DOMAIN/
+5. Accept all available identity providers = false
+6. Check 'One-time PIN'
+7. Create a policy. Action = "Allow" | Include : "Emails" = YOUR-MAIL
+8. Create that app. After that only your email can receive a one time pin code to access your server (it is secured!)
+
+
+Then when all is ready we can point the tunnels to the right endpoint
 ```bash
 cloudflared tunnel route dns homelab-tunnel authentik.arthur-lab.com
 cloudflared tunnel route dns homelab-tunnel headscale.arthur-lab.com

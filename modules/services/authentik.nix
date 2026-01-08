@@ -1,9 +1,6 @@
 { config, pkgs, myConstants, ... }:
 
 let
-  # Secrets should be in this file: 
-  # AUTHENTIK_SECRET_KEY=...
-  # AUTHENTIK_POSTGRESQL__PASSWORD=...
   envFile = "/var/lib/authentik/secrets.env";
 in
 {
@@ -22,7 +19,7 @@ in
     # 2. The Cache
     authentik-redis = {
       image = "docker.io/library/redis:alpine";
-      cmd = [ "redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru" ];
+      cmd = [ "redis-server" "--maxmemory" "256mb" "--maxmemory-policy" "allkeys-lru" ];
     };
 
     # 3. The Main Server
@@ -38,6 +35,11 @@ in
       };
       environmentFiles = [ envFile ];
       volumes = [ "/var/lib/authentik/media:/media" "/var/lib/authentik/custom-templates:/templates" ];
+      # Find the database by name
+      extraOptions = [ 
+        "--link=authentik-db:authentik-db" 
+        "--link=authentik-redis:authentik-redis" 
+      ];
     };
 
     # 4. The Worker (Handles the heavy lifting)
@@ -51,6 +53,10 @@ in
       };
       environmentFiles = [ envFile ];
       volumes = [ "/var/lib/authentik/media:/media" "/var/lib/authentik/certs:/certs" ];
+      extraOptions = [ 
+        "--link=authentik-db:authentik-db" 
+        "--link=authentik-redis:authentik-redis" 
+      ];
     };
   };
 }

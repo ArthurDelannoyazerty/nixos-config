@@ -21,7 +21,7 @@
     ../../modules/services/headscale.nix
     ../../modules/services/headscale-ui.nix
     ../../modules/services/cloudflared.nix
-    ../../modules/services/ldap.nix
+    ../../modules/services/lldap.nix
 
     # --- APPS ---
     ../../modules/services/homepage.nix
