@@ -30,9 +30,4 @@ in
   };
 
   environment.systemPackages = [ pkgs.headscale ];
-}# Attempt to start it manually to generate a fresh log
-sudo systemctl restart docker-authentik-db
-# Wait 2 seconds
-sleep 2
-# Check logs (if container exists) or systemd status
-sudo docker logs authentik-db
+}

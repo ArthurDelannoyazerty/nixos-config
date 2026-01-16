@@ -27,6 +27,7 @@
     tcpdump       # Packet analyzer
     nmap          # Network scanner (check open ports)
     ethtool       # Network card config
+    cloudflared  
 
     # Disk/System Management
     iotop         # I/O usage monitor (like top for disk)

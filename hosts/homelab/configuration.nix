@@ -57,10 +57,12 @@
   console.keyMap = "fr";
 
   # Do not sleep when the lid is closed
-  services.logind.settings.Login = {
-    lidSwitch = "ignore";
-    lidSwitchDocked = "ignore";
-    lidSwitchExternalPower = "ignore";
+  services.logind.settings = {
+    Login = {
+      HandleLidSwitch = "ignore";
+      HandleLidSwitchExternalPower = "ignore";
+      HandleLidSwitchDocked = "ignore";
+    };
   };
   
   # Optional: Prevent the system from sleeping automatically due to inactivity
