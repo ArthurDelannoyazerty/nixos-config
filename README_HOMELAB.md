@@ -51,10 +51,19 @@ EOF"
 sudo chmod 600 /var/lib/authentik/secrets.env
 
 
-# Some permission changes
+# Some permission changes (to do after the first rebuild)
 sudo chown -R 1000:1000 /var/lib/authentik/media
 sudo chown -R 1000:1000 /var/lib/authentik/certs
 sudo chown -R 1000:1000 /var/lib/authentik/custom-templates
+
+# Troubleshooting 
+# Test Authentik if error 502
+curl -I http://127.0.0.1:9000/
+# Examine logs
+docker logs authentik-server --tail 50
+# restart services
+systemctl restart docker-authentik-server
+systemctl restart docker-authentik-worker
 
 # Then put the bootstrap admin password manually with:
 # sudo vim /var/lib/authentik/secrets.env
@@ -99,9 +108,10 @@ Now we want other apps to use Authentik when a user arrive in them.
 ## Cloudflared
 
 ```bash
-nix shell nixpkgs#cloudflared
+(nix shell nixpkgs#cloudflared)
 cloudflared tunnel login
 cloudflared tunnel create homelab-tunnel
+# This created a tunnel secret and printed a UUID (use it in the following commands)
 
 sudo mkdir -p /var/lib/cloudflared
 sudo cp ~/.cloudflared/<YOUR-UUID>.json /var/lib/cloudflared/cert.json
@@ -111,7 +121,9 @@ sudo chmod 600 /var/lib/cloudflared/cert.json
 sudo chown cloudflared:cloudflared /var/lib/cloudflared/cert.json
 ```
 
-Before opening the server to all the internet, we need to verify that it work well.However for that we still need a working DNS record. So we create one but that only us can use with a one time PIN
+Then update the UUID in the `cloudflared.nix` file.
+
+Before opening the server to all the internet, we need to verify that it work well. However for that we still need a working DNS record. So we create one but that only us can use with a one time PIN
 
 1. Go to cloudflare zero trust dashboard
 2. 'Access control' -> 'Application' -> 'Add an application' -> 'Self Hosted'
@@ -123,10 +135,19 @@ Before opening the server to all the internet, we need to verify that it work we
 8. Create that app. After that only your email can receive a one time pin code to access your server (it is secured!)
 
 
-Then when all is ready we can point the tunnels to the right endpoint
+Then when all is ready we can point the tunnels to the right endpoint.
+
+
 ```bash
 cloudflared tunnel route dns homelab-tunnel authentik.arthur-lab.com
 cloudflared tunnel route dns homelab-tunnel headscale.arthur-lab.com
 cloudflared tunnel route dns homelab-tunnel arthur-lab.com
 cloudflared tunnel route dns homelab-tunnel homelab.arthur-lab.com
+
+# If the tunnel already had the config previously :
+
+cloudflared tunnel route dns -f homelab-tunnel authentik.arthur-lab.com
+cloudflared tunnel route dns -f homelab-tunnel headscale.arthur-lab.com
+cloudflared tunnel route dns -f homelab-tunnel arthur-lab.com
+cloudflared tunnel route dns -f homelab-tunnel homelab.arthur-lab.com
 ```
