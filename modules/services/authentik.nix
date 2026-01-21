@@ -23,6 +23,14 @@ let
   };
 in
 {
+  # Virtual user for secrets owning
+  users.groups.authentik = { gid = 1000; };
+  users.users.authentik = {
+    isSystemUser = true;
+    uid = 1000;
+    group = "authentik";
+  };
+
   virtualisation.oci-containers.containers = {
     # 1. The Database
     authentik-db = {

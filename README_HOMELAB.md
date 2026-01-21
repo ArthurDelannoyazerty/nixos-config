@@ -18,17 +18,30 @@ sudo chmod 600 /var/lib/vikunja/secret.env
 
 Used as a backend for Authelia
 
+1. Pre-build setup
 ```bash    
 sudo mkdir -p /var/lib/lldap/secrets
 tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 32 | sudo tee /var/lib/lldap/secrets/admin_password
 tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 64 | sudo tee /var/lib/lldap/secrets/jwt_secret
+```
 
-sudo chmod 700 /var/lib/lldap/secrets
+2. Post-build setup
+```bash
+# Change recursively the owner of these fodlder to the lldapp user can use them
+sudo chown -R lldap:lldap /var/lib/lldap/
+
+sudo chmod 700 /var/lib/lldap/secrets 
+sudo chmod 600 /var/lib/lldap/secrets/admin_password
+sudo chmod 600 /var/lib/lldap/secrets/jwt_secret
+
+# If needed
+sudo systemctl restart lldap
 ```
 
 ## Authentik
 Require : LLDPA
 
+1. Pre-build setup
 ```bash
 sudo mkdir -p /var/lib/authentik
 
@@ -47,16 +60,25 @@ AUTHENTIK_POSTGRESQL__PASSWORD=$PW
 POSTGRES_PASSWORD=$PW
 EOF"
 
-# Secure the file
+# Secure the file initially
 sudo chmod 600 /var/lib/authentik/secrets.env
+```
 
-
-# Some permission changes (to do after the first rebuild)
+2. Post-build setup
+```bash
+# Permission changes (The 'authentik' user exists only after rebuild)
+sudo chown authentik:authentik /var/lib/authentik/secrets.env
 sudo chown -R 1000:1000 /var/lib/authentik/media
 sudo chown -R 1000:1000 /var/lib/authentik/certs
 sudo chown -R 1000:1000 /var/lib/authentik/custom-templates
 
-# Troubleshooting 
+# NOW restart services so it reads the password file
+sudo systemctl restart docker-authentik-server
+sudo systemctl restart docker-authentik-worker
+```
+
+1. Troubleshooting
+```bash
 # Test Authentik if error 502
 curl -I http://127.0.0.1:9000/
 # Examine logs
@@ -145,7 +167,6 @@ cloudflared tunnel route dns homelab-tunnel arthur-lab.com
 cloudflared tunnel route dns homelab-tunnel homelab.arthur-lab.com
 
 # If the tunnel already had the config previously :
-
 cloudflared tunnel route dns -f homelab-tunnel authentik.arthur-lab.com
 cloudflared tunnel route dns -f homelab-tunnel headscale.arthur-lab.com
 cloudflared tunnel route dns -f homelab-tunnel arthur-lab.com

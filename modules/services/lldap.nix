@@ -2,6 +2,13 @@
 { config, pkgs, myConstants, ... }:
 
 {
+  # Virtual user for secrets owning
+  users.groups.lldap = { };
+  users.users.lldap = {
+    isSystemUser = true;
+    group = "lldap";
+  };
+
   services.lldap = {
     enable = true;
     # Silence the fact that modifying password in the UI desynchronize it from the one in the file that stays
