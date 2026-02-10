@@ -116,7 +116,7 @@ For using the option `Connect with Google account` :
 
 Set up Authentik login page
 1. Got to Step -> Search `default-authentication-identification` and edit it
-2. Password step = default-authentication-password --> LEt users sign up
+2. Password step = default-authentication-password --> Let users sign up
 3. Source available = google (the one your just created before)
 
 Now we want other apps to use Authentik when a user arrive in them.
@@ -124,8 +124,13 @@ Now we want other apps to use Authentik when a user arrive in them.
 2. Application -> Provider -> Create Provider -> Proxy provider
 3. Name = Homepage-provider (example service) |  Authorization flux = default-provider-authorization-implicit-consent | External host = https://homepage.<YOUR-DOMAIN> | Internal host = http://127.0.0.1:3000 (the internal service ip:port)
 4. Application -> Application -> Create applicaiton 
-5. Name = Homapage | slug = homepage | Provider = Homepage-provider | UI Setting -> Launch URL = https://homepage.<YOUR-DOMAIN>
+5. Name = Homepage | slug = homepage | Provider = Homepage-provider | UI Setting -> Launch URL = https://homepage.<YOUR-DOMAIN>
 6. Now go in the newly created application -> Policy -> Create binding -> add group -> Select the group that have access to that website (when someone go into your homepage service, they will ask to authentik about its group identity, if not included into they will not be authorized)
+
+Now we want authentik to actually accept redirect from the other websites
+1. Applications -> Outposts
+2. Modify the default "authentik Embedded Outpost" : Add the applications you want
+3. Save
 
 ## Cloudflared
 
@@ -145,30 +150,22 @@ sudo chown cloudflared:cloudflared /var/lib/cloudflared/cert.json
 
 Then update the UUID in the `cloudflared.nix` file.
 
+Then we need to set up the Cloudflare CNAME (that link the DNS address to the tunnel we created)
+
+1. Go to the Cloudflare dashboard -> DNS -> Records
+2. Create a Record for the root domain : Type=CNAME | name=<YOUR-DOMAIN-ROOT> | target=<TUNNEL-UUID>.cfargotunnel.com | Proxied=true
+3. Create a Record for all the subdomain : Type=CNAME | name=* (actually idk if it is only '*' or '*'.<YOUR-DOMAIN-ROOT>) | target=<TUNNEL-UUID>.cfargotunnel.com | Proxied=true
+
 Before opening the server to all the internet, we need to verify that it work well. However for that we still need a working DNS record. So we create one but that only us can use with a one time PIN
 
 1. Go to cloudflare zero trust dashboard
 2. 'Access control' -> 'Application' -> 'Add an application' -> 'Self Hosted'
-3. Application name = "Authentik Admin"
-4. Public Hostname: authentik.YOUR-DNS-DOMAIN/
+3. Application name="Homelab"
+4. Public Hostname=*.<YOUR-DNS-DOMAIN>
 5. Accept all available identity providers = false
 6. Check 'One-time PIN'
 7. Create a policy. Action = "Allow" | Include : "Emails" = YOUR-MAIL
 8. Create that app. After that only your email can receive a one time pin code to access your server (it is secured!)
+9. Do the same for the root domain : Application name="Homelab" | Public Hostname=<YOUR-DNS-DOMAIN>
 
 
-Then when all is ready we can point the tunnels to the right endpoint.
-
-
-```bash
-cloudflared tunnel route dns homelab-tunnel authentik.arthur-lab.com
-cloudflared tunnel route dns homelab-tunnel headscale.arthur-lab.com
-cloudflared tunnel route dns homelab-tunnel arthur-lab.com
-cloudflared tunnel route dns homelab-tunnel homelab.arthur-lab.com
-
-# If the tunnel already had the config previously :
-cloudflared tunnel route dns -f homelab-tunnel authentik.arthur-lab.com
-cloudflared tunnel route dns -f homelab-tunnel headscale.arthur-lab.com
-cloudflared tunnel route dns -f homelab-tunnel arthur-lab.com
-cloudflared tunnel route dns -f homelab-tunnel homelab.arthur-lab.com
-```

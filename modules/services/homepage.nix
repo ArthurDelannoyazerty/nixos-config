@@ -1,8 +1,6 @@
 { config, pkgs, myConstants, ... }:
 
 let
-  baseUrl = "http://${config.networking.hostName}"; 
-
   # 1. SETTINGS
   settingsYaml = pkgs.writeText "settings.yaml" ''
     title: Arthur's Homelab
@@ -29,15 +27,15 @@ let
   # 2. SERVICES
   servicesYaml = pkgs.writeText "services.yaml" ''
     - Services:
-        - My Finance:
+        - Finance:
             icon: mdi-cash-multiple
-            href: ${baseUrl}:${toString myConstants.services.finance.port}
+            href: https://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}
             description: Streamlit Finance Tracker
             server: my-docker
             container: local-finance
         - Vikunja:
             icon: mdi-checkbox-marked-outline
-            href: https://${toString myConstants.services.vikunja.port}
+            href: https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}
             description: To-Do & Projects
             server: my-docker
             container: vikunja
@@ -45,20 +43,14 @@ let
     - Server:
         - Glances:
             icon: mdi-server-network
-            href: ${baseUrl}:${toString myConstants.services.vikunja.port}
-            description: Htop view
-            server: my-docker 
-        - Netdata:
-            icon: mdi-chart-line
-            href: https://${toString myConstants.services.netdata.port}
+            href: https://${myConstants.services.glances.subdomain}.${myConstants.publicDomain}
+            description: System Monitor
         - Power Costs:
             description: Estimated Power (W) & Cost (€/month)
             widget:
               type: customapi
-              # url internal because not publicly exposed
-              url: ${baseUrl}:${toString myConstants.services.power-monitor.port}
-              refresh: 2000 # Refresh every 2 seconds
-              # Map the fields we defined in Python
+              url: http://172.17.0.1:${toString myConstants.services.power-monitor.port}
+              refresh: 2000
               mappings:
                 - field: Usage
                   label: Power
@@ -94,5 +86,7 @@ in
       "${bookmarksYaml}:/app/config/bookmarks.yaml" 
       "/var/run/docker.sock:/var/run/docker.sock"
     ];
+
+    extraOptions = [ "--add-host=host.docker.internal:host-gateway" ];
   };
 }

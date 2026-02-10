@@ -66,7 +66,7 @@ let
     # Allow the port to be reused immediately if service restarts
     socketserver.TCPServer.allow_reuse_address = True
     
-    with socketserver.TCPServer(("127.0.0.1", ${toString port}), Handler) as httpd:
+    with socketserver.TCPServer(("0.0.0.0", ${toString port}), Handler) as httpd:
         print(f"Serving power stats on port ${toString port}")
         httpd.serve_forever()
   '';

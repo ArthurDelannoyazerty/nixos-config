@@ -6,9 +6,8 @@
   # Public domain
   publicDomain = "arthur-lab.com"; 
   
-  # A helper function to make 127.0.0.1 binding lazy/easy
-  # Usage: bind 8501 -> "127.0.0.1:8501:8501"
-  bind = port: "127.0.0.1:${toString port}:${toString port}";
+  # Usage: bind 8501 -> "0.0.0.0:8501:8501"
+  bind = port: "0.0.0.0:${toString port}:${toString port}";
 
   # THE REGISTRY
   services = {

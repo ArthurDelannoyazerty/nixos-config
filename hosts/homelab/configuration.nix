@@ -18,17 +18,18 @@
     ../../modules/services/authentik.nix
     ../../modules/services/caddy.nix
     ../../modules/services/docker-socket-proxy.nix
-    ../../modules/services/headscale.nix
-    ../../modules/services/headscale-ui.nix
+    # ../../modules/services/headscale.nix
+    # ../../modules/services/headscale-ui.nix
     ../../modules/services/cloudflared.nix
     ../../modules/services/lldap.nix
 
     # --- APPS ---
     ../../modules/services/homepage.nix
     ../../modules/services/local-finance.nix
-    ../../modules/services/glances.nix
+    # ../../modules/services/glances.nix
     ../../modules/services/power-monitor.nix
     ../../modules/services/vikunja.nix
+    ../../modules/services/netdata.nix
 
     # Network services
     ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet

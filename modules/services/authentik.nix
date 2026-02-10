@@ -27,7 +27,6 @@ in
   users.groups.authentik = { gid = 1000; };
   users.users.authentik = {
     isSystemUser = true;
-    uid = 1000;
     group = "authentik";
   };
 
@@ -63,6 +62,7 @@ in
       volumes = [ "/var/lib/authentik/media:/media" "/var/lib/authentik/custom-templates:/templates" ];
       # Find the database by name
       extraOptions = [ 
+        "--add-host=host.docker.internal:host-gateway" 
         "--link=authentik-db:authentik-db" 
         "--link=authentik-redis:authentik-redis" 
       ];

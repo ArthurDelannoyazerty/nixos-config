@@ -14,7 +14,7 @@
     
     environment = {
       # The URL is required for the API to function correctly
-      VIKUNJA_SERVICE_PUBLICURL = "http://${config.networking.hostName}:${toString myConstants.services.vikunja.port}/";
+      VIKUNJA_SERVICE_PUBLICURL = "https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}/";
       # Use SQLite for a simple single-container setup
       VIKUNJA_DATABASE_TYPE = "sqlite"; 
       VIKUNJA_DATABASE_PATH = "/app/vikunja/db/vikunja.db";
