@@ -57,6 +57,9 @@
 
   console.keyMap = "fr";
 
+  /* -------------------------------------------------------------------------- */
+  /*                                POWER OPTIONS                               */
+  /* -------------------------------------------------------------------------- */
   # Do not sleep when the lid is closed
   services.logind.settings = {
     Login = {
@@ -65,6 +68,30 @@
       HandleLidSwitchDocked = "ignore";
     };
   };
+
+  # Force the network card to stay awake
+  networking.networkmanager.connectionConfig."connection.mdns" = 2; # Enable mDNS
+  
+  # Disable power management for the ethernet interface
+  powerManagement.cpuFreqGovernor = "performance";
+  
+  # Specifically disable power management for the network interface
+  systemd.services.disable-nic-powersave = {
+    description = "Disable NIC Power Management";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.ethtool ];
+    script = ''
+      # Replace 'eth0' or 'enp...' with your actual interface name 
+      # You can find it by running 'ip link'
+      # This command disables 'Wake-on-LAN' power-down modes
+      ethtool -s enp2s0 wol d || true 
+    '';
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                            END OF POWER OPTIONS                            */
+  /* -------------------------------------------------------------------------- */
   
   # Optional: Prevent the system from sleeping automatically due to inactivity
   systemd.targets.sleep.enable = false;

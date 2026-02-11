@@ -54,7 +54,7 @@
 
     virtualHosts = {
       
-      # 3. ROOT DOMAIN REDIRECT
+      # ROOT DOMAIN REDIRECT
       # http://arthur-lab.com -> https://homepage.arthur-lab.com
       "http://${myConstants.publicDomain}" = {
         extraConfig = ''
@@ -75,7 +75,7 @@
         '';
       };
 
-      # 4. HOMEPAGE
+      # HOMEPAGE
       "http://${myConstants.services.homepage.subdomain}.${myConstants.publicDomain}" = {
         extraConfig = ''
           log
@@ -84,7 +84,7 @@
         '';
       };
 
-      # 5. FINANCE
+      # FINANCE
       "http://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}" = {
         extraConfig = ''
           log
@@ -96,7 +96,7 @@
         '';
       };
 
-      # 6. GLANCES
+      # GLANCES
       "http://${myConstants.services.glances.subdomain}.${myConstants.publicDomain}" = {
         extraConfig = ''
           log
@@ -105,14 +105,50 @@
         '';
       };
 
+      #VIKUNJA
       "http://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}" = {
         extraConfig = ''
           log
           import snippet_authentik ${toString myConstants.services.vikunja.port}
         '';
       };
+
+      # NETDATA (custom config because picky apparently)
+      "http://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}" = {
+        extraConfig = ''
+          log
+          
+          # 1. Handle Authentik Outpost (Standard)
+          handle /outpost.goauthentik.io/* {
+            reverse_proxy 127.0.0.1:9000
+          }
+
+          # 2. Auth Check (Standard)
+          forward_auth 127.0.0.1:9000 {
+            uri /outpost.goauthentik.io/auth/caddy
+            copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt
+            header_up Host {host}
+          }
+
+          # 3. PROXY WITH SPECIAL NETDATA HEADERS
+          reverse_proxy 127.0.0.1:${toString myConstants.services.netdata.port} {
+             # These are crucial for Netdata to render charts behind a proxy
+             header_up X-Forwarded-Host {host}
+             header_up X-Forwarded-For {remote}
+             header_up X-Forwarded-Proto https
+          }
+
+          # 4. Redirect on 401 (Standard)
+          handle_errors {
+            @401 expression {err.status_code} == 401
+            handle @401 {
+              redir https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/start?rd={request.uri}
+            }
+          }
+        '';
+      };
       
-      # 7. LLDAP
+      # LLDAP
       "http://${myConstants.services.lldap.subdomain}.${myConstants.publicDomain}" = {
         extraConfig = ''
              import snippet_authentik

@@ -9,10 +9,10 @@ let
       opacity: 0.5
     layout:
       Finance:
-        style: row
+        style: grid
         columns: 2
       Server:
-        style: row
+        style: grid
         columns: 2
 
     providers:
@@ -41,9 +41,9 @@ let
             container: vikunja
 
     - Server:
-        - Glances:
+        - Netdata:
             icon: mdi-server-network
-            href: https://${myConstants.services.glances.subdomain}.${myConstants.publicDomain}
+            href: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}
             description: System Monitor
         - Power Costs:
             description: Estimated Power (W) & Cost (€/month)
@@ -66,8 +66,8 @@ let
   # 4. DOCKER: Defines the connection to the host
   dockerYaml = pkgs.writeText "docker.yaml" ''
     my-docker:
-      socket: tcp://127.0.0.1:2375
-  '';
+      socket: tcp://172.17.0.1:2375
+    '';
 in
 {
   virtualisation.oci-containers.containers.homepage = {
