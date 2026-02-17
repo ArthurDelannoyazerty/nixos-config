@@ -20,10 +20,17 @@
         "enabled" = "no";
       };
       
+      registry = {
+        "enabled" = "no";
+        "registry to announce" = "http://localhost:19999";
+      };
+
       # Allow access from Localhost (Caddy) and Docker Subnet (Homepage)
       web = {
         "allow connections from" = "localhost 172.17.0.* 127.0.0.1";
         "bind to" = "0.0.0.0"; # Listen on all interfaces so Docker containers can see it
+        # Disable tracking/analytics to prevent other CORS issues
+        "enable gzip compression" = "yes";
       };
     };
   };

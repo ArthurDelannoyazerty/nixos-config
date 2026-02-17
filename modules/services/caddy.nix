@@ -1,69 +1,54 @@
 { config, pkgs, myConstants, ... }:
 
+let
+  authentikMiddleware = ''
+    # A. Handle Authentik Outpost (Bypass Auth)
+    handle /outpost.goauthentik.io/* {
+      reverse_proxy 127.0.0.1:${toString myConstants.services.authentik.port}
+    }
+
+    # B. Auth Check (Forward to Authentik)
+    forward_auth 127.0.0.1:${toString myConstants.services.authentik.port} {
+      uri /outpost.goauthentik.io/auth/caddy
+      # Copy user details so apps (like Vikunja/Finance) know who logged in
+      copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jw Remote-User Remote-Email Remote-Name Remote-Groups
+      header_up Host {host}
+    }
+
+    # C. Redirect to Login if Unauthorized (401)
+    handle_errors {
+      @401 expression {err.status_code} == 401
+      handle @401 {
+        redir https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/start?rd={request.uri}
+      }
+    }
+  '';
+
+  # Helper to make the config shorter
+  domain = myConstants.publicDomain;
+in
 {
   services.caddy = {
     enable = true;
-    
-    # 1. Global settings (Trust Cloudflare IPs)
+
+    # Trust Cloudflare IPs so headers like {remote} give the real user IP, not Cloudflare's IP
     globalConfig = ''
       servers {
         trusted_proxies static private_ranges
       }
     '';
 
-    # 2. Define the Snippet here (Global Scope)
-    # This guarantees it exists before any site tries to import it.
-    extraConfig = ''
-      (snippet_authentik) {
-        # 1. Handle Authentik's internal paths (Bypass Auth Check)
-        # This must be a 'handle' so it stops here and proxies directly.
-        handle /outpost.goauthentik.io/* {
-          reverse_proxy 127.0.0.1:9000{
-            header_up Host {host}
-            header_up X-Real-IP {remote}
-            header_up X-Forwarded-For {remote}
-            header_up X-Forwarded-Proto https
-          }
-        }
-
-        # 2. Check authentication for everything else
-        # We use a matcher to exclude the outpost paths.
-        @not_authentik {
-          not path /outpost.goauthentik.io/*
-        }
-
-        # forward_auth is a directive: if it returns 2xx, Caddy continues 
-        # to the rest of the virtual host (your app).
-        forward_auth @not_authentik 127.0.0.1:9000 {
-          uri /outpost.goauthentik.io/auth/caddy
-          copy_headers X-Forwarded-Method X-Forwarded-Uri X-Forwarded-For X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid
-          header_up Host {host}
-          header_up X-Real-IP {remote}
-          header_up X-Forwarded-For {remote}
-          header_up X-Forwarded-Proto https
-        }
-
-        # 3. If Authentik returns 401 (Unauthorized), redirect to login
-        handle_errors {
-          @401 expression {err.status_code} == 401
-          handle @401 {
-            redir https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/start?rd={request.uri}          }
-        }
-      }
-    '';
-
     virtualHosts = {
       
-      # ROOT DOMAIN REDIRECT
-      # http://arthur-lab.com -> https://homepage.arthur-lab.com
-      "http://${myConstants.publicDomain}" = {
+      # --- ROOT REDIRECT ---
+      "http://${domain}" = {
         extraConfig = ''
-          log
-          redir https://${myConstants.services.homepage.subdomain}.${myConstants.publicDomain} permanent
+          redir https://${myConstants.services.homepage.subdomain}.${domain} permanent
         '';
       };
 
-      "http://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}" = {
+      # --- AUTHENTIK ITSELF ---
+      "http://${myConstants.services.authentik.subdomain}.${domain}" = {
         extraConfig = ''
           log
           reverse_proxy 127.0.0.1:${toString myConstants.services.authentik.port} {
@@ -75,84 +60,65 @@
         '';
       };
 
-      # HOMEPAGE
-      "http://${myConstants.services.homepage.subdomain}.${myConstants.publicDomain}" = {
+      # --- HOMEPAGE ---
+      "http://${myConstants.services.homepage.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          import snippet_authentik
+          ${authentikMiddleware} # Inject the auth logic
           reverse_proxy 127.0.0.1:${toString myConstants.services.homepage.port}
         '';
       };
 
-      # FINANCE
-      "http://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}" = {
+      # --- FINANCE ---
+      "http://${myConstants.services.finance.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          import snippet_authentik
-          reverse_proxy 127.0.0.1:${toString myConstants.services.finance.port} {
-            header_up Remote-User {http.auth.user.id}
-            header_up Remote-Groups {http.auth.user.groups}
-          }
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.finance.port}
         '';
       };
 
-      # GLANCES
-      "http://${myConstants.services.glances.subdomain}.${myConstants.publicDomain}" = {
+      # --- VIKUNJA ---
+      "http://${myConstants.services.vikunja.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          import snippet_authentik
+          reverse_proxy 127.0.0.1:3456 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto https
+          }        '';
+      };
+
+      # --- GLANCES ---
+      "http://${myConstants.services.glances.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.glances.port}
         '';
       };
 
-      #VIKUNJA
-      "http://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}" = {
+      # --- LLDAP ---
+      "http://${myConstants.services.lldap.subdomain}.${domain}" = {
         extraConfig = ''
-          log
-          import snippet_authentik ${toString myConstants.services.vikunja.port}
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.lldap.html-port}
         '';
       };
 
-      # NETDATA (custom config because picky apparently)
-      "http://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}" = {
+      # --- NETDATA (Special Headers) ---
+      "http://${myConstants.services.netdata.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${authentikMiddleware}
           
-          # 1. Handle Authentik Outpost (Standard)
-          handle /outpost.goauthentik.io/* {
-            reverse_proxy 127.0.0.1:9000
-          }
-
-          # 2. Auth Check (Standard)
-          forward_auth 127.0.0.1:9000 {
-            uri /outpost.goauthentik.io/auth/caddy
-            copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt
-            header_up Host {host}
-          }
-
-          # 3. PROXY WITH SPECIAL NETDATA HEADERS
+          # Netdata needs specific headers to know it is behind a proxy
           reverse_proxy 127.0.0.1:${toString myConstants.services.netdata.port} {
-             # These are crucial for Netdata to render charts behind a proxy
              header_up X-Forwarded-Host {host}
              header_up X-Forwarded-For {remote}
              header_up X-Forwarded-Proto https
           }
-
-          # 4. Redirect on 401 (Standard)
-          handle_errors {
-            @401 expression {err.status_code} == 401
-            handle @401 {
-              redir https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/start?rd={request.uri}
-            }
-          }
-        '';
-      };
-      
-      # LLDAP
-      "http://${myConstants.services.lldap.subdomain}.${myConstants.publicDomain}" = {
-        extraConfig = ''
-             import snippet_authentik
-             reverse_proxy 127.0.0.1:${toString myConstants.services.lldap.html-port}
         '';
       };
     };

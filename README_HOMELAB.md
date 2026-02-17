@@ -132,6 +132,11 @@ Now we want authentik to actually accept redirect from the other websites
 2. Modify the default "authentik Embedded Outpost" : Add the applications you want
 3. Save
 
+For Vikunja :
+1. Got to Outpost
+2. Follow : https://integrations.goauthentik.io/chat-communication-collaboration/vikunja/
+3. Don't forget to set up the Client ID and client secret in the Vikunja section above
+
 ## Cloudflared
 
 ```bash
