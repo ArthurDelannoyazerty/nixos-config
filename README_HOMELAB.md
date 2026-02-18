@@ -8,10 +8,32 @@ sudo mkdir -p /var/lib/vikunja
 
 # Generate a random secret and save it to a .env file
 echo "VIKUNJA_SERVICE_JWTSECRET=$(openssl rand -base64 32)" | sudo tee /var/lib/vikunja/secret.env
-
-# Lock down permissions so only root can read it
-sudo chmod 600 /var/lib/vikunja/secret.env
 ```
+Now you need to write the folllowing in the vikunja secret : 
+
+```vim
+# Enable OIDC
+VIKUNJA_AUTH_OPENID_ENABLED=true
+
+# Provider Settings (The 'authentik' part in the key is your provider ID)
+VIKUNJA_AUTH_OPENID_PROVIDERS_authentik_NAME=Authentik
+VIKUNJA_AUTH_OPENID_PROVIDERS_authentik_AUTHURL=https://authentik.yourdomain.com/application/o/vikunja/
+VIKUNJA_AUTH_OPENID_PROVIDERS_authentik_CLIENTID=your_client_id_from_authentik
+VIKUNJA_AUTH_OPENID_PROVIDERS_authentik_CLIENTSECRET=your_client_secret_from_authentik
+
+# Scopes required
+VIKUNJA_AUTH_OPENID_PROVIDERS_authentik_SCOPE=openid profile email
+```
+
+For the Authentik OIDC, you also need to create the Authentik Application and Provider (OAUT2/OIDC) (implicit consent) (confidential) (https://vikunja.yourdomain.com/auth/openid/authentik). 
+Then, cloudflare now blocks the Vikunja requests to Authentik (because vikunja exit our server and go back inside by Cloudflare). We thus need to create a bypass :
+1. Got to cloudflare Zero Trust Dashboard
+2. Policies -> Create new Policy
+3. Policy Name = Internal Server Bypass  |  Action = Bypass  |  Include = IP Range 
+4. Fill that field with your local IP using `curl -6 ifconfig.me` and `curl -4 ifconfig.me` (Use CIDR notation : IPV6/128 | IPV4/32)
+5. Now Save, Select the *.yourdomain.com and set that policy at the top
+6. Now, requests from the set IP (ourself) can pass through cloudflare ! 
+
 
 
 ## LLDAP

@@ -82,12 +82,8 @@ in
       "http://${myConstants.services.vikunja.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          reverse_proxy 127.0.0.1:3456 {
-            header_up Host {host}
-            header_up X-Real-IP {remote}
-            header_up X-Forwarded-For {remote}
-            header_up X-Forwarded-Proto https
-          }        '';
+          reverse_proxy 127.0.0.1:3456 
+        '';
       };
 
       # --- GLANCES ---
