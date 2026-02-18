@@ -60,32 +60,73 @@
   /* -------------------------------------------------------------------------- */
   /*                                POWER OPTIONS                               */
   /* -------------------------------------------------------------------------- */
-  # Do not sleep when the lid is closed
-  services.logind.settings = {
-    Login = {
-      HandleLidSwitch = "ignore";
-      HandleLidSwitchExternalPower = "ignore";
-      HandleLidSwitchDocked = "ignore";
-    };
-  };
+  # 1. LOGIND: Correct NixOS syntax to prevent lid-close suspension
+  services.logind.settings.Login.HandleLidSwitchDocked = "ignore";
+  services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
+  services.logind.settings.Login.HandleLidSwitch = "ignore";
 
-  # Force the network card to stay awake
-  networking.networkmanager.connectionConfig."connection.mdns" = 2; # Enable mDNS
-  
-  # Disable power management for the ethernet interface
+  # 2. SYSTEMD: Disable all sleep targets (You had this right)
+  systemd.targets.sleep.enable = false;
+  systemd.targets.suspend.enable = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
+
+  # 3. KERNEL
+  boot.kernelParams = [
+    # Prevent deep CPU sleep states that cause "fainting"
+    "intel_idle.max_cstate=1"
+    "processor.max_cstate=1"
+    
+    # Disable NVMe power management (often causes freezes on cheap SSDs)
+    "nvme_core.default_ps_max_latency_us=0"
+
+    # Emergency: Reboot the computer automatically 10 seconds after a crash
+    "panic=10"
+    "oops=panic"
+    "nmi_watchdog=panic"
+    "softlockup_panic=1"
+    
+    # Disable Active State Power Management (ASPM) to stop PCI devices 
+    "pcie_aspm=off"
+  ];
+
+  # This uses a "Dead Man's Switch". If the CPU freezes, the hardware 
+  # will notice the lack of "ticks" and force a reboot.
+  services.watchdogd.enable = true;
+
+
+  # 4. NETWORK: Disable standard power management
+  powerManagement.enable = false; # Global disable
   powerManagement.cpuFreqGovernor = "performance";
   
-  # Specifically disable power management for the network interface
-  systemd.services.disable-nic-powersave = {
-    description = "Disable NIC Power Management";
+  # Prevent NetworkManager from putting WiFi/Ethernet to sleep
+  networking.networkmanager.wifi.powersave = false;
+
+  
+
+  # 5. ETHTOOL: Explicitly disable Energy Efficient Ethernet (EEE)
+  # Note: Requires 'ethtool' in system packages
+  environment.systemPackages = [ pkgs.ethtool ];
+  
+  systemd.services.disable-nic-energy-saving = {
+    description = "Disable Ethernet Energy Saving (EEE)";
     after = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.ethtool ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
     script = ''
-      # Replace 'eth0' or 'enp...' with your actual interface name 
-      # You can find it by running 'ip link'
-      # This command disables 'Wake-on-LAN' power-down modes
-      ethtool -s enp2s0 wol d || true 
+      # CHANGE THIS NAME to what you found in Step 1 (e.g. eno1, eth0)
+      INTERFACE="eno1"
+      
+      # Check if interface exists before running command to avoid errors
+      if [ -d "/sys/class/net/$INTERFACE" ]; then
+        ${pkgs.ethtool}/bin/ethtool --set-eee $INTERFACE eee off || true
+        echo "Disabled EEE for $INTERFACE"
+      else
+        echo "Interface $INTERFACE not found, skipping EEE disable."
+      fi
     '';
   };
 
@@ -93,11 +134,6 @@
   /*                            END OF POWER OPTIONS                            */
   /* -------------------------------------------------------------------------- */
   
-  # Optional: Prevent the system from sleeping automatically due to inactivity
-  systemd.targets.sleep.enable = false;
-  systemd.targets.suspend.enable = false;
-  systemd.targets.hibernate.enable = false;
-  systemd.targets.hybrid-sleep.enable = false;
 
   # Add 4GB of emergency swap memory  
   swapDevices = [ {

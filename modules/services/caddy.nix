@@ -115,9 +115,11 @@ in
           
           # Netdata needs specific headers to know it is behind a proxy
           reverse_proxy 127.0.0.1:${toString myConstants.services.netdata.port} {
+             header_up Host {host} 
              header_up X-Forwarded-Host {host}
              header_up X-Forwarded-For {remote}
              header_up X-Forwarded-Proto https
+             flush_interval -1 
           }
         '';
       };
