@@ -30,7 +30,8 @@
     ../../modules/services/power-monitor.nix
     ../../modules/services/vikunja.nix
     ../../modules/services/netdata.nix
-    ../../modules/services/filebrowser.nix
+    # ../../modules/services/filebrowser.nix
+    ../../modules/services/scrutiny.nix
 
     # Network services
     ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet

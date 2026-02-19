@@ -45,6 +45,14 @@ let
             icon: mdi-server-network
             href: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}
             description: System Monitor
+        # - Filebrowser:
+        #     icon: mdi-folder
+        #     href: https://${myConstants.services.filebrowser.subdomain}.${myConstants.publicDomain}
+        #     description: Manage Files
+        - Scrutiny:
+            icon: mdi-harddisk
+            href: https://${myConstants.services.scrutiny.subdomain}.${myConstants.publicDomain}
+            description: Disk Health
         - Power Costs:
             description: Estimated Power (W) & Cost (€/month)
             widget:

@@ -196,3 +196,49 @@ Before opening the server to all the internet, we need to verify that it work we
 9. Do the same for the root domain : Application name="Homelab" | Public Hostname=<YOUR-DNS-DOMAIN>
 
 
+# To add other services
+
+1. Add an entry in `modules/constants.nix`:
+    - ```nix
+        services = {
+            YOUR-SERVICE = {
+                port = 3456;
+                subdomain = "YOUR-SERVICE";
+                version = "1.1.0"; # If using docker
+            };
+        }
+    ```
+2. Create your service file in `modules/services/YOUR-SERVICE.nix`
+    - Module input = `{ config, pkgs, myConstants, ... }: `
+    - Use your constants: `port = MyConstants.services.YOUR-SERVICE.port;` (for example)
+3. Add that file in `hosts/HOST/configuration.nix` 
+    - ```nix
+    imports = [
+        ../../modules/services/scrutiny.nix
+    ];
+    ```
+3. Add to `modules/services/caddy.nix` the following :
+    - ```nix
+        services.caddy = {
+            virtualHosts = {
+                # --- YOUR-SERVICE ---
+                "http://${myConstants.services.YOUR-SERVICE.subdomain}.${domain}" = {
+                    extraConfig = ''
+                    log
+                    ${authentikMiddleware} # Inject the auth logic
+                    reverse_proxy 127.0.0.1:${toString myConstants.services.YOUR-SERVICE.port}
+                    '';
+              };
+           };
+        };
+    ```
+4. In Authentik
+    1. create a provider 
+        - Proxy or OAUTH/OIDC depending on the service
+        - implicit consent
+        - Transfer authentification (unique app)
+        - https://YOUR-SERVICE.YOUR-DOMAIN.com 
+    2. An application 
+        - name=YOUR-SERVICE
+    3. Add that to the Embedded Authentik Outpost
+5. Add the link in the homepage to access it easily

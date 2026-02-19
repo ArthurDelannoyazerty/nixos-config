@@ -95,6 +95,24 @@ in
         '';
       };
 
+      # --- FILEBROWSER ---
+      "http://${myConstants.services.filebrowser.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.filebrowser.port}
+        '';
+      };
+
+      # --- SCRUTINY ---
+      "http://${myConstants.services.scrutiny.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.scrutiny.port}
+        '';
+      };
+
       # --- LLDAP ---
       "http://${myConstants.services.lldap.subdomain}.${domain}" = {
         extraConfig = ''

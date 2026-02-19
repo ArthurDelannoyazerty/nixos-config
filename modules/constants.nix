@@ -59,5 +59,9 @@
       port = 8081;
       subdomain = "filebrowser";
     };
+    scrutiny = {
+      port = 8082;
+      subdomain = "scrutiny";
+    };
   };
 }
