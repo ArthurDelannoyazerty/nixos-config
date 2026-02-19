@@ -9,6 +9,14 @@
       withCloudUi = true; 
     };
 
+    configDir = {
+      "go.d/sensors.conf" = pkgs.writeText "sensors.conf" ''
+        jobs:
+          - name: sensors
+            binary_path: ${pkgs.lm_sensors}/bin/sensors
+      '';
+    };
+
 
     config = {
       global = {

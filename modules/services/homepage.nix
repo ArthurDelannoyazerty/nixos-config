@@ -56,6 +56,16 @@ let
                   label: Power
                 - field: Cost
                   label: Estimation
+        - Settings & Auth:
+            - Authentik Dashboard:
+                icon: mdi-shield-account
+                href: https://authentik.arthur-lab.com
+                description: Manage Users
+            - Switch User (Log Out):
+                icon: mdi-logout
+                # This uses the built-in logout route on your homepage domain
+                href: https://homepage.arthur-lab.com/outpost.goauthentik.io/sign_out
+                description: Terminate SSO Session
   '';
 
   # 3. BOOKMARKS: Empty list to remove the default "Developer/Social/Entertainment" links
