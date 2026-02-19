@@ -55,5 +55,9 @@
       port = 9000;
       subdomain = "authentik";
     };
+    filebrowser = {
+      port = 8081;
+      subdomain = "filebrowser";
+    };
   };
 }
