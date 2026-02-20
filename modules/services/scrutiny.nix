@@ -2,7 +2,7 @@
 
 {
   # Install smartmontools so Scrutiny can read the disk health sensors
-  environment.systemPackages = [ smartmontools ];
+  environment.systemPackages = with pkgs; [ smartmontools ];
 
   services.scrutiny = {
     enable = true;
