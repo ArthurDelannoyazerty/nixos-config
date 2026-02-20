@@ -40,12 +40,14 @@ in
       };
       environmentFiles = [ envFile ];
       volumes = [ "/var/lib/authentik/postgres:/var/lib/postgresql/data" ];
+      ports = [ "127.0.0.1:5432:5432" ];    # for pinging 
     };
 
     # 2. The Cache
     authentik-redis = {
       image = "docker.io/library/redis:alpine";
       cmd = [ "redis-server" "--maxmemory" "256mb" "--maxmemory-policy" "allkeys-lru" ];
+      ports = [ "127.0.0.1:6379:6379" ];   # for pinging  
     };
 
     # 3. Server

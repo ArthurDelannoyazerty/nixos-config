@@ -5,7 +5,7 @@
     enable = true;
     settings = {
       PORT = toString myConstants.services.uptime-kuma.port;
-      HOST = "127.0.0.1";
+      HOST = "0.0.0.0"; # Allow Docker containers to reach this
     };
   };
 }

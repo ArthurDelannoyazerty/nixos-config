@@ -52,10 +52,9 @@ let
             # Monthly Cost Calculation
             monthly_cost = (total_watts / 1000) * ${toString kwhPrice} * 24 * 30
 
-            # Return a FLAT JSON object so Homepage can find the keys
             data = {
-                "Usage": f"{total_watts:.1f} W",
-                "Cost": f"{monthly_cost:.2f}€"
+                "Usage": round(total_watts, 1),
+                "Cost": round(monthly_cost, 2)
             }
 
             self.send_response(200)

@@ -1,94 +1,171 @@
 { config, pkgs, myConstants, ... }:
 
 let
-  # 1. SETTINGS
-  settingsYaml = pkgs.writeText "settings.yaml" ''
-    title: Arthur's Homelab
-    background:
-      image: https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop
-      opacity: 0.5
-    layout:
-      Finance:
-        style: grid
-        columns: 2
-      Server:
-        style: grid
-        columns: 2
+  # Internal Docker Gateway IP
+  internalHost = "http://172.17.0.1";
 
-    providers:
-      lldap:
-        url: http://127.0.0.1:17171 # Talk to LLDAP via localhost
-        bindDN: uid=admin,ou=people,dc=home,dc=arpa
-        bindPassword: "adminpassword"
-        searchDN: ou=people,dc=home,dc=arpa
-        searchFilter: (uid={{user}})
+  # 1. SETTINGS & THEME
+  settingsYaml = pkgs.writeText "settings.yaml" ''
+    title: Homelab
+    
+    theme: dark
+    color: stone
+
+    headerStyle: boxed
+    
+    cardBlur: xl
+    background:
+      image: "linear-gradient(to bottom right, #0f172a, #1e293b, #172554)"
+      opacity: 100
+
+    # Set to false to hide the CPU/RAM bars on cards
+    showStats: true
+    statusStyle: dot 
+
+    layout:
+      Information:
+        style: row
+        columns: 4
+      Productivity:
+        style: row
+        columns: 2
+      Infrastructure:
+        style: row
+        columns: 2
+      Monitoring:
+        style: row
+        columns: 2
   '';
 
-  # 2. SERVICES
-  servicesYaml = pkgs.writeText "services.yaml" ''
-    - Services:
-        - Finance:
-            icon: mdi-cash-multiple
-            href: https://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}
-            description: Streamlit Finance Tracker
-            server: my-docker
-            container: local-finance
-        - Vikunja:
-            icon: mdi-checkbox-marked-outline
-            href: https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}
-            description: To-Do & Projects
-            server: my-docker
-            container: vikunja
+  # 2. WIDGETS (Header)
+  widgetsYaml = pkgs.writeText "widgets.yaml" ''
+    - resources:
+        expanded: true
+        disk: 
+          - /
+          - /mnt/storage
 
-    - Server:
-        - Netdata:
-            icon: mdi-server-network
-            href: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}
-            description: System Monitor
-        # - Filebrowser:
-        #     icon: mdi-folder
-        #     href: https://${myConstants.services.filebrowser.subdomain}.${myConstants.publicDomain}
-        #     description: Manage Files
-        - Scrutiny:
-            icon: mdi-harddisk
-            href: https://${myConstants.services.scrutiny.subdomain}.${myConstants.publicDomain}
-            description: Disk Health
-        - Uptime Kuma:
-            icon: mdi-clock-check
-            href: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}
-            description: Service Uptime
+    - resources:
+        memory: true
+        expanded: true
+
+    - resources:
+        cpu: true
+    
+    - resources:
+        cputemp: true
+        tempmin: 0
+        tempmax: 100 
+        units: metric
+        
+    - resources:
+        uptime: true
+
+    - datetime:
+        text_size: xl
+        # ADD THIS: Enforces the DD/MM/YYYY format
+        locale: fr-FR 
+        format:
+            hour12: false
+            # We explicitly define the units to ensure the exact HH:MM DD/MM/YYYY look
+            hour: '2-digit'
+            minute: '2-digit'
+            day: '2-digit'
+            month: '2-digit'
+            year: 'numeric'
+  '';
+
+  # 3. SERVICES
+  servicesYaml = pkgs.writeText "services.yaml" ''
+    - Information:
         - Power Costs:
-            description: Estimated Power (W) & Cost (€/month)
+            description: Real-time Power
+            icon: mdi-lightning-bolt
             widget:
               type: customapi
-              url: http://172.17.0.1:${toString myConstants.services.power-monitor.port}
+              url: ${internalHost}:${toString myConstants.services.power-monitor.port}
               refresh: 2000
               mappings:
                 - field: Usage
                   label: Power
+                  format: float
+                  suffix: " W"
                 - field: Cost
-                  label: Estimation
-        - Settings & Auth:
-            - Authentik Dashboard:
-                icon: mdi-shield-account
-                href: https://authentik.arthur-lab.com
-                description: Manage Users
-            - Switch User (Log Out):
-                icon: mdi-logout
-                # This uses the built-in logout route on your homepage domain
-                href: https://homepage.arthur-lab.com/outpost.goauthentik.io/sign_out
-                description: Terminate SSO Session
+                  label: Monthly
+                  format: float
+                  prefix: "€"
+        
+        - Authentik:
+            icon: authentik.png
+            href: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
+            description: Authentification
+            siteMonitor: ${internalHost}:${toString myConstants.services.authentik.port}
+            widget:
+              type: authentik
+              url: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
+              key: ygODP16x2dZlpJGKpM2UB34nylQYBVHdnXsoXofrY3OWp8LzQl05ZDIYMwQk
+              version: 2 # optional, default is 1
+        
+        - Log Out:
+            icon: mdi-logout
+            href: https://${myConstants.services.homepage.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/sign_out
+            description: End Session
+
+    - Productivity:
+        - Finance:
+            icon: si-streamlit
+            href: https://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}
+            description: Personal Finance Tracker
+            siteMonitor: ${internalHost}:${toString myConstants.services.finance.port}
+        
+        - Vikunja:
+            icon: vikunja.png
+            href: https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}
+            description: Tasks & Projects
+            # Removed server/container to hide resource usage stats
+            siteMonitor: ${internalHost}:${toString myConstants.services.vikunja.port}
+
+    # - Services::
+
+    - Monitoring:
+        - Scrutiny:
+            icon: scrutiny.png
+            href: https://${myConstants.services.scrutiny.subdomain}.${myConstants.publicDomain}
+            ping: https://${myConstants.services.scrutiny.subdomain}.${myConstants.publicDomain}
+            description: Disks Health
+            widget:
+                type: scrutiny
+                url: ${internalHost}:${toString myConstants.services.scrutiny.port}
+        - Netdata:
+            icon: netdata.png
+            href: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}
+            ping: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}
+            description: Realtime Node Monitoring
+            widget:
+                type: netdata
+                url: ${internalHost}:${toString myConstants.services.netdata.port}
+        
+        - Uptime Kuma:
+            icon: uptime-kuma.png
+            href: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}
+            ping: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}
+            description: Services Uptime
+            widget:
+                type: uptimekuma
+                url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
+                slug: default 
   '';
 
-  # 3. BOOKMARKS: Empty list to remove the default "Developer/Social/Entertainment" links
+  # 4. BOOKMARKS
   bookmarksYaml = pkgs.writeText "bookmarks.yaml" ''
     []
   '';
 
-  # 4. DOCKER: Defines the connection to the host
+  # 5. DOCKER
   dockerYaml = pkgs.writeText "docker.yaml" ''
     my-docker:
-      socket: tcp://172.17.0.1:2375
+      host: 172.17.0.1
+      port: 2375
     '';
 in
 {
@@ -98,15 +175,16 @@ in
     
     environment = {
       HOMEPAGE_ALLOWED_HOSTS = "*"; 
+      DOCKER_HOST = "tcp://172.17.0.1:2375";
     };
 
     volumes = [
       "${settingsYaml}:/app/config/settings.yaml"
       "${servicesYaml}:/app/config/services.yaml"
+      "${widgetsYaml}:/app/config/widgets.yaml"
       "${dockerYaml}:/app/config/docker.yaml"
-      # Mount the empty bookmarks file
       "${bookmarksYaml}:/app/config/bookmarks.yaml" 
-      "/var/run/docker.sock:/var/run/docker.sock"
+      "/mnt/storage:/mnt/storage:ro" # Read-only access to HDD so it can measure it
     ];
 
     extraOptions = [ "--add-host=host.docker.internal:host-gateway" ];

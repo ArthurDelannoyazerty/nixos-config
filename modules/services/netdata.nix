@@ -29,10 +29,11 @@
       };
 
       web = {
-        "bind to" = "127.0.0.1";
-        # Allow access from your local machine and your Caddy/Authentik setup
-        "allow connections from" = "localhost 127.0.0.1 ::1 172.17.*";
-        "allow dashboard from" = "localhost 127.0.0.1 ::1 172.17.*";
+        # Bind to all IPs so the Docker container (172.17.0.x) can reach it
+        "bind to" = "0.0.0.0";
+        # Allow localhost AND the Docker Subnet (172.17.*)
+        "allow connections from" = "localhost 127.0.0.1 ::1 172.17.* 192.168.*";
+        "allow dashboard from" = "localhost 127.0.0.1 ::1 172.17.* 192.168.*";
       };
 
       cloud = {
