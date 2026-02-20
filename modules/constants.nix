@@ -63,5 +63,9 @@
       port = 8082;
       subdomain = "scrutiny";
     };
+    uptime-kuma = {
+      port = 3001;
+      subdomain = "uptime-kuma";
+    };
   };
 }

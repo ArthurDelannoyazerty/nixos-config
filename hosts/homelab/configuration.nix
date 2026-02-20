@@ -32,6 +32,7 @@
     ../../modules/services/netdata.nix
     # ../../modules/services/filebrowser.nix
     ../../modules/services/scrutiny.nix
+    ../../modules/services/uptime-kuma.nix
 
     # Network services
     ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet
@@ -78,13 +79,6 @@
 
   # 3. KERNEL
   boot.kernelParams = [
-    # Prevent deep CPU sleep states that cause "fainting"
-    "intel_idle.max_cstate=1"
-    "processor.max_cstate=1"
-    
-    # Disable NVMe power management (often causes freezes on cheap SSDs)
-    "nvme_core.default_ps_max_latency_us=0"
-
     # Emergency: Reboot the computer automatically 10 seconds after a crash
     "panic=10"
     "oops=panic"
@@ -102,7 +96,6 @@
 
   # 4. NETWORK: Disable standard power management
   powerManagement.enable = false; # Global disable
-  powerManagement.cpuFreqGovernor = "performance";
   
   # Prevent NetworkManager from putting WiFi/Ethernet to sleep
   networking.networkmanager.wifi.powersave = false;

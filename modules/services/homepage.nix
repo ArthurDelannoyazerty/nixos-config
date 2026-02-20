@@ -53,6 +53,10 @@ let
             icon: mdi-harddisk
             href: https://${myConstants.services.scrutiny.subdomain}.${myConstants.publicDomain}
             description: Disk Health
+        - Uptime Kuma:
+            icon: mdi-clock-check
+            href: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}
+            description: Service Uptime
         - Power Costs:
             description: Estimated Power (W) & Cost (€/month)
             widget:

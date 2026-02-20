@@ -113,6 +113,15 @@ in
         '';
       };
 
+      # --- UPTIME KUMA ---
+      "http://${myConstants.services.uptime-kuma.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          # No authentik middleware here, Uptime Kuma handles its own auth
+          reverse_proxy 127.0.0.1:${toString myConstants.services.uptime-kuma.port}
+        '';
+      };
+
       # --- LLDAP ---
       "http://${myConstants.services.lldap.subdomain}.${domain}" = {
         extraConfig = ''

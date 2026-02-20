@@ -199,20 +199,20 @@ Before opening the server to all the internet, we need to verify that it work we
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:
-    - ```nix
-        services = {
-            YOUR-SERVICE = {
-                port = 3456;
-                subdomain = "YOUR-SERVICE";
-                version = "1.1.0"; # If using docker
-            };
-        }
+    ```nix
+    services = {
+        YOUR-SERVICE = {
+            port = 3456;
+            subdomain = "YOUR-SERVICE";
+            version = "1.1.0"; # If using docker
+        };
+    }
     ```
 2. Create your service file in `modules/services/YOUR-SERVICE.nix`
     - Module input = `{ config, pkgs, myConstants, ... }: `
     - Use your constants: `port = MyConstants.services.YOUR-SERVICE.port;` (for example)
 3. Add that file in `hosts/HOST/configuration.nix` 
-    - ```nix
+     ```nix
     imports = [
         ../../modules/services/scrutiny.nix
     ];
