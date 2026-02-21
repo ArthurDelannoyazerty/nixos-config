@@ -79,6 +79,13 @@
 
   # 3. KERNEL
   boot.kernelParams = [
+    # Prevent deep CPU sleep states that cause "fainting"
+    "intel_idle.max_cstate=1"
+    "processor.max_cstate=1"
+    
+    # Disable NVMe power management (often causes freezes on cheap SSDs)
+    "nvme_core.default_ps_max_latency_us=0"
+
     # Emergency: Reboot the computer automatically 10 seconds after a crash
     "panic=10"
     "oops=panic"
