@@ -122,6 +122,15 @@ in
         '';
       };
 
+      # --- FORGEJO (Git Backup) ---
+      "http://${myConstants.services.forgejo.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.forgejo.port}
+        '';
+      };
+
       # --- LLDAP ---
       "http://${myConstants.services.lldap.subdomain}.${domain}" = {
         extraConfig = ''

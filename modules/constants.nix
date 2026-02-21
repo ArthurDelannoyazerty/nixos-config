@@ -67,5 +67,9 @@
       port = 3001;
       subdomain = "uptime-kuma";
     };
+    forgejo = {
+      port = 8083;
+      subdomain = "git";
+    };
   };
 }
