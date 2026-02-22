@@ -315,7 +315,7 @@ Add OIDC inside the app.
         ../../modules/services/scrutiny.nix
     ];
     ```
-3. Add to `modules/services/caddy.nix` the following :
+4. Add to `modules/services/caddy.nix` the following :
     - ```nix
         services.caddy = {
             virtualHosts = {
@@ -330,7 +330,7 @@ Add OIDC inside the app.
            };
         };
     ```
-4. In Authentik
+5. In Authentik
     1. create a provider 
         - Proxy or OAUTH/OIDC depending on the service
         - implicit consent
@@ -339,5 +339,5 @@ Add OIDC inside the app.
     2. An application 
         - name=YOUR-SERVICE
     3. Add that to the Embedded Authentik Outpost
-5. Optional : Add the link in the homepage to access it easily
-6. Optional : Add that service to Uptime Kuma
+6. Optional : Add the link in the homepage to access it easily
+7. Optional : Add that service to Uptime Kuma

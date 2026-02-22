@@ -69,7 +69,7 @@
     };
     forgejo = {
       port = 8083;
-      subdomain = "git";
+      subdomain = "forgejo";
     };
     immich = {
       port = 2283;
