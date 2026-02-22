@@ -278,25 +278,20 @@ nix-shell -p curl jq --run ~/forgejo_github_migration.sh
 
 ## Immich
 
-Secret management : 
+
+Fix files errors :
 ```bash
-sudo mkdir -p /var/lib/secrets
-sudo vim /var/lib/secrets/immich-secrets.json
+sudo mkdir -p /mnt/storage/services/immich
+sudo chown -R immich:immich /mnt/storage/services/immich
+sudo chmod -R 750 /mnt/storage/services/immich
 ```
 
-```json
-{
-  "oauth": {
-    "clientSecret": "THE_OIDC_CLIENT_SECRET"
-  }
-}
-```
-
+fix db issues :
 ```bash
-sudo chmod 600 /var/lib/secrets/immich-secrets.json
+sudo -u postgres psql -d immich -c "UPDATE pg_extension SET extowner = (SELECT oid FROM pg_roles WHERE rolname = 'immich') WHERE extname = 'vectors';"
 ```
 
-If you change the file path, don't forget to update the `immich.nix` file field `secretsFile = "/var/lib/secrets/immich-secrets.json";`
+Add OIDC inside the app.
 
 
 # To add other services

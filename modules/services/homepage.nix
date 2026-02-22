@@ -98,8 +98,8 @@ let
         - Authentik:
             icon: authentik.png
             href: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
-            description: Authentification
             siteMonitor: ${internalHost}:${toString myConstants.services.authentik.port}
+            description: Authentification
             widget:
               type: authentik
               url: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
@@ -115,37 +115,38 @@ let
         - Finance:
             icon: si-streamlit
             href: https://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}
-            description: Personal Finance Tracker
             siteMonitor: ${internalHost}:${toString myConstants.services.finance.port}
+            description: Personal Finance Tracker
         
         - Vikunja:
             icon: vikunja.png
             href: https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.vikunja.port}
             description: Tasks & Projects
             # Removed server/container to hide resource usage stats
-            siteMonitor: ${internalHost}:${toString myConstants.services.vikunja.port}
 
     - Services:
         - Forgejo:
             icon: forgejo.png
             href: https://${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}
-            description: Git Repositories
             siteMonitor: ${internalHost}:${toString myConstants.services.forgejo.port}
+            description: Git Repositories
         - Immich: 
             icon: immich.png
             href: https://${myConstants.services.immich.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.immich.port}
             description: Stockage Photos
-            ping: 172.17.0.1
             widget:
                 type: immich
                 url: http://172.17.0.1:${toString myConstants.services.immich.port}
-                key: YOUR_IMMICH_API_KEY # (Get this after first login)
+                key: sJg7n3MCXrowcGDwBnxQwMPAuEngmIjF6ScmlWHQ     #(Get this after first login)
+                version: 2
 
     - Monitoring:
         - Scrutiny:
             icon: scrutiny.png
             href: https://${myConstants.services.scrutiny.subdomain}.${myConstants.publicDomain}
-            ping: https://${myConstants.services.scrutiny.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.scrutiny.port}
             description: Disks Health
             widget:
                 type: scrutiny
@@ -153,7 +154,7 @@ let
         - Netdata:
             icon: netdata.png
             href: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}
-            ping: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.netdata.port}
             description: Realtime Node Monitoring
             widget:
                 type: netdata
@@ -162,7 +163,7 @@ let
         - Uptime Kuma:
             icon: uptime-kuma.png
             href: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}
-            ping: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
             description: Services Uptime
             widget:
                 type: uptimekuma
