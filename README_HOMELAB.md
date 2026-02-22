@@ -195,6 +195,86 @@ Before opening the server to all the internet, we need to verify that it work we
 8. Create that app. After that only your email can receive a one time pin code to access your server (it is secured!)
 9. Do the same for the root domain : Application name="Homelab" | Public Hostname=<YOUR-DNS-DOMAIN>
 
+## Forgejo
+
+Nothing particular to configure, it may just fail when rebuild nixos sometimes but is actually running (rebuild if needed, it shuold work)
+
+To Mirror your Github account : 
+
+Create the small script :
+```bash
+vim ~/forgejo_github_migration.sh
+```
+
+Copy the script (and modify the parameters) :
+```bash
+#!/usr/bin/env bash
+
+# --- CONFIGURATION ---
+GITHUB_USER="YOUR-GITHUB-USER"
+# Your GitHub Personal Access Token (Needs 'repo' scope)
+GITHUB_TOKEN="ghp_your_github_token_here"
+
+FORGEJO_URL="http://127.0.0.1:FORGEJO-PORT"     # use local port to ease the process (no auth error)
+FORGEJO_TOKEN="your_forgejo_token_here"
+# ---------------------
+
+echo "Fetching repositories from GitHub..."
+
+# Ask GitHub for all your repositories (up to 100)
+REPOS_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+  "https://api.github.com/user/repos?type=owner&per_page=100")
+
+# Extract names using jq
+REPOS=$(echo $REPOS_JSON | jq -r '.[].name')
+
+count=0
+
+for REPO in $REPOS; do
+  echo -n "Processing $REPO... "
+
+  # Check if private on GitHub (to set private on Forgejo)
+  IS_PRIVATE=$(echo $REPOS_JSON | jq -r ".[] | select(.name==\"$REPO\") | .private")
+
+  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}\n" -X POST "$FORGEJO_URL/api/v1/repos/migrate" \
+    -H "accept: application/json" \
+    -H "Authorization: token $FORGEJO_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"auth_token\": \"$GITHUB_TOKEN\",
+      \"clone_addr\": \"https://github.com/$GITHUB_USER/$REPO.git\",
+      \"mirror\": true,
+      \"repo_name\": \"$REPO\",
+      \"service\": \"github\",
+      \"private\": $IS_PRIVATE,
+      \"wiki\": true,
+      \"labels\": true,
+      \"issues\": true,
+      \"pull_requests\": true,
+      \"releases\": true
+    }")
+
+  if [ "$HTTP_CODE" == "201" ]; then
+    echo "✅ MIGRATED"
+  elif [ "$HTTP_CODE" == "409" ]; then
+    echo "⏭️  SKIPPED (Already exists)"
+  else
+    echo "❌ ERROR (Status: $HTTP_CODE)"
+  fi
+    
+  # Sleep to not overload the server
+  sleep 2
+done
+
+echo "Migration commands sent! Check your Forgejo dashboard."
+```
+
+Now run the script : 
+```bash
+chmod +x ~/forgejo_github_migration.sh
+nix-shell -p curl jq --run ~/forgejo_github_migration.sh
+```
+
 
 # To add other services
 
@@ -241,4 +321,5 @@ Before opening the server to all the internet, we need to verify that it work we
     2. An application 
         - name=YOUR-SERVICE
     3. Add that to the Embedded Authentik Outpost
-5. Add the link in the homepage to access it easily
+5. Optional : Add the link in the homepage to access it easily
+6. Optional : Add that service to Uptime Kuma

@@ -125,7 +125,12 @@ let
             # Removed server/container to hide resource usage stats
             siteMonitor: ${internalHost}:${toString myConstants.services.vikunja.port}
 
-    # - Services::
+    - Services:
+        - Forgejo:
+            icon: forgejo.png
+            href: https://${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}
+            description: Git Repositories
+            siteMonitor: ${internalHost}:${toString myConstants.services.forgejo.port}
 
     - Monitoring:
         - Scrutiny:
