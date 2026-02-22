@@ -7,7 +7,7 @@ let
   # 1. SETTINGS & THEME
   settingsYaml = pkgs.writeText "settings.yaml" ''
     title: Homelab
-    
+
     theme: dark
     color: stone
 
@@ -23,16 +23,16 @@ let
     statusStyle: dot 
 
     layout:
-      Information:
+      Authentification:
+        tab: Home
         style: row
         columns: 4
-      Productivity:
-        style: row
-        columns: 2
-      Infrastructure:
-        style: row
+      Services:
+        tab: Home
+        style: column
         columns: 2
       Monitoring:
+        tab: Server
         style: row
         columns: 2
   '';
@@ -77,24 +77,7 @@ let
 
   # 3. SERVICES
   servicesYaml = pkgs.writeText "services.yaml" ''
-    - Information:
-        - Power Costs:
-            description: Real-time Power
-            icon: mdi-lightning-bolt
-            widget:
-              type: customapi
-              url: ${internalHost}:${toString myConstants.services.power-monitor.port}
-              refresh: 2000
-              mappings:
-                - field: Usage
-                  label: Power
-                  format: float
-                  suffix: " W"
-                - field: Cost
-                  label: Monthly
-                  format: float
-                  prefix: "€"
-        
+    - Authentification:
         - Authentik:
             icon: authentik.png
             href: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
@@ -105,27 +88,23 @@ let
               url: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
               key: ygODP16x2dZlpJGKpM2UB34nylQYBVHdnXsoXofrY3OWp8LzQl05ZDIYMwQk
               version: 2 # optional, default is 1
-        
         - Log Out:
             icon: mdi-logout
             href: https://${myConstants.services.homepage.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/sign_out
             description: End Session
+            # Removed server/container to hide resource usage stats
 
-    - Productivity:
+    - Services:
         - Finance:
             icon: si-streamlit
             href: https://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.finance.port}
             description: Personal Finance Tracker
-        
         - Vikunja:
             icon: vikunja.png
             href: https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.vikunja.port}
             description: Tasks & Projects
-            # Removed server/container to hide resource usage stats
-
-    - Services:
         - Forgejo:
             icon: forgejo.png
             href: https://${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}
@@ -143,6 +122,22 @@ let
                 version: 2
 
     - Monitoring:
+        - Power Costs:
+            description: Real-time Power
+            icon: mdi-lightning-bolt
+            widget:
+              type: customapi
+              url: ${internalHost}:${toString myConstants.services.power-monitor.port}
+              refresh: 2000
+              mappings:
+                - field: Usage
+                  label: Power
+                  format: float
+                  suffix: " W"
+                - field: Cost
+                  label: Monthly
+                  format: float
+                  prefix: "€"
         - Scrutiny:
             icon: scrutiny.png
             href: https://${myConstants.services.scrutiny.subdomain}.${myConstants.publicDomain}

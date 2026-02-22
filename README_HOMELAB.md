@@ -120,7 +120,6 @@ Then, after cloudflare work and you have access to the website, you will need to
 2. Go to `Settings` and `Change password`
 3. Remove the `BOOTSTRAP` env variables in `/var/lib/authentik/secrets.env`
 
-
 For the step `1. login`, if you have "Invalid password":
 1. Find the `.py` script : `sudo docker exec -it authentik-server find / -name manage.py 2>/dev/null`
 2. Execute is to get a token to lon in as root : `sudo docker exec -it authentik-server python3 /manage.py create_recovery_key 1 akadmin`
