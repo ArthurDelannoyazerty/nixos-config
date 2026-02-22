@@ -71,5 +71,9 @@
       port = 8083;
       subdomain = "git";
     };
+    immich = {
+      port = 2283;
+      subdomain = "immich";
+    };
   };
 }

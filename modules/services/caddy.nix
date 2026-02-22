@@ -131,6 +131,20 @@ in
         '';
       };
 
+      # --- IMMICH ---
+      "http://${myConstants.services.immich.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          reverse_proxy 127.0.0.1:${toString myConstants.services.immich.port} {
+             header_up X-Real-IP {remote}
+             # Allow large uploads (Caddy default is sometimes strict)
+             transport http {
+               read_buffer 8192
+             }
+          }
+        '';
+      };
+
       # --- LLDAP ---
       "http://${myConstants.services.lldap.subdomain}.${domain}" = {
         extraConfig = ''

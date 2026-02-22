@@ -131,6 +131,15 @@ let
             href: https://${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}
             description: Git Repositories
             siteMonitor: ${internalHost}:${toString myConstants.services.forgejo.port}
+        - Immich: 
+            icon: immich.png
+            href: https://${myConstants.services.immich.subdomain}.${myConstants.publicDomain}
+            description: Stockage Photos
+            ping: 172.17.0.1
+            widget:
+                type: immich
+                url: http://172.17.0.1:${toString myConstants.services.immich.port}
+                key: YOUR_IMMICH_API_KEY # (Get this after first login)
 
     - Monitoring:
         - Scrutiny:

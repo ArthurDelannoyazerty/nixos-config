@@ -34,6 +34,7 @@
     ../../modules/services/scrutiny.nix
     ../../modules/services/uptime-kuma.nix
     ../../modules/services/forgejo.nix 
+    ../../modules/services/immich.nix
 
     # Network services
     ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet

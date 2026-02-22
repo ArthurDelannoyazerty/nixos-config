@@ -276,6 +276,29 @@ nix-shell -p curl jq --run ~/forgejo_github_migration.sh
 ```
 
 
+## Immich
+
+Secret management : 
+```bash
+sudo mkdir -p /var/lib/secrets
+sudo vim /var/lib/secrets/immich-secrets.json
+```
+
+```json
+{
+  "oauth": {
+    "clientSecret": "THE_OIDC_CLIENT_SECRET"
+  }
+}
+```
+
+```bash
+sudo chmod 600 /var/lib/secrets/immich-secrets.json
+```
+
+If you change the file path, don't forget to update the `immich.nix` file field `secretsFile = "/var/lib/secrets/immich-secrets.json";`
+
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:
