@@ -24,6 +24,20 @@
     curl
     wget
     openssl
+    lshw
+    util-linux
+    coreutils
+    findutils
+    gnutar
+    gzip
+    procps
+    gnugrep
+    which
+    htop
+    tldr
+    dmidecode 
+    lsof 
+    unixtools.netstat
   ];
 
 

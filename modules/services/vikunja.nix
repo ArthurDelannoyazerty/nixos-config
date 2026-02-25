@@ -19,6 +19,9 @@
       VIKUNJA_DATABASE_TYPE = "sqlite"; 
       VIKUNJA_DATABASE_PATH = "/app/vikunja/db/vikunja.db";
       HOME = "/app/vikunja";
+
+      VIKUNJA_AUTH_LOCAL_ENABLED = "false";
+      VIKUNJA_SERVICE_ENABLEREGISTRATION = "false";
     };
 
     volumes = [
