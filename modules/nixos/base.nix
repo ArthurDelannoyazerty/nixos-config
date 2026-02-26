@@ -38,6 +38,7 @@
     dmidecode 
     lsof 
     unixtools.netstat
+    hwinfo
   ];
 
 

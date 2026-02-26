@@ -62,28 +62,32 @@
 
   console.keyMap = "fr";
 
-  # CPU temps
-  boot.kernelModules = [ "coretemp" ];
+  
+  boot.kernelModules = [ 
+    # CPU temps
+    "coretemp" 
+    # Load the actual INTEL HARDWARE WATCHDOG
+    "iTCO_wdt" 
+  ];
 
   /* -------------------------------------------------------------------------- */
   /*                                POWER OPTIONS                               */
   /* -------------------------------------------------------------------------- */
-  # 1. LOGIND: Correct NixOS syntax to prevent lid-close suspension
+  # LOGIND: Correct NixOS syntax to prevent lid-close suspension
   services.logind.settings.Login.HandleLidSwitchDocked = "ignore";
   services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
   services.logind.settings.Login.HandleLidSwitch = "ignore";
 
-  # 2. SYSTEMD: Disable all sleep targets (You had this right)
+  # SYSTEMD: Disable all sleep targets
   systemd.targets.sleep.enable = false;
   systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
 
-  # 3. KERNEL
+  # KERNEL
   boot.kernelParams = [
     # Prevent deep CPU sleep states that cause "fainting"
-    "intel_idle.max_cstate=1"
-    "processor.max_cstate=1"
+    "intel_idle.max_cstate=4"
     
     # Disable NVMe power management (often causes freezes on cheap SSDs)
     "nvme_core.default_ps_max_latency_us=0"
@@ -93,15 +97,17 @@
     "oops=panic"
     "nmi_watchdog=panic"
     "softlockup_panic=1"
-    
-    # Disable Active State Power Management (ASPM) to stop PCI devices 
-    "pcie_aspm=off"
+
+    # DISABLE VIDEO DRIVERS (Fixes headless i915 GPU freezes)
+    "nomodeset"
   ];
 
   # This uses a "Dead Man's Switch". If the CPU freezes, the hardware 
   # will notice the lack of "ticks" and force a reboot.
-  services.watchdogd.enable = true;
-
+  # Configure systemd to use the hardware watchdog (More reliable than watchdogd)
+  services.watchdogd.enable = false; # Disable the external daemon
+  systemd.settings.Manager.RuntimeWatchdogSec = "20s"; # systemd will pet the HW watchdog every 10s
+  systemd.settings.Manager.RebootWatchdogSec = "1m";   # If systemd hangs for 1m, the motherboard cuts power
 
   # 4. NETWORK: Disable standard power management
   powerManagement.enable = false; # Global disable
@@ -109,11 +115,16 @@
   # Prevent NetworkManager from putting WiFi/Ethernet to sleep
   networking.networkmanager.wifi.powersave = false;
 
-  
+  # Ensure Intel Microcode is updated (fixes low-level CPU bugs)
+  hardware.cpu.intel.updateMicrocode = true;
 
-  # 5. ETHTOOL: Explicitly disable Energy Efficient Ethernet (EEE)
+  # ETHTOOL: Explicitly disable Energy Efficient Ethernet (EEE)
   # Note: Requires 'ethtool' in system packages
   environment.systemPackages = [ pkgs.ethtool ];
+
+  # Prevent Swap Thrashing lockups by enabling systemd-oomd
+  # This kills memory-hogging apps before they lock up the entire system
+  systemd.oomd.enable = true;
   
   systemd.services.disable-nic-energy-saving = {
     description = "Disable Ethernet Energy Saving (EEE)";
