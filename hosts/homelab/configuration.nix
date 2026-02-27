@@ -86,8 +86,19 @@
 
   # KERNEL
   boot.kernelParams = [
+    # Disable Display C-States and Panel Self-Refresh. 
+    # This prevents the SoC electrical deadlock when no monitor is attached.
+    "i915.enable_dc=0"
+    "i915.enable_psr=0"
+
+    # Disable SATA Link Power Management (fixes SATA/NVMe controller lockups)
+    "ahci.mobile_lpm_policy=1"
+
+    # Disable Active State Power Management for PCIe
+    "pcie_aspm=off"
+
     # Prevent deep CPU sleep states that cause "fainting"
-    "intel_idle.max_cstate=4"
+    "intel_idle.max_cstate=7"
     
     # Disable NVMe power management (often causes freezes on cheap SSDs)
     "nvme_core.default_ps_max_latency_us=0"
@@ -97,9 +108,6 @@
     "oops=panic"
     "nmi_watchdog=panic"
     "softlockup_panic=1"
-
-    # DISABLE VIDEO DRIVERS (Fixes headless i915 GPU freezes)
-    "nomodeset"
   ];
 
   # This uses a "Dead Man's Switch". If the CPU freezes, the hardware 
