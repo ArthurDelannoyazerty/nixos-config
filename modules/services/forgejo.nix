@@ -5,6 +5,9 @@
     enable = true;
     stateDir = "/mnt/storage/services/forgejo"; 
     
+    lfs.enable = true;
+    lfs.contentDir = "/mnt/storage/services/forgejo/lfs";
+    
     settings = {
       server = {
         DOMAIN = "${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}";
