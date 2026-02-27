@@ -70,3 +70,19 @@ nix-store --optimise
 ```bash
 nix shell nixpkgs#nix-output-monitor --command nom build .#nixosConfigurations.homelab.config.system.build.toplevel
 ```
+
+# For system update
+
+Change this line in `flake.nix` to the right version :
+```nix
+nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+# Change also the home-manager "url" field to the right release
+```
+
+Do **NOT** change the line `system.stateVersion` !
+
+Then 
+```bash
+nix flake update
+sudo nixos-rebuild switch --flake .#YOUR-HOST --impure
+```
