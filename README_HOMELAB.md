@@ -274,6 +274,13 @@ chmod +x ~/forgejo_github_migration.sh
 nix-shell -p curl jq --run ~/forgejo_github_migration.sh
 ```
 
+IMPORTANT : For private repo, the previous script is a bit broken. It create them but the sync are then not done.
+To solve that:
+1. Go in the private repo your want to sync in forgejo
+2. Verify the URL is OK (https://github.com/<USER>/<REPO-NAME>.git)
+3. Just below, replace the existing `Username` by <USER>, and set `Password` as the Personal access token from github
+4. Save and then verify it works
+
 
 ## Immich
 
