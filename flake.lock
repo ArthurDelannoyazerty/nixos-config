@@ -40,11 +40,11 @@
     "local-finance": {
       "flake": false,
       "locked": {
-        "lastModified": 1772657525,
-        "narHash": "sha256-5bfYFD0UinaHLLyOofnmlkvcaAfQaMIqUAibqhnhEXg=",
+        "lastModified": 1772978017,
+        "narHash": "sha256-3Bep+Yg32E3tujDwoNADcOBG4I8Y5P4UpC2H+QUl+ME=",
         "owner": "ArthurDelannoyazerty",
         "repo": "local-finance",
-        "rev": "8cca892414d1e6d0796f60a6c5df3c4bf3c2d6fe",
+        "rev": "4dcf5910e65cc58426af14be5d0ac25e7c9f4c0d",
         "type": "github"
       },
       "original": {
