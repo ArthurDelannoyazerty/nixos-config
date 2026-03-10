@@ -118,7 +118,7 @@ let
             widget:
                 type: immich
                 url: http://172.17.0.1:${toString myConstants.services.immich.port}
-                key: sJg7n3MCXrowcGDwBnxQwMPAuEngmIjF6ScmlWHQ     #(Get this after first login)
+                key: 1CcVvq9WjwqL1gL9j5O3qpbRI0nUCeNOscfAMK6HaYI     #(Get this after first login)
                 version: 2
 
     - Monitoring:
