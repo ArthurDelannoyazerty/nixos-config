@@ -123,8 +123,12 @@ let
         - n8n:
             icon: n8n.png
             href: https://${myConstants.services.n8n.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.n8n.port}
             description: Worflow Automation
+        - RomM:
+            icon: romm.png
+            href: https://${myConstants.services.romm.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.romm.port}
+            description: Retro Game Manager
 
     - Monitoring:
         - Power Costs:

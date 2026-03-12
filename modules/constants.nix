@@ -81,5 +81,10 @@
       subdomain = "n8n";
       version = "2.11.3";
     };
+    romm = {
+      port = 8085;
+      subdomain = "romm";
+      version = "latest";
+    };
   };
 }

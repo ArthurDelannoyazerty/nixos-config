@@ -36,6 +36,7 @@
     ../../modules/services/forgejo.nix 
     ../../modules/services/immich.nix
     ../../modules/services/n8n.nix 
+    ../../modules/services/romm.nix 
 
     # Network services
     ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet
