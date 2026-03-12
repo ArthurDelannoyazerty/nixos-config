@@ -104,6 +104,23 @@ in
         '';
       };
 
+      "http://${myConstants.services.n8n.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          
+          # 1. Allow external webhooks to bypass Authentik SSO
+          handle /webhook/* {
+            reverse_proxy 127.0.0.1:${toString myConstants.services.n8n.port}
+          }
+
+          # 2. Protect the rest of the n8n UI with Authentik
+          handle {
+            ${authentikMiddleware}
+            reverse_proxy 127.0.0.1:${toString myConstants.services.n8n.port}
+          }
+        '';
+      };
+
       # --- SCRUTINY ---
       "http://${myConstants.services.scrutiny.subdomain}.${domain}" = {
         extraConfig = ''

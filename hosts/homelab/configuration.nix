@@ -35,6 +35,7 @@
     ../../modules/services/uptime-kuma.nix
     ../../modules/services/forgejo.nix 
     ../../modules/services/immich.nix
+    ../../modules/services/n8n.nix 
 
     # Network services
     ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet

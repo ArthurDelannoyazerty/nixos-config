@@ -76,5 +76,10 @@
       subdomain = "immich";
       version = "v2.5.6";
     };
+    n8n = {
+      port = 5678;
+      subdomain = "n8n";
+      version = "2.11.3";
+    };
   };
 }
