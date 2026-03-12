@@ -104,6 +104,7 @@ in
         '';
       };
 
+      # --- N8N ---
       "http://${myConstants.services.n8n.subdomain}.${domain}" = {
         extraConfig = ''
           log
@@ -115,11 +116,32 @@ in
 
           # 2. Protect the rest of the n8n UI with Authentik
           handle {
-            ${authentikMiddleware}
+            # A. Handle Authentik Outpost (Bypass Auth)
+            handle /outpost.goauthentik.io/* {
+              reverse_proxy 127.0.0.1:${toString myConstants.services.authentik.port}
+            }
+
+            # B. Auth Check (Forward to Authentik)
+            forward_auth 127.0.0.1:${toString myConstants.services.authentik.port} {
+              uri /outpost.goauthentik.io/auth/caddy
+              copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jw Remote-User Remote-Email Remote-Name Remote-Groups
+              header_up Host {host}
+            }
+            
+            # C. Actually proxy to n8n
             reverse_proxy 127.0.0.1:${toString myConstants.services.n8n.port}
+          }
+
+          # 3. Redirect to Login if Unauthorized (401) - MUST BE OUTSIDE `handle`
+          handle_errors {
+            @401 expression {err.status_code} == 401
+            handle @401 {
+              redir https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/start?rd={request.uri}
+            }
           }
         '';
       };
+
 
       # --- SCRUTINY ---
       "http://${myConstants.services.scrutiny.subdomain}.${domain}" = {

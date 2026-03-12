@@ -12,7 +12,7 @@ in
 
   virtualisation.oci-containers.containers."n8n" = {
     image = "docker.n8n.io/n8nio/n8n:${myConstants.services.n8n.version}";
-    ports =[ "127.0.0.1:${toString port}:5678" ];
+    ports =[ "0.0.0.0:${toString port}:5678" ];
     volumes =[
       "/var/lib/n8n:/home/node/.n8n"
     ];

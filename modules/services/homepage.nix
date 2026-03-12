@@ -120,6 +120,11 @@ let
                 url: http://172.17.0.1:${toString myConstants.services.immich.port}
                 key: 1CcVvq9WjwqL1gL9j5O3qpbRI0nUCeNOscfAMK6HaYI     #(Get this after first login)
                 version: 2
+        - n8n:
+            icon: n8n.png
+            href: https://${myConstants.services.n8n.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.n8n.port}
+            description: Worflow Automation
 
     - Monitoring:
         - Power Costs:
