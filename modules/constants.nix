@@ -14,7 +14,7 @@
     vikunja = {
       port = 3456;
       subdomain = "vikunja";
-      version = "1.1.0";
+      version = "2.1.0";
     };
     finance = {
       port = 8501;

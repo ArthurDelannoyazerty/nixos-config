@@ -347,3 +347,10 @@ Add OIDC inside the app.
     3. Add that to the Embedded Authentik Outpost
 6. Optional : Add the link in the homepage to access it easily
 7. Optional : Add that service to Uptime Kuma
+
+
+
+# To update a docker service
+
+1. Change the version in `constants.nix`
+2. Execute `sudo nixos-rebuild switch --flake .#homelab --impure` and then the service must be rebooted
