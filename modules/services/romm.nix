@@ -22,6 +22,12 @@ in
         DB_HOST = "romm-db";
         DB_NAME = "romm";
         DB_USER = "romm_user";
+        # OIDC config
+        OIDC_ENABLED = "true";
+        OIDC_PROVIDER = "authentik";
+        OIDC_REDIRECT_URI = "https://romm.arthur-lab.com/api/oauth/openid"; 
+        OIDC_SERVER_APPLICATION_URL = "https://authentik.arthur-lab.com/application/o/romm/";
+        DISABLE_USERPASS_LOGIN = "true";
       };
       volumes =[
         "/mnt/storage/services/romm/library:/romm/library"

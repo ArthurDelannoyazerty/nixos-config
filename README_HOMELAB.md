@@ -302,6 +302,8 @@ Add OIDC inside the app.
 
 ## ROMM
 
+Create the authentik OAuth provider (https://docs.romm.app/4.5.0/OIDC-Guides/OIDC-Setup-With-Authentik/) 
+
 ```bash
 # Create the directory
 sudo mkdir -p /var/lib/romm
@@ -318,8 +320,42 @@ MARIADB_ROOT_PASSWORD=$(openssl rand -base64 24)
 ROMM_AUTH_SECRET_KEY=$AUTH_SECRET
 EOF"
 
+sudo vim /var/lib/romm/secrets.env
+# Add the OIDC Client ID and Secret 
+# OIDC_CLIENT_ID=your_authentik_client_id_here
+# OIDC_CLIENT_SECRET=your_authentik_client_secret_here
+
 # Secure the file
 sudo chmod 600 /var/lib/romm/secrets.env
+```
+
+
+To download the roms
+```bash
+cd /mnt/storage/services/romm/library
+nix-shell -p internetarchive
+ia configure
+# Enter your Internet Archive email and password
+
+ia download tiny-best-set-go tiny-best-set-go-games.zip
+
+# After the download 
+sudo unzip tiny-best-set-go-games.zip -d ./temp_set
+ls -R ./temp_set
+
+# Move the fodlers. Example for GBA / SNES
+sudo mv ./temp_extract/Roms/GBA/* /mnt/storage/services/romm/library/gba/
+sudo mv ./temp_extract/Roms/SNES/* /mnt/storage/services/romm/library/snes/
+
+# Cleanup
+sudo rm tiny-best-set-go-games.zip
+sudo rm -rf ./temp_extract
+```
+
+For N64 :
+```
+cd /mnt/storage/services/romm/library/roms/n64/
+sudo wget -r -np -nd -l1 -A "*(USA).zip" -R "*(Beta)*,*(Proto)*,*(LodgeNet)*,*(Demo)*,*(Test)*" https://myrient.erista.me/files/No-Intro/Nintendo%20-%20Nintendo%2064%20%28BigEndian%29/
 ```
 
 # To add other services
@@ -351,7 +387,7 @@ sudo chmod 600 /var/lib/romm/secrets.env
                 "http://${myConstants.services.YOUR-SERVICE.subdomain}.${domain}" = {
                     extraConfig = ''
                     log
-                    ${authentikMiddleware} # Inject the auth logic
+                    ${authentikMiddleware} # Inject the auth logic ONLY IF USING REVERSE PROXY (OIDC manage on its own for example)
                     reverse_proxy 127.0.0.1:${toString myConstants.services.YOUR-SERVICE.port}
                     '';
               };
