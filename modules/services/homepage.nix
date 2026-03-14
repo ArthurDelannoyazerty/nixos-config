@@ -129,6 +129,9 @@ let
             href: https://${myConstants.services.romm.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.romm.port}
             description: Retro Game Manager
+            widget:
+              type: romm
+              url: ${internalHost}:${toString myConstants.services.romm.port}
 
     - Monitoring:
         - Power Costs:

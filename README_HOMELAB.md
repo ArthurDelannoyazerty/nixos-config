@@ -300,6 +300,28 @@ sudo -u postgres psql -d immich -c "UPDATE pg_extension SET extowner = (SELECT o
 Add OIDC inside the app.
 
 
+## ROMM
+
+```bash
+# Create the directory
+sudo mkdir -p /var/lib/romm
+
+# Generate passwords
+DB_PASS=$(openssl rand -base64 24)
+AUTH_SECRET=$(openssl rand -base64 32)
+
+# Write to the environment file. We include both variable names so the same file works for App and DB
+sudo bash -c "cat <<EOF > /var/lib/romm/secrets.env
+DB_PASSWD=$DB_PASS
+MARIADB_PASSWORD=$DB_PASS
+MARIADB_ROOT_PASSWORD=$(openssl rand -base64 24)
+ROMM_AUTH_SECRET_KEY=$AUTH_SECRET
+EOF"
+
+# Secure the file
+sudo chmod 600 /var/lib/romm/secrets.env
+```
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:
