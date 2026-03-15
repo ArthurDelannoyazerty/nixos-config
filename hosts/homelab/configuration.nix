@@ -37,6 +37,8 @@
     ../../modules/services/immich.nix
     ../../modules/services/n8n.nix 
     ../../modules/services/romm.nix 
+    ../../modules/services/grafana.nix 
+    ../../modules/services/prometheus.nix 
 
     # Network services
     ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet

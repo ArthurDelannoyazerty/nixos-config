@@ -86,5 +86,12 @@
       subdomain = "romm";
       version = "latest";
     };
+    prometheus = {
+      port = 9090;
+    };
+    grafana = {
+      port = 3002;
+      subdomain = "grafana";
+    };
   };
 }

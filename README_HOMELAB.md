@@ -304,6 +304,14 @@ Add OIDC inside the app.
 
 Create the authentik OAuth provider (https://docs.romm.app/4.5.0/OIDC-Guides/OIDC-Setup-With-Authentik/) 
 
+Create a twitch IGDB API key :
+1. Go to the Twitch Developer Portal (https://dev.twitch.tv/)
+2. Register an application 
+    - name : romm.<YOUR-DOMAIN>
+    - redirection url (not used) : https://localhost 
+    - category : application integration 
+3. After creating it, click to access it, create a secret and get the client ID and Client Secret => to put in the folowing secret file
+
 ```bash
 # Create the directory
 sudo mkdir -p /var/lib/romm
@@ -324,13 +332,16 @@ sudo vim /var/lib/romm/secrets.env
 # Add the OIDC Client ID and Secret 
 # OIDC_CLIENT_ID=your_authentik_client_id_here
 # OIDC_CLIENT_SECRET=your_authentik_client_secret_here
+# Add the IGDB keys:
+# IGDB_CLIENT_ID=...
+# IGDB_CLIENT_SECRET=...
 
 # Secure the file
 sudo chmod 600 /var/lib/romm/secrets.env
 ```
 
 
-To download the roms
+To download the roms (2h30)
 ```bash
 cd /mnt/storage/services/romm/library
 nix-shell -p internetarchive
@@ -353,9 +364,66 @@ sudo rm -rf ./temp_extract
 ```
 
 For N64 :
-```
+```bash
 cd /mnt/storage/services/romm/library/roms/n64/
 sudo wget -r -np -nd -l1 -A "*(USA).zip" -R "*(Beta)*,*(Proto)*,*(LodgeNet)*,*(Demo)*,*(Test)*" https://myrient.erista.me/files/No-Intro/Nintendo%20-%20Nintendo%2064%20%28BigEndian%29/
+```
+
+
+many downloads : 
+```bash
+vim /mnt/storage/services/romm/library/myrient_download.sh
+```
+```bash
+#!/usr/bin/env bash
+
+# Base Library Path
+BASE_PATH="/mnt/storage/services/romm/library/roms"
+
+# Define the platforms and their Myrient URLs
+declare -A platforms
+platforms[nes]="https://myrient.erista.me/files/No-Intro/Nintendo%20-%20Nintendo%20Entertainment%20System%20(Headered)/"
+platforms[snes]="https://myrient.erista.me/files/No-Intro/Nintendo%20-%20Super%20Nintendo%20Entertainment%20System/"
+platforms[gbc]="https://myrient.erista.me/files/No-Intro/Nintendo%20-%20Game%20Boy%20Color/"
+platforms[nds]="https://myrient.erista.me/files/No-Intro/Nintendo%20-%20Nintendo%20DS%20(Decrypted)/"
+platforms[n64]="https://myrient.erista.me/files/No-Intro/Nintendo%20-%20Nintendo%2064%20(BigEndian)/"
+platforms[sms]="https://myrient.erista.me/files/No-Intro/Sega%20-%20Master%20System%20-%20Mark%20III/"
+platforms[amiga]="https://myrient.erista.me/files/No-Intro/Commodore%20-%20Amiga/"
+platforms[zxs]="https://myrient.erista.me/files/No-Intro/Sinclair%20-%20ZX%20Spectrum%20%2B3/"
+platforms[c64]="https://myrient.erista.me/files/No-Intro/Commodore%20-%20Commodore%2064/"
+
+# Standard Filters
+INCLUDE="*(USA).zip"
+EXCLUDE="*(Beta)*,*(Proto)*,*(LodgeNet)*,*(Demo)*,*(Test)*,*(Aftermarket)*,*(Video)*,*(Private)*"
+
+echo "Starting massive download to $BASE_PATH..."
+
+for console in "${!platforms[@]}"; do
+    TARGET_DIR="$BASE_PATH/$console"
+    URL="${platforms[$console]}"
+    
+    echo "-----------------------------------------------------------"
+    echo "PROCESSING: $console"
+    echo "TARGET: $TARGET_DIR"
+    echo "-----------------------------------------------------------"
+    
+    # Create folder
+    sudo mkdir -p "$TARGET_DIR"
+    cd "$TARGET_DIR" || exit
+    
+    # Download
+    sudo wget -r -np -nd -l1 -nc \
+        -A "$INCLUDE" \
+        -R "$EXCLUDE" \
+        "$URL"
+done
+
+echo "All downloads finished! Don't forget to 'Scan' in RomM."
+```
+
+launch the detached script
+```bash
+bash /mnt/storage/services/romm/library/myrient_download.sh &
 ```
 
 # To add other services
