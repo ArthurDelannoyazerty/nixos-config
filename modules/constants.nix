@@ -93,5 +93,37 @@
       port = 3002;
       subdomain = "grafana";
     };
+    jellyfin = { 
+      port = 8096; 
+      subdomain = "jellyfin"; 
+    };
+    jellyseerr = { 
+      port = 5055; 
+      subdomain = "requests"; 
+    };
+    sonarr = { 
+      port = 8989; 
+      subdomain = "sonarr"; 
+    };
+    radarr = { 
+      port = 7878; 
+      subdomain = "radarr";
+    };
+    lidarr = { 
+      port = 8686; 
+      subdomain = "lidarr"; 
+    };
+    prowlarr = { 
+      port = 9696; 
+      subdomain = "prowlarr"; 
+    };
+    bazarr = { 
+      port = 6767; 
+      subdomain = "bazarr"; 
+    };
+    sabnzbd = { 
+      port = 8080; 
+      subdomain = "sabnzbd"; 
+    };
   };
 }
