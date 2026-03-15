@@ -23,9 +23,9 @@
         # STEP 2: Tell Netdata exactly where the web files are in the Nix store
         "web files directory" = "${config.services.netdata.package}/share/netdata/web";
         
-        "update every" = 1; # Back to 1s for real-time feel
-        "memory mode" = "dbengine";
-        "dbengine disk space" = 256;
+        "update every" = 5;
+        "memory mode" = "ram";
+        "history" = 3600;       # How much RAM to give Netdata's internal history (in MB)
       };
 
       web = {

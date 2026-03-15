@@ -150,6 +150,15 @@ in
         '';
       };
 
+      # --- GRAFANA ---
+      "http://${myConstants.services.grafana.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.grafana.port}
+        '';
+      };
+
       # --- SCRUTINY ---
       "http://${myConstants.services.scrutiny.subdomain}.${domain}" = {
         extraConfig = ''

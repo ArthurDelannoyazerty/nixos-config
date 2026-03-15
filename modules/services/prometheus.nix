@@ -11,7 +11,7 @@
     scrapeConfigs =[
       {
         job_name = "netdata";
-        scrape_interval = "1s"; 
+        scrape_interval = "5s"; 
         metrics_path = "/api/v1/allmetrics";
         params = {
           # Ask Netdata to format the output for Prometheus

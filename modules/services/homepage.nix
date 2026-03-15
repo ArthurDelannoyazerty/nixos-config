@@ -158,6 +158,11 @@ let
             widget:
                 type: scrutiny
                 url: ${internalHost}:${toString myConstants.services.scrutiny.port}
+        - Grafana:
+            icon: grafana.png
+            href: https://${myConstants.services.grafana.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.grafana.port}
+            description: Long-term Metrics Dashboard
         - Netdata:
             icon: netdata.png
             href: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}
