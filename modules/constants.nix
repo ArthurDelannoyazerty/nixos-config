@@ -23,7 +23,7 @@
     homepage = {
       port = 3000;
       subdomain = "homepage";
-      version = "v1.10.1";
+      version = "v1.11.0";
     };
     glances = {
       port = 61208;

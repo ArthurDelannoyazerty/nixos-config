@@ -18,23 +18,23 @@ let
       image: "linear-gradient(to bottom right, #0f172a, #1e293b, #172554)"
       opacity: 100
 
-    # Set to false to hide the CPU/RAM bars on cards
     showStats: true
     statusStyle: dot 
 
     layout:
+      Family:
+        tab: Home
+        columns: 2
       Authentification:
         tab: Home
-        style: row
-        columns: 4
-      Services:
-        tab: Home
-        style: column
         columns: 2
+      Other Services:
+        tab: Home
+        columns: 4
       Monitoring:
         tab: Server
         style: row
-        columns: 2
+        columns: 4
   '';
 
   # 2. WIDGETS (Header)
@@ -44,30 +44,23 @@ let
         disk: 
           - /
           - /mnt/storage
-
     - resources:
         memory: true
         expanded: true
-
     - resources:
         cpu: true
-    
     - resources:
         cputemp: true
         tempmin: 0
         tempmax: 100 
         units: metric
-        
     - resources:
         uptime: true
-
     - datetime:
         text_size: xl
-        # ADD THIS: Enforces the DD/MM/YYYY format
         locale: fr-FR 
         format:
             hour12: false
-            # We explicitly define the units to ensure the exact HH:MM DD/MM/YYYY look
             hour: '2-digit'
             minute: '2-digit'
             day: '2-digit'
@@ -77,6 +70,23 @@ let
 
   # 3. SERVICES
   servicesYaml = pkgs.writeText "services.yaml" ''
+    - Family:
+        - Immich: 
+            icon: immich.png
+            href: https://${myConstants.services.immich.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.immich.port}
+            description: Stockage Photos
+            widget:
+                type: immich
+                url: http://172.17.0.1:${toString myConstants.services.immich.port}
+                key: 1CcVvq9WjwqL1gL9j5O3qpbRI0nUCeNOscfAMK6HaYI
+                version: 2
+        - Vikunja:
+            icon: vikunja.png
+            href: https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.vikunja.port}
+            description: Tasks & Projects
+
     - Authentification:
         - Authentik:
             icon: authentik.png
@@ -87,39 +97,23 @@ let
               type: authentik
               url: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
               key: ygODP16x2dZlpJGKpM2UB34nylQYBVHdnXsoXofrY3OWp8LzQl05ZDIYMwQk
-              version: 2 # optional, default is 1
+              version: 2
         - Log Out:
             icon: mdi-logout
             href: https://${myConstants.services.homepage.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/sign_out
             description: End Session
-            # Removed server/container to hide resource usage stats
 
-    - Services:
+    - Other Services:
         - Finance:
             icon: si-streamlit
             href: https://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.finance.port}
             description: Personal Finance Tracker
-        - Vikunja:
-            icon: vikunja.png
-            href: https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.vikunja.port}
-            description: Tasks & Projects
         - Forgejo:
             icon: forgejo.png
             href: https://${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.forgejo.port}
             description: Git Repositories
-        - Immich: 
-            icon: immich.png
-            href: https://${myConstants.services.immich.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.immich.port}
-            description: Stockage Photos
-            widget:
-                type: immich
-                url: http://172.17.0.1:${toString myConstants.services.immich.port}
-                key: 1CcVvq9WjwqL1gL9j5O3qpbRI0nUCeNOscfAMK6HaYI     #(Get this after first login)
-                version: 2
         - n8n:
             icon: n8n.png
             href: https://${myConstants.services.n8n.subdomain}.${myConstants.publicDomain}
@@ -171,7 +165,6 @@ let
             widget:
                 type: netdata
                 url: ${internalHost}:${toString myConstants.services.netdata.port}
-        
         - Uptime Kuma:
             icon: uptime-kuma.png
             href: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}
@@ -183,12 +176,12 @@ let
                 slug: default 
   '';
 
-  # 4. BOOKMARKS
+  # 4. BOOKMARKS - Unchanged
   bookmarksYaml = pkgs.writeText "bookmarks.yaml" ''
     []
   '';
 
-  # 5. DOCKER
+  # 5. DOCKER - Unchanged
   dockerYaml = pkgs.writeText "docker.yaml" ''
     my-docker:
       host: 172.17.0.1
@@ -211,7 +204,7 @@ in
       "${widgetsYaml}:/app/config/widgets.yaml"
       "${dockerYaml}:/app/config/docker.yaml"
       "${bookmarksYaml}:/app/config/bookmarks.yaml" 
-      "/mnt/storage:/mnt/storage:ro" # Read-only access to HDD so it can measure it
+      "/mnt/storage:/mnt/storage:ro"
     ];
 
     extraOptions = [ "--add-host=host.docker.internal:host-gateway" ];
