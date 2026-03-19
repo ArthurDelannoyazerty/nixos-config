@@ -39,6 +39,12 @@
           isDefault = true;
           access = "proxy";
         }
+        {
+          name = "Loki";
+          type = "loki";
+          access = "proxy";
+          url = "http://127.0.0.1:${toString myConstants.services.loki.port}";
+        }
       ];
     };
   };

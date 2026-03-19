@@ -125,5 +125,11 @@
       port = 8080; 
       subdomain = "sabnzbd"; 
     };
+    loki = {
+      port = 3100;
+    };
+    promtail = {
+      port = 9080;
+    };
   };
 }
