@@ -39,6 +39,8 @@
     lsof 
     unixtools.netstat
     hwinfo
+    unzip
+    zip
   ];
 
 

@@ -341,6 +341,9 @@ sudo vim /var/lib/romm/secrets.env
 
 # Secure the file
 sudo chmod 600 /var/lib/romm/secrets.env
+
+# Add an empty config file : 
+sudo touch /mnt/storage/services/romm/config/config.yml
 ```
 
 
@@ -357,9 +360,48 @@ ia download tiny-best-set-go tiny-best-set-go-games.zip
 sudo unzip tiny-best-set-go-games.zip -d ./temp_set
 ls -R ./temp_set
 
-# Move the fodlers. Example for GBA / SNES
-sudo mv ./temp_extract/Roms/GBA/* /mnt/storage/services/romm/library/gba/
-sudo mv ./temp_extract/Roms/SNES/* /mnt/storage/services/romm/library/snes/
+# Se placer au bon endroit
+cd /mnt/storage/services/romm/library
+
+sudo mkdir -p roms/mame
+sudo mkdir -p roms/gb
+sudo mkdir -p roms/gba
+sudo mkdir -p roms/gbc
+sudo mkdir -p roms/gg
+sudo mkdir -p roms/sms
+sudo mkdir -p roms/nes
+sudo mkdir -p roms/snes
+sudo mkdir -p roms/megadrive
+sudo mkdir -p roms/pcengine
+sudo mkdir -p roms/neogeo/bios
+
+# Déplacer les dossiers simples
+sudo cp tiny-best-set-go/temp_set/Roms/GB/* roms/gb/
+sudo cp tiny-best-set-go/temp_set/Roms/GBA/* roms/gba/
+sudo cp tiny-best-set-go/temp_set/Roms/GBC/* roms/gbc/
+sudo cp tiny-best-set-go/temp_set/Roms/GG/* roms/gg/ 
+sudo cp tiny-best-set-go/temp_set/Roms/MS/* roms/sms/
+sudo cp tiny-best-set-go/temp_set/Roms/NEOGEO/* roms/neogeo/
+
+# Déplacer les dossiers avec renommage
+sudo cp tiny-best-set-go/temp_set/Roms/FC/* roms/nes/
+sudo cp tiny-best-set-go/temp_set/Roms/SFC/* roms/snes/
+sudo cp tiny-best-set-go/temp_set/Roms/MD/* roms/megadrive/
+sudo cp tiny-best-set-go/temp_set/Roms/PCE/* roms/pcengine/
+sudo cp tiny-best-set-go/temp_set/Roms/ARCADE/* roms/mame/
+
+sudo cp tiny-best-set-go/temp_set/BIOS/neogeo.zip roms/neogeo/bios/
+
+# GameBoy / GBA
+sudo mkdir -p roms/gb/bios roms/gba/bios roms/gbc/bios
+sudo cp tiny-best-set-go/temp_set/BIOS/gb_bios.bin roms/gb/bios/
+sudo cp tiny-best-set-go/temp_set/BIOS/gba_bios.bin roms/gba/bios/
+sudo cp tiny-best-set-go/temp_set/BIOS/gbc_bios.bin roms/gbc/bios/
+
+# NES (Disksys pour les jeux Famicom Disk System)
+sudo mkdir -p roms/nes/bios
+sudo cp tiny-best-set-go/temp_set/BIOS/disksys.rom roms/nes/bios/
+
 
 # Cleanup
 sudo rm tiny-best-set-go-games.zip
