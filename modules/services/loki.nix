@@ -40,7 +40,7 @@
       # Enable the background worker that actually deletes the files
       compactor = {
         working_directory = "/var/lib/loki/compactor";
-        shared_store = "filesystem";
+        delete_request_store = "filesystem"; 
         compaction_interval = "10m";
         retention_enabled = true;
         retention_delete_delay = "2h";
