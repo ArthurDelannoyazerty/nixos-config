@@ -200,6 +200,33 @@ in
         '';
       };
 
+      # --- NEXTCLOUD ---
+      "http://${myConstants.services.nextcloud.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          reverse_proxy 127.0.0.1:${toString myConstants.services.nextcloud.port} {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto https
+          }
+          
+          # Crucial for Nextcloud desktop client discovery
+          redir /.well-known/carddav /remote.php/dav 301
+          redir /.well-known/caldav /remote.php/dav 301
+          redir /.well-known/webfinger /index.php/.well-known/webfinger 301
+          redir /.well-known/nodeinfo /index.php/.well-known/nodeinfo 301
+        '';
+      };
+
+      # --- PAPERLESS NGX ---
+      "http://${myConstants.services.paperless.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          reverse_proxy 127.0.0.1:${toString myConstants.services.paperless.port}
+        '';
+      };
+
       # --- LLDAP ---
       "http://${myConstants.services.lldap.subdomain}.${domain}" = {
         extraConfig = ''

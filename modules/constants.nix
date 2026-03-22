@@ -131,5 +131,15 @@
     promtail = {
       port = 9080;
     };
+    nextcloud = {
+      port = 8086;
+      subdomain = "nextcloud"; 
+      version = "33.0.0";
+    };
+    paperless-ngx = {
+      port = 8000;
+      subdomain = "paperless-ngx";
+      version = "latest";
+    };
   };
 }

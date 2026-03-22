@@ -471,6 +471,55 @@ launch the detached script
 bash /mnt/storage/services/romm/library/myrient_download.sh &
 ```
 
+
+
+## Nextcloud & Paperless
+
+1. Pre-build setup (Generate Secrets & Folders)
+```bash
+# Set up Nextcloud Secrets
+sudo mkdir -p /var/lib/nextcloud
+sudo bash -c "cat <<EOF > /var/lib/nextcloud/secrets.env
+POSTGRES_PASSWORD=$(openssl rand -base64 24)
+NEXTCLOUD_ADMIN_PASSWORD=$(openssl rand -base64 16)
+NEXTCLOUD_ADMIN_USER=admin
+EOF"
+sudo chmod 600 /var/lib/nextcloud/secrets.env
+
+# Set up Paperless Secrets
+sudo mkdir -p /var/lib/paperless
+PAPERLESS_DB=$(openssl rand -base64 24)
+sudo bash -c "cat <<EOF > /var/lib/paperless/secrets.env
+POSTGRES_PASSWORD=$PAPERLESS_DB
+PAPERLESS_DBPASS=$PAPERLESS_DB
+PAPERLESS_ADMIN_PASSWORD=$(openssl rand -base64 16)
+PAPERLESS_ADMIN_USER=admin
+EOF"
+sudo chmod 600 /var/lib/paperless/secrets.env
+
+# Create folders and set permissions for the shared User ID (33)
+sudo mkdir -p /mnt/storage/services/nextcloud/{db,redis,app,data}
+sudo mkdir -p /mnt/storage/services/paperless/{db,redis,data,media,export,consume}
+
+# Change ownership of Paperless folders to UID 33 (Nextcloud's www-data) so they can share
+sudo chown -R 33:33 /mnt/storage/services/paperless
+```
+
+2. Linking them together (Post-Installation)
+Wait a few minutes for the first boot. Nextcloud will automatically delete the bloated apps in the background. Once you can log into Nextcloud:
+
+  1. Click your Profile icon -> Administration settings -> External storages (on the left menu).
+  2. Add a new storage:
+    Folder name: Paperless-Inbox (or whatever you want)
+    External storage: Local
+    Authentication: None
+    Configuration (Path): /paperless-consume
+    Available for: Check the admin box (or your specific user)
+  3. Click the Checkmark.
+
+Workflow: Now, if you drop a PDF into the Paperless-Inbox folder via your Nextcloud Desktop/Mobile app, Paperless will instantly scan it, add it to your Paperless dashboard, and safely remove it from Nextcloud!
+
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:
