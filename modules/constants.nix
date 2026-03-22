@@ -134,7 +134,7 @@
     nextcloud = {
       port = 8086;
       subdomain = "nextcloud"; 
-      version = "33.0.0";
+      version = "33.0.0-apache";
     };
     paperless-ngx = {
       port = 8000;

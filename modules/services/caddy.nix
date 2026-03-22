@@ -220,10 +220,10 @@ in
       };
 
       # --- PAPERLESS NGX ---
-      "http://${myConstants.services.paperless.subdomain}.${domain}" = {
+      "http://${myConstants.services.paperless-ngx.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          reverse_proxy 127.0.0.1:${toString myConstants.services.paperless.port}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.paperless-ngx.port}
         '';
       };
 
