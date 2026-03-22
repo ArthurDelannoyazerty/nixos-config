@@ -78,4 +78,15 @@ in
     "d /mnt/storage/services/immich/photos 0777 root root -"
     "d /mnt/storage/services/immich/model-cache 0777 root root -"
   ];
+
+
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      intel-media-driver        # Pilote moderne pour QuickSync (8ème gen+)
+      intel-vaapi-driver        # Alternative pour la compatibilité
+      libvdpau-va-gl
+    ];
+  };
+
 }

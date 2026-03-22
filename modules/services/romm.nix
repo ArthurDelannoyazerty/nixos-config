@@ -8,6 +8,7 @@ in
   systemd.tmpfiles.rules =[
     "d /mnt/storage/services/romm/library 0777 root root -"
     "d /mnt/storage/services/romm/assets 0777 root root -"
+    "d /mnt/storage/services/romm/resources 0777 root root -"
     "d /mnt/storage/services/romm/config 0777 root root -"
     "d /mnt/storage/services/romm/redis 0777 root root -" # Ajouté pour Redis
     "d /var/lib/romm 0700 root root -" # Folder for secrets
@@ -43,6 +44,7 @@ in
       volumes =[
         "/mnt/storage/services/romm/library:/romm/library"
         "/mnt/storage/services/romm/assets:/romm/assets"
+        "/mnt/storage/services/romm/resources:/romm/resources"
         "/mnt/storage/services/romm/config:/romm/config"
       ];
       dependsOn = [ "romm-db" "romm-redis" ];

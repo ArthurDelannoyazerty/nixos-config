@@ -74,7 +74,7 @@
     immich = {
       port = 2283;
       subdomain = "immich";
-      version = "v2.5.6";
+      version = "v2.6.1";
     };
     n8n = {
       port = 5678;
