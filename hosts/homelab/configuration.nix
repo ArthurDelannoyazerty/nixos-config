@@ -42,7 +42,7 @@
     ../../modules/services/loki.nix
     ../../modules/services/promtail.nix
     ../../modules/services/nextcloud.nix
-    ../../modules/services/paperless.nix
+    ../../modules/services/paperless-ngx.nix
 
     # Network services
     ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet
