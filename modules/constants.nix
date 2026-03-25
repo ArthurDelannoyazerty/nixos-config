@@ -141,5 +141,10 @@
       subdomain = "paperless-ngx";
       version = "latest";
     };
+    filebrowser-quantum = {
+      port = 8088;
+      subdomain = "filebrowser-quantum";
+      version = "1.2-stable";
+    };
   };
 }

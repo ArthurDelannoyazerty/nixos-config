@@ -104,6 +104,14 @@ in
         '';
       };
 
+      # --- FILEBROWSER QUANTUM ---
+      "http://${myConstants.services.filebrowser-quantum.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          reverse_proxy 127.0.0.1:${toString myConstants.services.filebrowser-quantum.port}
+        '';
+      };
+
       # --- N8N ---
       "http://${myConstants.services.n8n.subdomain}.${domain}" = {
         extraConfig = ''

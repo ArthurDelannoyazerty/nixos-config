@@ -126,11 +126,11 @@ let
             widget:
               type: romm
               url: ${internalHost}:${toString myConstants.services.romm.port}
-        - Filebrowser:
-            icon: filebrowser.png
-            href: https://${myConstants.services.filebrowser.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.filebrowser.port}
-            description: File Explorer
+        - FileBrowser Quantum:
+            icon: filebrowser.svg
+            href: https://${myConstants.services.filebrowser-quantum.subdomain}.${myConstants.publicDomain}
+            siteMonitor: http://172.17.0.1:${toString myConstants.services.filebrowser-quantum.port}
+            description: Personal Cloud Storage
         - Paperless NGX:
             icon: paperless.png
             href: https://${myConstants.services.paperless-ngx.subdomain}.${myConstants.publicDomain}
