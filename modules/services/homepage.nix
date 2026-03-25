@@ -74,25 +74,28 @@ let
         - Immich: 
             icon: immich.png
             href: https://${myConstants.services.immich.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.immich.port}
             description: Stockage Photos
+            server: my-docker
+            container: ${myConstants.services.immich.containerName}
             widget:
                 type: immich
-                url: http://172.17.0.1:${toString myConstants.services.immich.port}
+                url: ${internalHost}:${toString myConstants.services.immich.port}
                 key: 1CcVvq9WjwqL1gL9j5O3qpbRI0nUCeNOscfAMK6HaYI
                 version: 2
         - Vikunja:
             icon: vikunja.png
             href: https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.vikunja.port}
             description: Tasks & Projects
+            server: my-docker
+            container: ${myConstants.services.vikunja.containerName}
 
     - Authentification:
         - Authentik:
             icon: authentik.png
             href: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.authentik.port}
             description: Authentification
+            server: my-docker
+            container: ${myConstants.services.authentik.containerName}
             widget:
               type: authentik
               url: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
@@ -116,13 +119,15 @@ let
             description: Git Repositories
         - n8n:
             icon: n8n.png
-            href: https://${myConstants.services.n8n.subdomain}.${myConstants.publicDomain}
             description: Worflow Automation
+            server: my-docker
+            container: ${myConstants.services.n8n.containerName}
         - RomM:
             icon: romm.png
             href: https://${myConstants.services.romm.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.romm.port}
             description: Retro Game Manager
+            server: my-docker
+            container: ${myConstants.services.romm.containerName}
             widget:
               type: romm
               url: ${internalHost}:${toString myConstants.services.romm.port}

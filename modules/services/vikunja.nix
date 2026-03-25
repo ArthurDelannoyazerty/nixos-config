@@ -4,7 +4,7 @@
 {
 
   # Container Configuration
-  virtualisation.oci-containers.containers.vikunja = {
+  virtualisation.oci-containers.containers.${myConstants.services.vikunja.containerName} = {
     image = "vikunja/vikunja:${myConstants.services.vikunja.version}";
     ports = [ (myConstants.bind myConstants.services.vikunja.port) ];
 

@@ -193,6 +193,7 @@ rec {
       port = 3456;
       subdomain = "vikunja";
       version = "2.2.2";
+      containerName = "vikunja";
     };
   };
 }
