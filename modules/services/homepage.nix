@@ -204,7 +204,7 @@ let
     '';
 in
 {
-  virtualisation.oci-containers.containers.homepage = {
+  virtualisation.oci-containers.containers.${myConstants.services.homepage.containerName} = {
     image = "ghcr.io/gethomepage/homepage:${myConstants.services.homepage.version}";
     ports = [ (myConstants.bind myConstants.services.homepage.port) ];
     

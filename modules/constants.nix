@@ -33,36 +33,32 @@ rec {
       version = "2024.12.3";
       containerName = "authentik-worker";
     };
-    vikunja = {
-      port = 3456;
-      subdomain = "vikunja";
-      version = "2.2.2";
+    bazarr = { 
+      port = 6767; 
+      subdomain = "bazarr"; 
     };
-    finance = {
-      port = 8501;
-      subdomain = "finance";
+    filebrowser-quantum = {
+      port = 8088;
+      subdomain = "filebrowser-quantum";
+      version = "1.2-stable";
+      containerName = "filebrowser-quantum";
     };
-    homepage = {
-      port = 3000;
-      subdomain = "homepage";
-      version = "v1.11.0";
+    filebrowser = {
+      port = 8081;
+      subdomain = "filebrowser";
+    };
+    forgejo = {
+      port = 8083;
+      subdomain = "forgejo";
     };
     glances = {
       port = 61208;
       subdomain = "glances";
       version = "4.4.1-full";
     };
-    lldap = {
-      port = 3890;
-      html-port = 17171;
-      subdomain = "lldap";
-    };
-    netdata = {
-      port = 19999;
-      subdomain = "netdata";
-    };
-    power-monitor = {
-      port = 9100;
+    grafana = {
+      port = 3002;
+      subdomain = "grafana";
     };
     headscale = {
       port = 8080;
@@ -73,43 +69,32 @@ rec {
       subdomain = "headscale-ui";
       version = "latest";
     };
-    filebrowser = {
-      port = 8081;
-      subdomain = "filebrowser";
-    };
-    scrutiny = {
-      port = 8082;
-      subdomain = "scrutiny";
-    };
-    uptime-kuma = {
-      port = 3001;
-      subdomain = "uptime-kuma";
-    };
-    forgejo = {
-      port = 8083;
-      subdomain = "forgejo";
+    homepage = {
+      port = 3000;
+      subdomain = "homepage";
+      version = "v1.11.0";
+      containerName = "homepage";
     };
     immich = {
       port = 2283;
       subdomain = "immich";
       version = "v2.6.1";
+      containerName = "immich-server";
     };
-    n8n = {
-      port = 5678;
-      subdomain = "n8n";
-      version = "2.11.3";
+    immich-db = {
+      port = 5433;
+      version = "14-vectorchord0.4.3-pgvectors0.2.0";
+      containerName = "immich-db";
     };
-    romm = {
-      port = 8085;
-      subdomain = "romm";
-      version = "latest";
+    immich-redis = {
+      port = 999999999; # Not exposed to host, only for internal communication
+      version = "6.2-alpine";
+      containerName = "immich-redis";
     };
-    prometheus = {
-      port = 9090;
-    };
-    grafana = {
-      port = 3002;
-      subdomain = "grafana";
+    immich-machine-learning = {
+      port = 2283;
+      version = "v2.6.1";
+      containerName = "immich-machine-learning";
     };
     jellyfin = { 
       port = 8096; 
@@ -119,35 +104,31 @@ rec {
       port = 5055; 
       subdomain = "requests"; 
     };
-    sonarr = { 
-      port = 8989; 
-      subdomain = "sonarr"; 
-    };
-    radarr = { 
-      port = 7878; 
-      subdomain = "radarr";
-    };
     lidarr = { 
       port = 8686; 
       subdomain = "lidarr"; 
     };
-    prowlarr = { 
-      port = 9696; 
-      subdomain = "prowlarr"; 
+    lldap = {
+      port = 3890;
+      html-port = 17171;
+      subdomain = "lldap";
     };
-    bazarr = { 
-      port = 6767; 
-      subdomain = "bazarr"; 
-    };
-    sabnzbd = { 
-      port = 8080; 
-      subdomain = "sabnzbd"; 
+    finance = {
+      port = 8501;
+      subdomain = "finance";
     };
     loki = {
       port = 3100;
     };
-    promtail = {
-      port = 9080;
+    n8n = {
+      port = 5678;
+      subdomain = "n8n";
+      version = "2.11.3";
+      containerName = "n8n";
+    };
+    netdata = {
+      port = 19999;
+      subdomain = "netdata";
     };
     nextcloud = {
       port = 8087;
@@ -159,11 +140,59 @@ rec {
       subdomain = "paperless-ngx";
       version = "latest";
     };
-    filebrowser-quantum = {
-      port = 8088;
-      subdomain = "filebrowser-quantum";
-      version = "1.2-stable";
-      containerName = "filebrowser-quantum";
+    power-monitor = {
+      port = 9100;
+    };
+    prometheus = {
+      port = 9090;
+    };
+    promtail = {
+      port = 9080;
+    };
+    prowlarr = { 
+      port = 9696; 
+      subdomain = "prowlarr"; 
+    };
+    radarr = { 
+      port = 7878; 
+      subdomain = "radarr";
+    };
+    romm = {
+      port = 8085;
+      subdomain = "romm";
+      version = "latest";
+      containerName = "romm";
+    };
+    romm-db = {
+      port = 999999997; # Not exposed to host, only for internal communication
+      version = "11";
+      containerName = "romm-db";
+    };
+    romm-redis = {
+      port = 999999998; # Not exposed to host, only for internal communication
+      version = "7-alpine";
+      containerName = "romm-redis";
+    };
+    sabnzbd = { 
+      port = 8080; 
+      subdomain = "sabnzbd"; 
+    };
+    scrutiny = {
+      port = 8082;
+      subdomain = "scrutiny";
+    };
+    sonarr = { 
+      port = 8989; 
+      subdomain = "sonarr"; 
+    };
+    uptime-kuma = {
+      port = 3001;
+      subdomain = "uptime-kuma";
+    };
+    vikunja = {
+      port = 3456;
+      subdomain = "vikunja";
+      version = "2.2.2";
     };
   };
 }

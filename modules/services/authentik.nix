@@ -35,8 +35,8 @@ in
     ${myConstants.services.authentik.containerName} = {
       image = "ghcr.io/goauthentik/server:${myConstants.services.authentik.version}";
       dependsOn = [ 
-        (toString myConstants.services.authentik-db.containerName) 
-        (toString myConstants.services.authentik-redis.containerName) 
+        myConstants.services.authentik-db.containerName
+        myConstants.services.authentik-redis.containerName 
       ];
       cmd = [ "server" ];
       ports = [ (myConstants.bind myConstants.services.authentik.port) ];

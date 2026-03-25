@@ -1,8 +1,6 @@
 { config, pkgs, myConstants, ... }:
 
 let
-  cfg = myConstants.services.filebrowser-quantum;
-
   filebrowserConfig = pkgs.writeText "filebrowser-config.yaml" ''
     server:
       port: 80
@@ -20,7 +18,7 @@ let
           enabled: true
         oidc:
           enabled: true
-          issuerUrl: "https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/application/o/${cfg.subdomain}/"
+          issuerUrl: "https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/application/o/${myConstants.services.filebrowser-quantum.subdomain}/"
           scopes: "email openid profile groups"
           userIdentifier: "preferred_username"
           createUser: true               # create user if it does not exist
@@ -38,7 +36,7 @@ in
   ];
 
   virtualisation.oci-containers.containers."${toString myConstants.services.filebrowser-quantum.containerName}" = {
-    image = "gtstef/filebrowser:${cfg.version}";
+    image = "gtstef/filebrowser:${myConstants.services.filebrowser-quantum.version}";
     
     volumes =[
       "/var/lib/filebrowser-quantum/data:/home/filebrowser/data"
@@ -55,7 +53,7 @@ in
     };
 
     ports =[
-      "0.0.0.0:${toString cfg.port}:80"
+      "0.0.0.0:${toString myConstants.services.filebrowser-quantum.port}:80"
     ];
   };
 }
