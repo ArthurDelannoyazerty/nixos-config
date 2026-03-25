@@ -471,6 +471,12 @@ launch the detached script
 bash /mnt/storage/services/romm/library/myrient_download.sh &
 ```
 
+## Filebrowser
+
+Create user manually
+```bash
+docker exec -it filebrowser /filebrowser users add <USERNAME-AUTHENTIK> dummy-password (--perm.admin)
+```
 
 
 ## Nextcloud & Paperless
@@ -495,6 +501,7 @@ PAPERLESS_DBPASS=$PAPERLESS_DB
 PAPERLESS_ADMIN_PASSWORD=$(openssl rand -base64 16)
 PAPERLESS_ADMIN_USER=admin
 EOF"
+sudo echo "PAPERLESS_SECRET_KEY=$(openssl rand -base64 32)" | sudo tee -a /var/lib/paperless/secrets.env
 sudo chmod 600 /var/lib/paperless/secrets.env
 
 # Create folders and set permissions for the shared User ID (33)
@@ -506,7 +513,7 @@ sudo chown -R 33:33 /mnt/storage/services/paperless
 ```
 
 2. Linking them together (Post-Installation)
-Wait a few minutes for the first boot. Nextcloud will automatically delete the bloated apps in the background. Once you can log into Nextcloud:
+Wait a few minutes for the first boot. Nextcloud will automatically delete the bloated apps in the background. Once you can log into Nextcloud (with the admin password : `sudo cat /var/lib/services/nextcloud/secrets.env` -> `NEXTCLOUD_ADMIN_PASSWORD`):
 
   1. Click your Profile icon -> Administration settings -> External storages (on the left menu).
   2. Add a new storage:
@@ -518,6 +525,26 @@ Wait a few minutes for the first boot. Nextcloud will automatically delete the b
   3. Click the Checkmark.
 
 Workflow: Now, if you drop a PDF into the Paperless-Inbox folder via your Nextcloud Desktop/Mobile app, Paperless will instantly scan it, add it to your Paperless dashboard, and safely remove it from Nextcloud!
+
+3. Then add OIDC auth :
+
+  1. Nextcloud :
+    1. `sudo vim /var/lib/nextcloud/secrets.env`
+    2. copy : 
+      ```bash
+      NEXTCLOUD_OIDC_CLIENT_ID=client_id_nextcloud
+      NEXTCLOUD_OIDC_CLIENT_SECRET=client_secret_nextcloud
+      ```
+    3. 
+  2. Paperless :
+    1. `sudo vim /var/lib/paperless/secrets.env`
+    2. copy : 
+      ```bash
+        PAPERLESS_OIDC_CLIENT_ID=client_id_paperless
+        PAPERLESS_OIDC_CLIENT_SECRET=client_secret_paperless
+      ```
+    3. 
+
 
 
 # To add other services

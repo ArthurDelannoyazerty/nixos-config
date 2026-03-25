@@ -126,16 +126,11 @@ let
             widget:
               type: romm
               url: ${internalHost}:${toString myConstants.services.romm.port}
-        - Nextcloud:
-            icon: nextcloud.png
-            href: https://${myConstants.services.nextcloud.subdomain}.${myConstants.publicDomain}
-            siteMonitor: http://172.17.0.1:${toString myConstants.services.nextcloud.port}
-            description: Google Drive Alternative
-            widget:
-                type: nextcloud
-                url: http://172.17.0.1:${toString myConstants.services.nextcloud.port}
-                username: admin
-                password: YOUR_NEXTCLOUD_APP_PASSWORD
+        - Filebrowser:
+            icon: filebrowser.png
+            href: https://${myConstants.services.filebrowser.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.filebrowser.port}
+            description: File Explorer
         - Paperless NGX:
             icon: paperless.png
             href: https://${myConstants.services.paperless-ngx.subdomain}.${myConstants.publicDomain}

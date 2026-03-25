@@ -14,7 +14,7 @@
     vikunja = {
       port = 3456;
       subdomain = "vikunja";
-      version = "2.2.0";
+      version = "2.2.2";
     };
     finance = {
       port = 8501;
@@ -132,9 +132,9 @@
       port = 9080;
     };
     nextcloud = {
-      port = 8086;
+      port = 8087;
       subdomain = "nextcloud"; 
-      version = "33.0.0-apache";
+      version = "33-apache";
     };
     paperless-ngx = {
       port = 8000;
