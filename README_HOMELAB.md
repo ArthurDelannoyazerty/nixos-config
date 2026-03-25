@@ -480,7 +480,6 @@ docker exec -it filebrowser /filebrowser users add <USERNAME-AUTHENTIK> dummy-pa
 
 ## Filebrowser quantum
 
-### A. Pre-build Setup
 
 ```bash
 # Create the directories
@@ -493,37 +492,28 @@ server:
   port: 80
   database: "/home/filebrowser/data/database.db"
   cacheDir: "/home/filebrowser/data/tmp"
-sources:
-  - path: /srv
-    config:
-      defaultEnabled: true
+  sources:
+    - path: /srv
+      config:
+        defaultEnabled: true
 EOF'
 
 # Securely set up the initial admin password
 sudo bash -c 'cat <<EOF > /var/lib/filebrowser-quantum/secrets.env
-FILEBROWSER_ADMIN_PASSWORD=YourSuperSecretAdminPassword123!
+FILEBROWSER_ADMIN_PASSWORD=$(openssl rand -base64 24)
 EOF'
 
 sudo chmod 600 /var/lib/filebrowser-quantum/secrets.env
 ```
 
-Now run your rebuild: sudo nixos-rebuild switch --flake .#homelab --impure
+Add OIDC config :
+```bash
+sudo vim /var/lib/filebrowser-quantum/secrets.env
+# FILEBROWSER_OIDC_CLIENT_ID=your_authentik_client_id_here
+# FILEBROWSER_OIDC_CLIENT_SECRET=your_authentik_client_secret_here
+```
 
-### B. Authentik Setup
-
-Go to Authentik and create the OIDC app
-
-### C. Link OIDC inside Filebrowser
-
-1. Go to filebrowser quantum and log in with username admin and the password you put in the .env file.
-2. Click on Settings (Gear icon) -> Global Settings.
-3. Under Authentication Method, switch from JSON Web Token to OIDC.
-4. Fill in the details:
-  1. Client ID: Your Authentik Client ID
-  2. Client Secret: Your Authentik Client Secret
-  3. Issuer URL: https://authentik.arthur-lab.com/application/o/drive/ (Match your Authentik application slug).
-  4. Auto-create users: ✅ Check this box. (This provisions accounts automatically when users sign in via SSO).
-  5. Save. Log out, and you should now see a button to login via Authentik!
+Don't forget to auto-create user as a filebrowser quantum admin before trying login with other accounts with OIDC
 
 
 ## Nextcloud & Paperless

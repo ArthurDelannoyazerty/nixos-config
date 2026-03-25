@@ -2,8 +2,35 @@
 
 let
   cfg = myConstants.services.filebrowser-quantum;
+
+  filebrowserConfig = pkgs.writeText "filebrowser-config.yaml" ''
+    server:
+      port: 80
+      database: "/home/filebrowser/data/database.db"
+      cacheDir: "/home/filebrowser/data/tmp"
+      sources:
+        - path: "/srv"
+          config:
+            defaultEnabled: true
+            createUserDir: true
+
+    auth:
+      methods:
+        password:
+          enabled: true
+        oidc:
+          enabled: true
+          issuerUrl: "https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/application/o/${cfg.subdomain}/"
+          scopes: "email openid profile groups"
+          userIdentifier: "preferred_username"
+          createUser: true               # create user if it does not exist
+          
+          adminGroup: "authentik Admins" 
+  '';
+
 in
 {
+  # Ensure the necessary persistent directories exist before Docker starts
   systemd.tmpfiles.rules =[
     "d /var/lib/filebrowser-quantum 0750 root root -"
     "d /var/lib/filebrowser-quantum/data 0750 root root -"
@@ -16,6 +43,7 @@ in
     volumes =[
       "/var/lib/filebrowser-quantum/data:/home/filebrowser/data"
       "/mnt/storage/services/filebrowser-quantum/files:/srv"
+      "${filebrowserConfig}:/home/filebrowser/data/config.yaml:ro"
     ];
 
     environmentFiles =[
@@ -27,7 +55,7 @@ in
     };
 
     ports =[
-      "${myConstants.bind cfg.port}:80"
+      "0.0.0.0:${toString cfg.port}:80"
     ];
   };
 }
