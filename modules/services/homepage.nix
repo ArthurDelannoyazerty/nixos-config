@@ -127,10 +127,11 @@ let
               type: romm
               url: ${internalHost}:${toString myConstants.services.romm.port}
         - FileBrowser Quantum:
-            icon: filebrowser.svg
+            icon: filebrowser-quantum.svg
             href: https://${myConstants.services.filebrowser-quantum.subdomain}.${myConstants.publicDomain}
-            siteMonitor: http://172.17.0.1:${toString myConstants.services.filebrowser-quantum.port}
             description: Personal Cloud Storage
+            server: my-docker
+            container: ${myConstants.services.filebrowser-quantum.containerName}
         - Paperless NGX:
             icon: paperless.png
             href: https://${myConstants.services.paperless-ngx.subdomain}.${myConstants.publicDomain}

@@ -1,16 +1,38 @@
-# /modules/constants.nix
-{
+rec {
   # Internal domain for services
   domain = "home.arpa";
 
   # Public domain
   publicDomain = "arthur-lab.com"; 
+
+  dockerSocketProxy = "172.17.0.1";
   
-  # Usage: bind 8501 -> "0.0.0.0:8501:8501"
+  # Usage: bind 8501 -> "172.17.0.1:8501:8501"
   bind = port: "0.0.0.0:${toString port}:${toString port}";
 
   # THE REGISTRY
   services = {
+    authentik = {
+      port = 9000;
+      subdomain = "authentik";
+      version = "2024.12.3";
+      containerName = "authentik-server";
+    };
+    authentik-db = {
+      port = 5432;
+      version = "16-alpine";
+      containerName = "authentik-db";
+    };
+    authentik-redis = {
+      port = 6379;
+      version = "alpine";
+      containerName = "authentik-redis";
+    };
+    authentik-worker = {
+      port = 9000;
+      version = "2024.12.3";
+      containerName = "authentik-worker";
+    };
     vikunja = {
       port = 3456;
       subdomain = "vikunja";
@@ -50,10 +72,6 @@
       port = 9443;
       subdomain = "headscale-ui";
       version = "latest";
-    };
-    authentik = {
-      port = 9000;
-      subdomain = "authentik";
     };
     filebrowser = {
       port = 8081;
@@ -145,6 +163,7 @@
       port = 8088;
       subdomain = "filebrowser-quantum";
       version = "1.2-stable";
+      containerName = "filebrowser-quantum";
     };
   };
 }

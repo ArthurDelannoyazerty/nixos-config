@@ -37,7 +37,7 @@ in
     "d /mnt/storage/services/filebrowser-quantum/files 0750 root root -"
   ];
 
-  virtualisation.oci-containers.containers."filebrowser-quantum" = {
+  virtualisation.oci-containers.containers."${toString myConstants.services.filebrowser-quantum.containerName}" = {
     image = "gtstef/filebrowser:${cfg.version}";
     
     volumes =[
