@@ -37,6 +37,7 @@
         PLAYMATCH_API_ENABLED = "true";
         LAUNCHBOX_API_ENABLED = "true";
         FLASHPOINT_API_ENABLED = "true";
+        HLTB_API_ENABLED = "true"; 
       };
       volumes =[
         "/mnt/storage/services/romm/library:/romm/library"
