@@ -18,7 +18,7 @@ let
       image: "linear-gradient(to bottom right, #0f172a, #1e293b, #172554)"
       opacity: 100
 
-    showStats: true
+    showStats: false  # hide docker container stats on service cards
     statusStyle: dot 
 
     layout:
