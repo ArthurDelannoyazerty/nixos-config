@@ -513,7 +513,7 @@ sudo vim /var/lib/filebrowser-quantum/secrets.env
 # FILEBROWSER_OIDC_CLIENT_SECRET=your_authentik_client_secret_here
 ```
 
-Don't forget to auto-create user as a filebrowser quantum admin before trying login with other accounts with OIDC
+Don't forget to set permissions to auto-creates user, even auto created admin users won't have permissions to create/delete/modify file/folders
 
 
 ## Nextcloud & Paperless
