@@ -146,6 +146,10 @@ let
                 type: paperlessngx
                 url: http://172.17.0.1:${toString myConstants.services.paperless-ngx.port}
                 key: YOUR_PAPERLESS_API_TOKEN
+        - Obsidian Notes:
+            icon: obsidian.png
+            href: https://${myConstants.services.quartz.subdomain}.${myConstants.publicDomain}
+            description: Digital Garden
 
     - Monitoring:
         - Power Costs:

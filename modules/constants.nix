@@ -153,6 +153,10 @@ rec {
       port = 9696; 
       subdomain = "prowlarr"; 
     };
+    quartz = {
+      port = 9999990; # No port needed because Caddy will serve the static files directly!
+      subdomain = "quartz";
+    };
     radarr = { 
       port = 7878; 
       subdomain = "radarr";
