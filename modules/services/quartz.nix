@@ -7,6 +7,9 @@
     git
     git-lfs
     rsync
+    bash
+    coreutils
+    webhook
   ];
 
   # 2. Setup Directories
@@ -14,71 +17,102 @@
     "d /var/lib/quartz 0750 root root -"
   ];
 
-  # 3. Allow n8n (via SSH) to trigger the build securely
-  security.sudo.extraRules = [
+  # --- 3. THE NATIVE WEBHOOK LISTENER ---
+  systemd.services.webhook-quartz = {
+    description = "Webhook receiver for Quartz";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.webhook}/bin/webhook -hooks /etc/webhook/hooks.json -port 9001";
+      User = "root";
+    };
+  };
+
+  # Define what the webhook does when Forgejo hits it
+  environment.etc."webhook/hooks.json".text = builtins.toJSON[
     {
-      users = [ "arthur-homelab" ]; 
-      commands =[
-        {
-          command = "/run/current-system/sw/bin/systemctl start build-quartz.service";
-          options = [ "NOPASSWD" ];
-        }
+      id = "rebuild-quartz";
+      execute-command = "/run/current-system/sw/bin/systemctl";
+      pass-arguments-to-command =[
+        { source = "string"; name = "start"; }
+        { source = "string"; name = "build-quartz.service"; }
       ];
     }
   ];
 
-  # 4. The Build Service
+  # --- 4. THE BUILD SERVICE ---
   systemd.services.build-quartz = {
-    description = "Build Quartz Static Site from local Forgejo (with LFS)";
+    description = "Build Quartz Static Site from local Forgejo";
     
-    # Add git-lfs to the execution path!
-    path =[ pkgs.git pkgs.git-lfs pkgs.nodejs pkgs.rsync ];
+    path =[ pkgs.git pkgs.git-lfs pkgs.nodejs pkgs.rsync pkgs.bash pkgs.coreutils ];
     
     serviceConfig = {
       Type = "oneshot";
       User = "root";
-      # Read the secure token from this file at runtime
-      EnvironmentFile = "/var/lib/quartz/secrets.env";
+      # Make sure this file exists on your server and contains: FORGEJO_TOKEN="your_token_here"
+      EnvironmentFile = "/var/lib/quartz/secrets.env"; 
     };
 
     script = ''
       QUARTZ_DIR="/var/lib/quartz"
       TEMP_CLONE="/tmp/obsidian-vault-clone"
       
-      # Use the FORGEJO_TOKEN injected securely by systemd EnvironmentFile
-      # Replace YOUR_USER and YOUR_REPO below
-      VAULT_URL="http://quartz-builder:$FORGEJO_TOKEN@127.0.0.1:${toString myConstants.services.forgejo.port}/arthur-delannoy/obsidian.git"
+      LOCAL_URL="http://127.0.0.1:${toString myConstants.services.forgejo.port}"
+      PUBLIC_DOMAIN="${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}"
+
+      export HOME="/var/lib/quartz"
+
+      echo "Starting Quartz Build..."
+
+      # --- CLOUDFLARE / AUTHENTIK BYPASS FIX ---
+      # 1. Provide credentials for the local IP
+      echo "machine 127.0.0.1 login quartz-builder password $FORGEJO_TOKEN" > $HOME/.netrc
+      chmod 600 $HOME/.netrc
+
+      # 2. Force Git and LFS to rewrite the public URL back to localhost
+      git config --global url."$LOCAL_URL/".insteadOf "https://$PUBLIC_DOMAIN/"
+      git config --global lfs.transfer.enableHrefRewrite true
 
       # Step 1: Initialize Quartz if missing
-      if[ ! -d "$QUARTZ_DIR/.git" ]; then
-        git clone https://github.com/jackyzha0/quartz.git $QUARTZ_DIR
-        cd $QUARTZ_DIR
+      if [ ! -d "$QUARTZ_DIR/node_modules" ]; then
+        echo "Initializing Quartz Engine..."
+        rm -rf "$QUARTZ_DIR/.git" "$QUARTZ_DIR/package.json" "$QUARTZ_DIR/package-lock.json"
+        
+        git clone https://github.com/jackyzha0/quartz.git /tmp/quartz-init
+        cp -a /tmp/quartz-init/. "$QUARTZ_DIR/"
+        rm -rf /tmp/quartz-init
+        
+        cd "$QUARTZ_DIR"
         npm install
       fi
 
       # Step 2: Clone the vault and pull LFS files
       rm -rf $TEMP_CLONE
+      export GIT_LFS_SKIP_SMUDGE=1
       
-      # Tell git to use LFS in this temporary environment
-      git lfs install
+      git clone "$LOCAL_URL/arthur-delannoy/obsidian.git" $TEMP_CLONE
       
-      # Clone the repository
-      git clone $VAULT_URL $TEMP_CLONE
-      
-      # Enter the clone and explicitly pull all large files (images/PDFs)
       cd $TEMP_CLONE
-      git lfs pull
+      
+      # Initialize LFS locally to remove the warning we saw in the test
+      git lfs install --local
+      git lfs pull --include="*.png,*.jpg,*.jpeg,*.gif,*.webp,*.svg"
 
       # Step 3: Sync to Quartz content directory
-      # We exclude .git, but KEEP the images and markdown!
-      rsync -av --delete --exclude='.git' --exclude='.obsidian' $TEMP_CLONE/ $QUARTZ_DIR/content/
+      echo "Syncing Markdown and Images to Quartz..."
+      rsync -av --delete --exclude='.obsidian' $TEMP_CLONE/ $QUARTZ_DIR/content/
 
-      # Step 4: Build the site
+      # Step 4: Build the static site
+      echo "Building Quartz..."
       cd $QUARTZ_DIR
       npx quartz build
       
-      # Clean up the temp clone so it doesn't waste disk space
+      # Step 5: Clean up credentials for security
       rm -rf $TEMP_CLONE
+      rm -f $HOME/.netrc
+      rm -f $HOME/.gitconfig
+      
+      echo "Quartz build completed! Files are served by Caddy at /var/lib/quartz/public"
     '';
   };
 }

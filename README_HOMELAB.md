@@ -520,8 +520,6 @@ Don't forget to set permissions to auto-creates user, even auto created admin us
 
 First, replace the variables in the `quartz.nix` to the right ones in the script.
 
-
-### A. Generate a Forgejo Access Token
 Because your repository is private in Forgejo, the build script needs permission to clone it locally.
 1. Go to your Forgejo UI -> Settings -> Applications.
 2. Generate a new Token named quartz-builder (Grant it "Read" access to repositories).
@@ -538,26 +536,12 @@ EOF"
 sudo chmod 600 /var/lib/quartz/secrets.env
 ```
 
-
-### B. Setup n8n Workflow
-1. Open your n8n UI.
-2. Create a new Workflow called Rebuild Obsidian Notes.
-3. Add a Webhook Node:
-4. Method: POST
-    Path: quartz-rebuild
-    URL will be: https://n8n.arthur-lab.com/webhook/quartz-rebuild (This bypasses Authentik thanks to your Caddy config).
-5. Add an SSH Node and connect it to the Webhook:
-    Host: 172.17.0.1 (Your Docker gateway, which points back to the NixOS host).
-    Port: 22 (Ensure SSH is enabled on your host).
-    Credentials: Create new SSH credentials. Enter your arthur-homelab username, and put in your SSH Private Key. (Alternatively, generate a new SSH key pair just for n8n, put the private key here, and add the public key to ~/.ssh/authorized_keys on NixOS).
-    Command: sudo systemctl start build-quartz.service
-
-
-### C. Setup Forgejo Webhook
-1. Go to your Forgejo UI -> Open your mirrored Obsidian repository.
-2. Go to Settings -> Webhooks -> Add Webhook -> n8n (or generic POST).
-3. Target URL: Paste your n8n production webhook URL (https://n8n.arthur-lab.com/webhook/quartz-rebuild).
-4. Trigger On: Select "Custom Events" and check Push (This triggers when GitHub pushes to Forgejo, or when Forgejo completes a mirror sync).
+Then create a forgejo webhook : 
+1. Go to the repo settings
+2. "Add Webhook"
+3. target url = http://127.0.0.1:9001/hooks/rebuild-quartz  |  HTTP = POST  | Trigger on = Push Events
+4. Save
+5. Optional : Test the webhook (small button at the bottom of the page) while looking at : `journalctl -fu build-quartz.service`
 
 
 ## Nextcloud & Paperless
@@ -676,7 +660,7 @@ Workflow: Now, if you drop a PDF into the Paperless-Inbox folder via your Nextcl
 6. Optional : Add the link in the homepage to access it easily
 7. Optional : Add that service to Uptime Kuma
 
-
+If you have trouble by landing on a weird bugged page with an authentik error, verify that you added the applciation to the authentik outpost
 
 # To update a docker service
 

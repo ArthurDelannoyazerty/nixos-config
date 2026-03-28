@@ -119,6 +119,7 @@ let
             description: Git Repositories
         - n8n:
             icon: n8n.png
+            href: https://${myConstants.services.n8n.subdomain}.${myConstants.publicDomain}
             description: Worflow Automation
             server: my-docker
             container: ${myConstants.services.n8n.containerName}

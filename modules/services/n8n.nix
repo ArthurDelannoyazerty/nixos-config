@@ -14,7 +14,7 @@
     ];
     environment = {
       # Tell n8n how it is accessed from the outside so webhooks generate correct URLs
-      WEBHOOK_URL = "https://${myConstants.publicDomain}.${myConstants.publicDomain}/";
+      WEBHOOK_URL = "https://${myConstants.services.n8n.subdomain}.${myConstants.publicDomain}/";
       GENERIC_TIMEZONE = "Europe/Paris";
 
       #Disable the user management as we will use authentik for authentication      

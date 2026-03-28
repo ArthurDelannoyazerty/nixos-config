@@ -9,6 +9,10 @@
     lfs.contentDir = "/mnt/storage/services/forgejo/lfs";
     
     settings = {
+      webhook = {
+        ALLOWED_HOST_LIST = "127.0.0.1";
+      };
+
       server = {
         DOMAIN = "${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}";
         ROOT_URL = "https://${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}/";
