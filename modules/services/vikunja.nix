@@ -9,7 +9,7 @@
     ports = [ (myConstants.bind myConstants.services.vikunja.port) ];
 
     environmentFiles = [
-      "/var/lib/vikunja/secret.env"
+      "${myConstants.paths.servicesSSD}/vikunja/secret.env"
     ];
     
     environment = {
@@ -25,15 +25,14 @@
     };
 
     volumes = [
-      # Persist data on the host
-      "/var/lib/vikunja/files:/app/vikunja/files"
-      "/var/lib/vikunja/db:/app/vikunja/db"
+      "${myConstants.paths.servicesSSD}/vikunja/files:/app/vikunja/files"
+      "${myConstants.paths.servicesSSD}/vikunja/db:/app/vikunja/db"
     ];
   };
 
   # 3. Ensure data directories exist on host
   systemd.tmpfiles.rules = [
-    "d /var/lib/vikunja/files 0755 1000 100 -"
-    "d /var/lib/vikunja/db 0755 1000 100 -"
+    "d ${myConstants.paths.servicesSSD}/vikunja/files 0755 1000 100 -"
+    "d ${myConstants.paths.servicesSSD}/vikunja/db 0755 1000 100 -"
   ];
 }

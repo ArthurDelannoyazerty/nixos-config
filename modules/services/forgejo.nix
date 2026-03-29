@@ -3,11 +3,11 @@
 {
   services.forgejo = {
     enable = true;
-    stateDir = "/mnt/storage/services/forgejo"; 
-    
+    stateDir = "${myConstants.paths.servicesSSD}/forgejo"; 
+
     lfs.enable = true;
-    lfs.contentDir = "/mnt/storage/services/forgejo/lfs";
-    
+    lfs.contentDir = "${myConstants.paths.servicesSSD}/forgejo/lfs";
+        
     settings = {
       webhook = {
         ALLOWED_HOST_LIST = "127.0.0.1";

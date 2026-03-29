@@ -28,12 +28,12 @@
     ../../modules/services/local-finance.nix
     # # ../../modules/services/glances.nix
     ../../modules/services/power-monitor.nix
-    # ../../modules/services/vikunja.nix
+    ../../modules/services/vikunja.nix
     ../../modules/services/netdata.nix
     # # ../../modules/services/filebrowser.nix
     ../../modules/services/scrutiny.nix
-    # ../../modules/services/uptime-kuma.nix
-    # ../../modules/services/forgejo.nix 
+    ../../modules/services/uptime-kuma.nix
+    ../../modules/services/forgejo.nix 
     # ../../modules/services/immich.nix
     # ../../modules/services/n8n.nix 
     # ../../modules/services/romm.nix 
