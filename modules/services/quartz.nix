@@ -14,7 +14,7 @@
 
   # 2. Setup Directories
   systemd.tmpfiles.rules =[
-    "d /var/lib/quartz 0750 root root -"
+    "d ${myConstants.paths.servicesSSD}/quartz 0755 root root -"
   ];
 
   # --- 3. THE NATIVE WEBHOOK LISTENER ---
@@ -50,17 +50,17 @@
       Type = "oneshot";
       User = "root";
       # Make sure this file exists on your server and contains: FORGEJO_TOKEN="your_token_here"
-      EnvironmentFile = "/var/lib/quartz/secrets.env"; 
+      EnvironmentFile = "${myConstants.paths.servicesSSD}/quartz/secrets.env"; 
     };
 
     script = ''
-      QUARTZ_DIR="/var/lib/quartz"
+      QUARTZ_DIR="${myConstants.paths.servicesSSD}/quartz"
       TEMP_CLONE="/tmp/obsidian-vault-clone"
       
       LOCAL_URL="http://127.0.0.1:${toString myConstants.services.forgejo.port}"
       PUBLIC_DOMAIN="${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}"
 
-      export HOME="/var/lib/quartz"
+      export HOME="${myConstants.paths.servicesSSD}/quartz"
 
       echo "Starting Quartz Build..."
 
@@ -112,7 +112,7 @@
       rm -f $HOME/.netrc
       rm -f $HOME/.gitconfig
       
-      echo "Quartz build completed! Files are served by Caddy at /var/lib/quartz/public"
+      echo "Quartz build completed! Files are served by Caddy at $QUARTZ_DIR/public"
     '';
   };
 }

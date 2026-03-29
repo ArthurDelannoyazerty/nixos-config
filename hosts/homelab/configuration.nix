@@ -44,7 +44,7 @@
     # # ../../modules/services/nextcloud.nix
     # # ../../modules/services/paperless-ngx.nix
     ../../modules/services/filebrowser-quantum.nix  
-    # ../../modules/services/quartz.nix  
+    ../../modules/services/quartz.nix  
 
     # Network services
     ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet
