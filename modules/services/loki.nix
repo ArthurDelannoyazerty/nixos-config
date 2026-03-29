@@ -14,7 +14,7 @@
           kvstore.store = "inmemory";
         };
         replication_factor = 1;
-        path_prefix = "/var/lib/loki";
+        path_prefix = "${myConstants.paths.servicesSSD}/loki";
       };
 
       schema_config = {
@@ -30,7 +30,7 @@
         }];
       };
 
-      storage_config.filesystem.directory = "/var/lib/loki/chunks";
+      storage_config.filesystem.directory = "${myConstants.paths.servicesSSD}/loki/chunks";
 
       # Tell Loki to drop data older than 30 days
       limits_config = {
@@ -39,7 +39,7 @@
 
       # Enable the background worker that actually deletes the files
       compactor = {
-        working_directory = "/var/lib/loki/compactor";
+        working_directory = "${myConstants.paths.servicesSSD}/loki/compactor";
         delete_request_store = "filesystem"; 
         compaction_interval = "10m";
         retention_enabled = true;
