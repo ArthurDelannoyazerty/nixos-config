@@ -43,7 +43,8 @@ let
         expanded: true
         disk: 
           - /
-          - /mnt/storage
+          - ${myConstants.paths.disk2TB}
+          - ${myConstants.paths.disk4TB}
     - resources:
         memory: true
         expanded: true
@@ -220,7 +221,9 @@ in
       "${widgetsYaml}:/app/config/widgets.yaml"
       "${dockerYaml}:/app/config/docker.yaml"
       "${bookmarksYaml}:/app/config/bookmarks.yaml" 
-      "/mnt/storage:/mnt/storage:ro"
+      
+      "${myConstants.paths.disk2TB}:${myConstants.paths.disk2TB}:ro"
+      "${myConstants.paths.disk4TB}:${myConstants.paths.disk4TB}:ro"
     ];
 
     extraOptions = [ "--add-host=host.docker.internal:host-gateway" ];

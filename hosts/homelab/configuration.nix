@@ -23,13 +23,13 @@
     ../../modules/services/cloudflared.nix
     ../../modules/services/lldap.nix
 
-    # # --- APPS ---
-    # ../../modules/services/homepage.nix
+    # --- APPS ---
+    ../../modules/services/homepage.nix
     # ../../modules/services/local-finance.nix
     # # ../../modules/services/glances.nix
     # ../../modules/services/power-monitor.nix
     # ../../modules/services/vikunja.nix
-    # ../../modules/services/netdata.nix
+    ../../modules/services/netdata.nix
     # # ../../modules/services/filebrowser.nix
     # ../../modules/services/scrutiny.nix
     # ../../modules/services/uptime-kuma.nix
