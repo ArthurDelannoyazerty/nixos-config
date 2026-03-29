@@ -87,7 +87,6 @@ rec {
       containerName = "immich-db";
     };
     immich-redis = {
-      port = 999999999; # Not exposed to host, only for internal communication
       version = "6.2-alpine";
       containerName = "immich-redis";
     };
@@ -154,7 +153,6 @@ rec {
       subdomain = "prowlarr"; 
     };
     quartz = {
-      port = 9999990; # No port needed because Caddy will serve the static files directly!
       subdomain = "quartz";
     };
     radarr = { 
@@ -168,12 +166,10 @@ rec {
       containerName = "romm";
     };
     romm-db = {
-      port = 999999997; # Not exposed to host, only for internal communication
       version = "11";
       containerName = "romm-db";
     };
     romm-redis = {
-      port = 999999998; # Not exposed to host, only for internal communication
       version = "7-alpine";
       containerName = "romm-redis";
     };
