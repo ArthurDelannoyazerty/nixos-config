@@ -10,6 +10,11 @@ rec {
   # Usage: bind 8501 -> "172.17.0.1:8501:8501"
   bind = port: "0.0.0.0:${toString port}:${toString port}";
 
+  paths = {
+    disk2TB = "/mnt/storage";
+    disk4TB = "/mnt/storage-4tb";
+  };
+
   # THE REGISTRY
   services = {
     authentik = {

@@ -14,37 +14,37 @@
     ../../modules/terminal
     ../../modules/dev
 
-    # --- INFRASTRUCTURE ---
-    ../../modules/services/authentik.nix
-    ../../modules/services/caddy.nix
-    ../../modules/services/docker-socket-proxy.nix
-    # ../../modules/services/headscale.nix
-    # ../../modules/services/headscale-ui.nix
-    ../../modules/services/cloudflared.nix
-    ../../modules/services/lldap.nix
+    # # --- INFRASTRUCTURE ---
+    # ../../modules/services/authentik.nix
+    # ../../modules/services/caddy.nix
+    # ../../modules/services/docker-socket-proxy.nix
+    # # ../../modules/services/headscale.nix
+    # # ../../modules/services/headscale-ui.nix
+    # ../../modules/services/cloudflared.nix
+    # ../../modules/services/lldap.nix
 
-    # --- APPS ---
-    ../../modules/services/homepage.nix
-    ../../modules/services/local-finance.nix
-    # ../../modules/services/glances.nix
-    ../../modules/services/power-monitor.nix
-    ../../modules/services/vikunja.nix
-    ../../modules/services/netdata.nix
-    # ../../modules/services/filebrowser.nix
-    ../../modules/services/scrutiny.nix
-    ../../modules/services/uptime-kuma.nix
-    ../../modules/services/forgejo.nix 
-    ../../modules/services/immich.nix
-    ../../modules/services/n8n.nix 
-    ../../modules/services/romm.nix 
-    ../../modules/services/grafana.nix 
-    ../../modules/services/prometheus.nix 
-    ../../modules/services/loki.nix
-    ../../modules/services/promtail.nix
-    # ../../modules/services/nextcloud.nix
-    # ../../modules/services/paperless-ngx.nix
-    ../../modules/services/filebrowser-quantum.nix  
-    ../../modules/services/quartz.nix  
+    # # --- APPS ---
+    # ../../modules/services/homepage.nix
+    # ../../modules/services/local-finance.nix
+    # # ../../modules/services/glances.nix
+    # ../../modules/services/power-monitor.nix
+    # ../../modules/services/vikunja.nix
+    # ../../modules/services/netdata.nix
+    # # ../../modules/services/filebrowser.nix
+    # ../../modules/services/scrutiny.nix
+    # ../../modules/services/uptime-kuma.nix
+    # ../../modules/services/forgejo.nix 
+    # ../../modules/services/immich.nix
+    # ../../modules/services/n8n.nix 
+    # ../../modules/services/romm.nix 
+    # ../../modules/services/grafana.nix 
+    # ../../modules/services/prometheus.nix 
+    # ../../modules/services/loki.nix
+    # ../../modules/services/promtail.nix
+    # # ../../modules/services/nextcloud.nix
+    # # ../../modules/services/paperless-ngx.nix
+    # ../../modules/services/filebrowser-quantum.nix  
+    # ../../modules/services/quartz.nix  
 
     # Network services
     ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet

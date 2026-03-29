@@ -27,6 +27,10 @@
     { device = "/dev/disk/by-uuid/362d367d-cfc8-43f0-9e21-1f52a9707924";
       fsType = "ext4";
     };
+  fileSystems."/mnt/storage-4tb" =
+    { device = "/dev/disk/by-uuid/4511946c-342a-40c3-8463-dd4275313ae4";
+      fsType = "ext4";
+    };
 
   swapDevices =
     [ { device = "/dev/disk/by-uuid/79065f7d-4c11-49c3-af91-35e0e32f01f4"; }
