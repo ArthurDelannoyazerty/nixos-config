@@ -30,9 +30,9 @@ in
 {
   # Ensure the necessary persistent directories exist before Docker starts
   systemd.tmpfiles.rules =[
-    "d /var/lib/filebrowser-quantum 0750 1000 1000 -"
-    "d /var/lib/filebrowser-quantum/data 0750 1000 1000 -"
-    "d /mnt/storage/services/filebrowser-quantum/files 0750 1000 1000 -"
+    "d ${myConstants.paths.servicesSSD}/filebrowser-quantum 0750 1000 1000 -"
+    "d ${myConstants.paths.servicesSSD}/filebrowser-quantum/data 0750 1000 1000 -"
+    "d ${myConstants.paths.services4TB}/filebrowser-quantum/files 0750 1000 1000 -"
   ];
 
   virtualisation.oci-containers.containers."${toString myConstants.services.filebrowser-quantum.containerName}" = {
@@ -41,13 +41,13 @@ in
     user = "1000:1000";
 
     volumes =[
-      "/var/lib/filebrowser-quantum/data:/home/filebrowser/data"
-      "/mnt/storage/services/filebrowser-quantum/files:/srv"
+      "${myConstants.paths.servicesSSD}/filebrowser-quantum/data:/home/filebrowser/data"
+      "${myConstants.paths.services4TB}/filebrowser-quantum/files:/srv"
       "${filebrowserConfig}:/home/filebrowser/data/config.yaml:ro"
     ];
 
     environmentFiles =[
-      "/var/lib/filebrowser-quantum/secrets.env"
+      "${myConstants.paths.servicesSSD}/filebrowser-quantum/secrets.env"
     ];
 
     environment = {

@@ -43,7 +43,7 @@
     ../../modules/services/promtail.nix
     # # ../../modules/services/nextcloud.nix
     # # ../../modules/services/paperless-ngx.nix
-    # ../../modules/services/filebrowser-quantum.nix  
+    ../../modules/services/filebrowser-quantum.nix  
     # ../../modules/services/quartz.nix  
 
     # Network services
