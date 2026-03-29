@@ -20,8 +20,8 @@
     # ../../modules/services/docker-socket-proxy.nix
     # # ../../modules/services/headscale.nix
     # # ../../modules/services/headscale-ui.nix
-    # ../../modules/services/cloudflared.nix
-    # ../../modules/services/lldap.nix
+    ../../modules/services/cloudflared.nix
+    ../../modules/services/lldap.nix
 
     # # --- APPS ---
     # ../../modules/services/homepage.nix

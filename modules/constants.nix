@@ -11,8 +11,16 @@ rec {
   bind = port: "0.0.0.0:${toString port}:${toString port}";
 
   paths = {
-    disk2TB = "/mnt/storage";
-    disk4TB = "/mnt/storage-4tb";
+    # 1. Fast SSD Storage (Configs, Redis, Postgres DBs)
+    servicesSSD = "/var/lib/services";
+
+    # 2. Bulk HDD 1 (Downloads, Scratch, Backups)
+    disk2TB =     "/mnt/storage";
+    services2TB = "/mnt/storage/services";
+
+    # 3. Bulk HDD 2 (Media, Photos, Cloud Files)
+    disk4TB =     "/mnt/storage-4tb";
+    services4TB = "/mnt/storage-4tb/services";
   };
 
   # THE REGISTRY
