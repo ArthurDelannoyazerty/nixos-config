@@ -25,9 +25,9 @@
 
     # --- APPS ---
     ../../modules/services/homepage.nix
-    # ../../modules/services/local-finance.nix
+    ../../modules/services/local-finance.nix
     # # ../../modules/services/glances.nix
-    # ../../modules/services/power-monitor.nix
+    ../../modules/services/power-monitor.nix
     # ../../modules/services/vikunja.nix
     ../../modules/services/netdata.nix
     # # ../../modules/services/filebrowser.nix
