@@ -1,7 +1,7 @@
 { config, pkgs, myConstants, ... }:
 
 let
-  envFile = "/var/lib/authentik/secrets.env";
+  envFile = "${myConstants.paths.servicesSSD}/authentik/secrets.env";
 
   # Common optimization settings to make Authentik fast on Homelabs
   commonEnv = {
@@ -45,8 +45,10 @@ in
         AUTHENTIK_LISTEN__HTTP = "0.0.0.0:${toString myConstants.services.authentik.port}";
       };
       environmentFiles = [ envFile ];
-      volumes = [ "/var/lib/authentik/media:/media" "/var/lib/authentik/custom-templates:/templates" ];
-      # Find the database by name
+      volumes = [ 
+        "${myConstants.paths.servicesSSD}/authentik/media:/media" 
+        "${myConstants.paths.servicesSSD}/authentik/custom-templates:/templates" 
+       ];
       extraOptions = [ 
         "--add-host=host.docker.internal:host-gateway" 
         "--link=${myConstants.services.authentik-db.containerName}:${myConstants.services.authentik-db.containerName}" 
@@ -62,7 +64,7 @@ in
         POSTGRES_USER = "authentik";
       };
       environmentFiles = [ envFile ];
-      volumes = [ "/var/lib/authentik/postgres:/var/lib/postgresql/data" ];
+      volumes = [ "${myConstants.paths.servicesSSD}/authentik/postgres:/var/lib/postgresql/data" ];
       ports = [ "127.0.0.1:${toString myConstants.services.authentik-db.port}:6379" ];
     };
 
@@ -80,7 +82,10 @@ in
       cmd = [ "worker" ];
       environment = commonEnv;
       environmentFiles = [ envFile ];
-      volumes = [ "/var/lib/authentik/media:/media" "/var/lib/authentik/certs:/certs" ];
+      volumes = [ 
+        "${myConstants.paths.servicesSSD}/authentik/media:/media" 
+        "${myConstants.paths.servicesSSD}/authentik/certs:/certs"  
+      ];
       extraOptions = [ 
         "--link=${myConstants.services.authentik-db.containerName}:${myConstants.services.authentik-db.containerName}" 
         "--link=${myConstants.services.authentik-redis.containerName}:${myConstants.services.authentik-redis.containerName}" 

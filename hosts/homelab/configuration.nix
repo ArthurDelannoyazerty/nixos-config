@@ -14,12 +14,12 @@
     ../../modules/terminal
     ../../modules/dev
 
-    # # --- INFRASTRUCTURE ---
-    # ../../modules/services/authentik.nix
-    # ../../modules/services/caddy.nix
-    # ../../modules/services/docker-socket-proxy.nix
-    # # ../../modules/services/headscale.nix
-    # # ../../modules/services/headscale-ui.nix
+    # --- INFRASTRUCTURE ---
+    ../../modules/services/authentik.nix
+    ../../modules/services/caddy.nix
+    ../../modules/services/docker-socket-proxy.nix
+    # ../../modules/services/headscale.nix
+    # ../../modules/services/headscale-ui.nix
     ../../modules/services/cloudflared.nix
     ../../modules/services/lldap.nix
 
