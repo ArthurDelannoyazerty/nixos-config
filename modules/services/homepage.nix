@@ -138,15 +138,6 @@ let
             description: Personal Cloud Storage
             server: my-docker
             container: ${myConstants.services.filebrowser-quantum.containerName}
-        - Paperless NGX:
-            icon: paperless.png
-            href: https://${myConstants.services.paperless-ngx.subdomain}.${myConstants.publicDomain}
-            siteMonitor: http://172.17.0.1:${toString myConstants.services.paperless-ngx.port}
-            description: Document Management
-            widget:
-                type: paperlessngx
-                url: http://172.17.0.1:${toString myConstants.services.paperless-ngx.port}
-                key: YOUR_PAPERLESS_API_TOKEN
         - Obsidian Notes:
             icon: obsidian.png
             href: https://${myConstants.services.quartz.subdomain}.${myConstants.publicDomain}
