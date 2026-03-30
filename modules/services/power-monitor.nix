@@ -2,7 +2,10 @@
 
 let
   port = myConstants.services.power-monitor.port;
-  kwhPrice = 0.22; # Price in €/kWh
+  # Formule du prix moyen pondéré Tempo (€/kWh) : 
+  # ((300j * moy_bleu + 43j * moy_blanc + 22j * moy_rouge) / 365 jours) / 100 pour conversion cts -> €
+  kwhPrice = ((300.0 * 15.16) + (43.0 * 17.47) + (22.0 * 52.32)) / 365.0 / 100.0;   # ~ 0,1767 €/kWh
+
   idleOffset = 15; # Watt offset for non-CPU components (Motherboard, RAM, Fans)
 
   powerScript = pkgs.writeScriptBin "power-monitor" ''
