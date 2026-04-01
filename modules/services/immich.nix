@@ -2,8 +2,8 @@
 
 let
   # The secure file we just created
-  envFile = "/var/lib/immich/secrets.env";
-  
+  envFile = "${myConstants.paths.servicesSSD}/immich/secrets/secrets.env";
+
   # Shared Environment Variables (No passwords here)
   sharedEnv = {
     DB_HOSTNAME = "immich-db";
@@ -30,7 +30,7 @@ in
       # Pulls DB_PASSWORD from the secure file
       environmentFiles = [ envFile ];
       volumes = [
-        "/mnt/storage/services/immich/photos:/usr/src/app/upload"
+        "${myConstants.paths.services4TB}/immich/photos:/usr/src/app/upload"
         "/etc/localtime:/etc/localtime:ro"
       ];
       extraOptions = [
@@ -51,7 +51,7 @@ in
         POSTGRES_INITDB_ARGS = "--data-checksums"; 
       };
       environmentFiles = [ envFile ];
-      volumes = [ "/mnt/storage/services/immich/postgres:/var/lib/postgresql/data" ];
+      volumes = [ "${myConstants.paths.servicesSSD}/immich/postgres:/var/lib/postgresql/data" ];
       ports = [ "127.0.0.1:${toString myConstants.services.immich-db.port}:5432" ]; 
     };
 
@@ -68,7 +68,7 @@ in
       # Pulls DB_PASSWORD from the secure file
       environmentFiles = [ envFile ];
       volumes = [
-        "/mnt/storage/services/immich/model-cache:/cache"
+        "${myConstants.paths.servicesSSD}/immich/model-cache:/cache"
       ];
       extraOptions = [
         "--link=${myConstants.services.immich-db.containerName}:${myConstants.services.immich-db.containerName}"
@@ -78,9 +78,9 @@ in
 
   # Ensure the host directories exist with wide permissions 
   systemd.tmpfiles.rules = [
-    "d /mnt/storage/services/immich/postgres 0777 root root -"
-    "d /mnt/storage/services/immich/photos 0777 root root -"
-    "d /mnt/storage/services/immich/model-cache 0777 root root -"
+    "d ${myConstants.paths.servicesSSD}/immich/postgres 0777 root root -"
+    "d ${myConstants.paths.servicesSSD}/immich/photos 0777 root root -"
+    "d ${myConstants.paths.servicesSSD}/immich/model-cache 0777 root root -"
   ];
 
 
