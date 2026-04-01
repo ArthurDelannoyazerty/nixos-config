@@ -3,20 +3,23 @@
 {
   # Create the folders for your ROMs and database
   systemd.tmpfiles.rules =[
-    "d /mnt/storage/services/romm/library 0777 root root -"
-    "d /mnt/storage/services/romm/assets 0777 root root -"
-    "d /mnt/storage/services/romm/resources 0777 root root -"
-    "d /mnt/storage/services/romm/config 0777 root root -"
-    "d /mnt/storage/services/romm/redis 0777 root root -" # Ajouté pour Redis
-    "d /var/lib/romm 0700 root root -" # Folder for secrets
-    "d /var/lib/romm-db 0777 root root -"
+    # 4TB HDD: ROMs and Boxart
+    "d ${myConstants.paths.services4TB}/romm/library 0777 root root -"
+    "d ${myConstants.paths.services4TB}/romm/assets 0777 root root -"
+    
+    # SSD: Config, Resources, Redis and DB
+    "d ${myConstants.paths.servicesSSD}/romm/resources 0777 root root -"
+    "d ${myConstants.paths.servicesSSD}/romm/config 0777 root root -"
+    "d ${myConstants.paths.servicesSSD}/romm/redis 0777 root root -"
+    "d ${myConstants.paths.servicesSSD}/romm/secrets 0700 root root -"
+    "d ${myConstants.paths.servicesSSD}/romm/db 0777 root root -"
   ];
 
   virtualisation.oci-containers.containers = {
     ${myConstants.services.romm.containerName} = {
       image = "ghcr.io/rommapp/romm:${toString myConstants.services.romm.version}";
       ports =[ "0.0.0.0:${toString myConstants.services.romm.port}:8080" ];
-      environmentFiles = [ "/var/lib/romm/secrets.env" ];
+      environmentFiles = [ "${myConstants.paths.servicesSSD}/romm/secrets/secrets.env" ];
       environment = {
         DB_HOST = "romm-db";
         DB_NAME = "romm";
@@ -40,10 +43,10 @@
         HLTB_API_ENABLED = "true"; 
       };
       volumes =[
-        "/mnt/storage/services/romm/library:/romm/library"
-        "/mnt/storage/services/romm/assets:/romm/assets"
-        "/mnt/storage/services/romm/resources:/romm/resources"
-        "/mnt/storage/services/romm/config:/romm/config"
+        "${myConstants.paths.services4TB}/romm/library:/romm/library"
+        "${myConstants.paths.services4TB}/romm/assets:/romm/assets"
+        "${myConstants.paths.servicesSSD}/romm/resources:/romm/resources"
+        "${myConstants.paths.servicesSSD}/romm/config:/romm/config"
       ];
       dependsOn = [ 
         myConstants.services.romm-db.containerName 
@@ -57,19 +60,19 @@
 
     ${myConstants.services.romm-db.containerName} = {
       image = "mariadb:${toString myConstants.services.romm-db.version}";
-      environmentFiles = [ "/var/lib/romm/secrets.env" ];
+      environmentFiles = [ "${myConstants.paths.servicesSSD}/romm/secrets/secrets.env" ];
       environment = {
         MARIADB_DATABASE = "romm";
         MARIADB_USER = "romm_user";
       };
       volumes =[
-        "/var/lib/romm-db:/var/lib/mysql"
+        "${myConstants.paths.servicesSSD}/romm/db:/var/lib/mysql"
       ];
     };
 
     ${myConstants.services.romm-redis.containerName} = {
       image = "redis:${toString myConstants.services.romm-redis.version}";
-      volumes = [ "/mnt/storage/services/romm/redis:/data" ];
+      volumes = [ "${myConstants.paths.servicesSSD}/romm/redis:/data" ];
     };
 
   };

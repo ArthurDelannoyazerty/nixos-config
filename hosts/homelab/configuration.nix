@@ -34,9 +34,9 @@
     ../../modules/services/scrutiny.nix
     ../../modules/services/uptime-kuma.nix
     ../../modules/services/forgejo.nix 
-    # ../../modules/services/immich.nix
+    ../../modules/services/immich.nix
     ../../modules/services/n8n.nix 
-    # ../../modules/services/romm.nix 
+    ../../modules/services/romm.nix 
     ../../modules/services/grafana.nix 
     ../../modules/services/prometheus.nix 
     ../../modules/services/loki.nix
