@@ -7,10 +7,10 @@
 
 It need a JWT token so you do :
 ```bash
-sudo mkdir -p /var/lib/vikunja
+sudo mkdir -p /var/lib/services/vikunja
 
 # Generate a random secret and save it to a .env file
-echo "VIKUNJA_SERVICE_JWTSECRET=$(openssl rand -base64 32)" | sudo tee /var/lib/vikunja/secret.env
+echo "VIKUNJA_SERVICE_JWTSECRET=$(openssl rand -base64 32)" | sudo tee /var/lib/services/vikunja/secret.env
 ```
 Now you need to write the folllowing in the vikunja secret : 
 
@@ -45,9 +45,9 @@ Used as a backend for Authelia
 
 1. Pre-build setup
 ```bash    
-sudo mkdir -p /var/lib/lldap/secrets
-tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 32 | sudo tee /var/lib/lldap/secrets/admin_password
-tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 64 | sudo tee /var/lib/lldap/secrets/jwt_secret
+sudo mkdir -p /var/lib/services/lldap/secrets
+tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 32 | sudo tee /var/lib/services/lldap/secrets/admin_password
+tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 64 | sudo tee /var/lib/services/lldap/secrets/jwt_secret
 ```
 
 2. Post-build setup
@@ -55,9 +55,9 @@ tr -cd 'a-z0-9A-Z' < /dev/urandom | head -c 64 | sudo tee /var/lib/lldap/secrets
 # Change recursively the owner of these fodlder to the lldapp user can use them
 sudo chown -R lldap:lldap /var/lib/lldap/
 
-sudo chmod 700 /var/lib/lldap/secrets 
-sudo chmod 600 /var/lib/lldap/secrets/admin_password
-sudo chmod 600 /var/lib/lldap/secrets/jwt_secret
+sudo chmod 700 /var/lib/services/lldap/secrets 
+sudo chmod 600 /var/lib/services/lldap/secrets/admin_password
+sudo chmod 600 /var/lib/services/lldap/secrets/jwt_secret
 
 # If needed
 sudo systemctl restart lldap
@@ -68,7 +68,7 @@ Require : LLDPA
 
 1. Pre-build setup
 ```bash
-sudo mkdir -p /var/lib/authentik
+sudo mkdir -p /var/lib/services/authentik
 
 # Create a fresh file or overwrite the broken one
 # Generate a new random password and key
@@ -79,23 +79,23 @@ KEY=$(openssl rand -base64 36)
 # AUTHENTIK_SECRET_KEY: Used to encrypt browser cookies and tokens
 # AUTHENTIK_POSTGRESQL__PASSWORD: The password the server uses to talk to the database.
 # POSTGRES_PASSWORD: The password the database sets for itself on startup. 
-sudo bash -c "cat <<EOF > /var/lib/authentik/secrets.env
+sudo bash -c "cat <<EOF > /var/lib/services/authentik/secrets.env
 AUTHENTIK_SECRET_KEY=$KEY
 AUTHENTIK_POSTGRESQL__PASSWORD=$PW
 POSTGRES_PASSWORD=$PW
 EOF"
 
 # Secure the file initially
-sudo chmod 600 /var/lib/authentik/secrets.env
+sudo chmod 600 /var/lib/services/authentik/secrets.env
 ```
 
 2. Post-build setup
 ```bash
 # Permission changes (The 'authentik' user exists only after rebuild)
-sudo chown authentik:authentik /var/lib/authentik/secrets.env
-sudo chown -R 1000:1000 /var/lib/authentik/media
-sudo chown -R 1000:1000 /var/lib/authentik/certs
-sudo chown -R 1000:1000 /var/lib/authentik/custom-templates
+sudo chown authentik:authentik /var/lib/services/authentik/secrets.env
+sudo chown -R 1000:1000 /var/lib/services/authentik/media
+sudo chown -R 1000:1000 /var/lib/services/authentik/certs
+sudo chown -R 1000:1000 /var/lib/services/authentik/custom-templates
 
 # NOW restart services so it reads the password file
 sudo systemctl restart docker-authentik-server
@@ -113,7 +113,7 @@ systemctl restart docker-authentik-server
 systemctl restart docker-authentik-worker
 
 # Then put the bootstrap admin password manually with:
-# sudo vim /var/lib/authentik/secrets.env
+# sudo vim /var/lib/services/authentik/secrets.env
 # AUTHENTIK_BOOTSTRAP_PASSWORD=YourStrongPasswordHere
 # AUTHENTIK_BOOTSTRAP_EMAIL=YourEmail
 ```
@@ -121,7 +121,7 @@ systemctl restart docker-authentik-worker
 Then, after cloudflare work and you have access to the website, you will need to 
 1. Log in as admin (login: akadmin | password: the one set as AUTHENTIK_BOOTSTRAP_PASSWORD). 
 2. Go to `Settings` and `Change password`
-3. Remove the `BOOTSTRAP` env variables in `/var/lib/authentik/secrets.env`
+3. Remove the `BOOTSTRAP` env variables in `/var/lib/services/authentik/secrets.env`
 
 For the step `1. login`, if you have "Invalid password":
 1. Find the `.py` script : `sudo docker exec -it authentik-server find / -name manage.py 2>/dev/null`
@@ -287,16 +287,25 @@ To solve that:
 
 ## Immich
 
-
-Fix files errors :
+1. Pre-build Setup (Create Secrets)
 ```bash
-sudo mkdir -p /mnt/storage/services/immich
-sudo chown -R immich:immich /mnt/storage/services/immich
-sudo chmod -R 750 /mnt/storage/services/immich
+PW=$(openssl rand -base64 24)
+sudo mkdir -p /var/lib/services/immich/secrets
+sudo bash -c "cat <<EOF > /var/lib/services/immich/secrets/secrets.env
+DB_PASSWORD=$(openssl rand -base64 24)
+POSTGRES_PASSWORD=\$PW
+EOF"
+sudo chmod 600 /var/lib/services/immich/secrets/secrets.env
 ```
 
 fix db issues :
 ```bash
+# Ensure photos go to the 4TB Drive!
+sudo mkdir -p /mnt/storage-4tb/services/immich
+sudo chown -R 1000:1000 /mnt/storage-4tb/services/immich
+sudo chmod -R 777 /mnt/storage-4tb/services/immich
+
+# Fix DB extensions
 sudo -u postgres psql -d immich -c "UPDATE pg_extension SET extowner = (SELECT oid FROM pg_roles WHERE rolname = 'immich') WHERE extname = 'vectors';"
 ```
 
@@ -317,21 +326,21 @@ Create a twitch IGDB API key :
 
 ```bash
 # Create the directory
-sudo mkdir -p /var/lib/romm
-
+sudo mkdir -p /var/lib/services/romm/secrets
+sudo mkdir -p /var/lib/services/romm/config
 # Generate passwords
 DB_PASS=$(openssl rand -base64 24)
 AUTH_SECRET=$(openssl rand -base64 32)
 
 # Write to the environment file. We include both variable names so the same file works for App and DB
-sudo bash -c "cat <<EOF > /var/lib/romm/secrets.env
+sudo bash -c "cat <<EOF > /var/lib/services/romm/secrets/secrets.env
 DB_PASSWD=$DB_PASS
 MARIADB_PASSWORD=$DB_PASS
 MARIADB_ROOT_PASSWORD=$(openssl rand -base64 24)
 ROMM_AUTH_SECRET_KEY=$AUTH_SECRET
 EOF"
 
-sudo vim /var/lib/romm/secrets.env
+sudo vim /var/lib/services/romm/secrets.env
 # Add the OIDC Client ID and Secret 
 # OIDC_CLIENT_ID=your_authentik_client_id_here
 # OIDC_CLIENT_SECRET=your_authentik_client_secret_here
@@ -340,16 +349,16 @@ sudo vim /var/lib/romm/secrets.env
 # IGDB_CLIENT_SECRET=...
 
 # Secure the file
-sudo chmod 600 /var/lib/romm/secrets.env
+sudo chmod 600 /var/lib/services/romm/secrets/secrets.env
 
 # Add an empty config file : 
-sudo touch /mnt/storage/services/romm/config/config.yml
+sudo touch /var/lib/services/romm/config/config.yml
 ```
 
 
 To download the roms (2h30)
 ```bash
-cd /mnt/storage/services/romm/library
+cd /mnt/storage-4tb/services/romm/library
 nix-shell -p internetarchive
 ia configure
 # Enter your Internet Archive email and password
@@ -423,7 +432,7 @@ vim /mnt/storage/services/romm/library/myrient_download.sh
 #!/usr/bin/env bash
 
 # Base Library Path
-BASE_PATH="/mnt/storage/services/romm/library/roms"
+BASE_PATH="/mnt/storage-4tb/services/romm/library/roms"
 
 # Define the platforms and their Myrient URLs
 declare -A platforms
@@ -471,23 +480,16 @@ launch the detached script
 bash /mnt/storage/services/romm/library/myrient_download.sh &
 ```
 
-## Filebrowser
-
-Create user manually
-```bash
-docker exec -it filebrowser /filebrowser users add <USERNAME-AUTHENTIK> dummy-password (--perm.admin)
-```
 
 ## Filebrowser quantum
 
-
 ```bash
 # Create the directories
-sudo mkdir -p /var/lib/filebrowser-quantum/data
+sudo mkdir -p /mnt/storage-4tb/services/filebrowser-quantum/files
 sudo mkdir -p /mnt/storage/services/filebrowser-quantum/files
 
 # Create the initial config.yaml mapping /srv as the primary file location
-sudo bash -c 'cat <<EOF > /var/lib/filebrowser-quantum/data/config.yaml
+sudo bash -c 'cat <<EOF > /var/lib/services/filebrowser-quantum/data/config.yaml
 server:
   port: 80
   database: "/home/filebrowser/data/database.db"
@@ -499,16 +501,16 @@ server:
 EOF'
 
 # Securely set up the initial admin password
-sudo bash -c 'cat <<EOF > /var/lib/filebrowser-quantum/secrets.env
+sudo bash -c 'cat <<EOF > /var/lib/services/filebrowser-quantum/secrets.env
 FILEBROWSER_ADMIN_PASSWORD=$(openssl rand -base64 24)
 EOF'
 
-sudo chmod 600 /var/lib/filebrowser-quantum/secrets.env
+sudo chmod 600 /var/lib/services/filebrowser-quantum/secrets.env
 ```
 
 Add OIDC config :
 ```bash
-sudo vim /var/lib/filebrowser-quantum/secrets.env
+sudo vim /var/lib/services/filebrowser-quantum/secrets.env
 # FILEBROWSER_OIDC_CLIENT_ID=your_authentik_client_id_here
 # FILEBROWSER_OIDC_CLIENT_SECRET=your_authentik_client_secret_here
 ```
@@ -525,15 +527,15 @@ Because your repository is private in Forgejo, the build script needs permission
 2. Generate a new Token named quartz-builder (Grant it "Read" access to repositories).
 3. Then add the forgejo key :
 ```bash
-sudo mkdir -p /var/lib/quartz
+sudo mkdir -p /var/lib/services/quartz
 
 # Create the secret file
-sudo bash -c "cat <<EOF > /var/lib/quartz/secrets.env
+sudo bash -c "cat <<EOF > /var/lib/services/quartz/secrets.env
 FORGEJO_TOKEN=your_forgejo_token_here
 EOF"
 
 # Secure the file so only root (who runs the systemd service) can read it
-sudo chmod 600 /var/lib/quartz/secrets.env
+sudo chmod 600 /var/lib/services/quartz/secrets.env
 ```
 
 Then create a forgejo webhook : 
@@ -544,72 +546,16 @@ Then create a forgejo webhook :
 5. Optional : Test the webhook (small button at the bottom of the page) while looking at : `journalctl -fu build-quartz.service`
 
 
-## Nextcloud & Paperless
+## Borgmatic (Backups)
 
-1. Pre-build setup (Generate Secrets & Folders)
+Backs up the fast SSD (`/var/lib/services`) and the bulk HDD (`/mnt/storage-4tb`) to the backup drive (`/mnt/storage`). It automatically safely dumps Postgres/MariaDB databases before backing up.
+
+1. Pre-build setup (Generate Repository Passphrase)
 ```bash
-# Set up Nextcloud Secrets
-sudo mkdir -p /var/lib/nextcloud
-sudo bash -c "cat <<EOF > /var/lib/nextcloud/secrets.env
-POSTGRES_PASSWORD=$(openssl rand -base64 24)
-NEXTCLOUD_ADMIN_PASSWORD=$(openssl rand -base64 16)
-NEXTCLOUD_ADMIN_USER=admin
-EOF"
-sudo chmod 600 /var/lib/nextcloud/secrets.env
-
-# Set up Paperless Secrets
-sudo mkdir -p /var/lib/paperless
-PAPERLESS_DB=$(openssl rand -base64 24)
-sudo bash -c "cat <<EOF > /var/lib/paperless/secrets.env
-POSTGRES_PASSWORD=$PAPERLESS_DB
-PAPERLESS_DBPASS=$PAPERLESS_DB
-PAPERLESS_ADMIN_PASSWORD=$(openssl rand -base64 16)
-PAPERLESS_ADMIN_USER=admin
-EOF"
-sudo echo "PAPERLESS_SECRET_KEY=$(openssl rand -base64 32)" | sudo tee -a /var/lib/paperless/secrets.env
-sudo chmod 600 /var/lib/paperless/secrets.env
-
-# Create folders and set permissions for the shared User ID (33)
-sudo mkdir -p /mnt/storage/services/nextcloud/{db,redis,app,data}
-sudo mkdir -p /mnt/storage/services/paperless/{db,redis,data,media,export,consume}
-
-# Change ownership of Paperless folders to UID 33 (Nextcloud's www-data) so they can share
-sudo chown -R 33:33 /mnt/storage/services/paperless
+sudo mkdir -p /var/lib/borgmatic
+echo "$(openssl rand -base64 32)" | sudo tee /var/lib/borgmatic/passphrase
+sudo chmod 600 /var/lib/services/passphrase
 ```
-
-2. Linking them together (Post-Installation)
-Wait a few minutes for the first boot. Nextcloud will automatically delete the bloated apps in the background. Once you can log into Nextcloud (with the admin password : `sudo cat /var/lib/services/nextcloud/secrets.env` -> `NEXTCLOUD_ADMIN_PASSWORD`):
-
-  1. Click your Profile icon -> Administration settings -> External storages (on the left menu).
-  2. Add a new storage:
-    Folder name: Paperless-Inbox (or whatever you want)
-    External storage: Local
-    Authentication: None
-    Configuration (Path): /paperless-consume
-    Available for: Check the admin box (or your specific user)
-  3. Click the Checkmark.
-
-Workflow: Now, if you drop a PDF into the Paperless-Inbox folder via your Nextcloud Desktop/Mobile app, Paperless will instantly scan it, add it to your Paperless dashboard, and safely remove it from Nextcloud!
-
-3. Then add OIDC auth :
-
-  1. Nextcloud :
-    1. `sudo vim /var/lib/nextcloud/secrets.env`
-    2. copy : 
-      ```bash
-      NEXTCLOUD_OIDC_CLIENT_ID=client_id_nextcloud
-      NEXTCLOUD_OIDC_CLIENT_SECRET=client_secret_nextcloud
-      ```
-    3. 
-  2. Paperless :
-    1. `sudo vim /var/lib/paperless/secrets.env`
-    2. copy : 
-      ```bash
-        PAPERLESS_OIDC_CLIENT_ID=client_id_paperless
-        PAPERLESS_OIDC_CLIENT_SECRET=client_secret_paperless
-      ```
-    3. 
-
 
 
 # To add other services

@@ -79,7 +79,7 @@ in
   # Ensure the host directories exist with wide permissions 
   systemd.tmpfiles.rules = [
     "d ${myConstants.paths.servicesSSD}/immich/postgres 0777 root root -"
-    "d ${myConstants.paths.servicesSSD}/immich/photos 0777 root root -"
+    "d ${myConstants.paths.services4TB}/immich/photos 0777 root root -"
     "d ${myConstants.paths.servicesSSD}/immich/model-cache 0777 root root -"
   ];
 

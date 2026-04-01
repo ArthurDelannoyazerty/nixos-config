@@ -48,6 +48,9 @@
 
     # Network services
     ../../modules/security-watchdog.nix
+
+    # Backups
+    ../../modules/services/borgmatic.nix
     
     # users
     ../../users/arthur-homelab/default.nix
