@@ -550,11 +550,34 @@ Then create a forgejo webhook :
 
 Backs up the fast SSD (`/var/lib/services`) and the bulk HDD (`/mnt/storage-4tb`) to the backup drive (`/mnt/storage`). It automatically safely dumps Postgres/MariaDB databases before backing up.
 
-1. Pre-build setup (Generate Repository Passphrase)
+Pre-build setup (Generate Repository Passphrase)
 ```bash
 sudo mkdir -p /var/lib/borgmatic
 echo "$(openssl rand -base64 32)" | sudo tee /var/lib/borgmatic/passphrase
 sudo chmod 600 /var/lib/services/passphrase
+```
+After a rebuild, execute the command :
+```bash
+sudo borgmatic init -e repokey-blake2
+# Set up the borgmatic pass
+```
+
+Monitoring commands
+```bash
+# See logs for last days
+sudo journalctl -u borgmatic.service --since yesterday
+
+# See current lgos
+sudo journalctl -fu borgmatic.service
+
+# Manually start the service once (nice for testing + the first backup surveillance)
+sudo systemctl start borgmatic.service
+
+# Bormatic info
+sudo borgmatic info
+
+sudo borgmatic list
+
 ```
 
 
