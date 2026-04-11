@@ -64,7 +64,7 @@ in
       keep_daily = 7;
       keep_weekly = 4;
       keep_monthly = 6;
-      match_archives  = "homelab-";
+      match_archives  = "homelab-*";
 
 
       # bit rot check
