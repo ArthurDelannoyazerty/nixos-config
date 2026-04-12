@@ -2,8 +2,11 @@
 { config, lib, myConstants, ... }:
 
 let
-  # Extract just the port numbers from our constants
-  internalPorts = lib.mapAttrsToList (name: value: value.port) myConstants.services;
+  # 1. Filter out services that don't have a 'port' attribute defined
+  servicesWithPorts = lib.filterAttrs (name: value: value ? port) myConstants.services;
+
+  # 2. Extract just the port numbers from the filtered list
+  internalPorts = lib.mapAttrsToList (name: value: value.port) servicesWithPorts;
   
   # The currently open firewall ports
   openPorts = config.networking.firewall.allowedTCPPorts;
@@ -14,7 +17,7 @@ let
 in
 {
   # If 'exposedPort' is NOT null, crash the build with a message
-  assertions = [
+  assertions =[
     {
       assertion = (exposedPort == null);
       message = "CRITICAL SECURITY ERROR: You have opened port ${toString exposedPort} in the firewall, but it is defined as an internal service in constants.nix! Remove it from networking.firewall.allowedTCPPorts.";

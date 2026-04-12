@@ -2,7 +2,10 @@
 
 let
   port = myConstants.services.power-monitor.port;
-  kwhPrice = 0.22; # Price in €/kWh
+  # Formule du prix moyen pondéré Tempo (€/kWh) : 
+  # ((300j * moy_bleu + 43j * moy_blanc + 22j * moy_rouge) / 365 jours) / 100 pour conversion cts -> €
+  kwhPrice = ((300.0 * 15.16) + (43.0 * 17.47) + (22.0 * 52.32)) / 365.0 / 100.0;   # ~ 0,1767 €/kWh
+
   idleOffset = 15; # Watt offset for non-CPU components (Motherboard, RAM, Fans)
 
   powerScript = pkgs.writeScriptBin "power-monitor" ''
@@ -52,10 +55,9 @@ let
             # Monthly Cost Calculation
             monthly_cost = (total_watts / 1000) * ${toString kwhPrice} * 24 * 30
 
-            # Return a FLAT JSON object so Homepage can find the keys
             data = {
-                "Usage": f"{total_watts:.1f} W",
-                "Cost": f"{monthly_cost:.2f}€"
+                "Usage": round(total_watts, 1),
+                "Cost": round(monthly_cost, 2)
             }
 
             self.send_response(200)
@@ -66,7 +68,7 @@ let
     # Allow the port to be reused immediately if service restarts
     socketserver.TCPServer.allow_reuse_address = True
     
-    with socketserver.TCPServer(("127.0.0.1", ${toString port}), Handler) as httpd:
+    with socketserver.TCPServer(("0.0.0.0", ${toString port}), Handler) as httpd:
         print(f"Serving power stats on port ${toString port}")
         httpd.serve_forever()
   '';

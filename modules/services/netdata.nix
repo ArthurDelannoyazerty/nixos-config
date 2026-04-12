@@ -1,13 +1,64 @@
-{myConstants, ... }:
+{ config, pkgs, myConstants, ... }:
+
 {
-  virtualisation.oci-containers.containers.netdata = {
-    image = "netdata/netdata:latest";
-    ports = [ (myConstants.bind myConstants.services.netdata.port) ];
-    extraOptions = [ "--cap-add=SYS_PTRACE" "--security-opt=apparmor=unconfined" ];
-    volumes = [
-      "/proc:/host/proc:ro"
-      "/sys:/host/sys:ro"
-      "/var/run/docker.sock:/var/run/docker.sock:ro"
-    ];
+  services.netdata = {
+    enable = true;
+
+    # STEP 1: Override the package to include the Modern Dashboard (unfree)
+    package = pkgs.netdata.override { 
+      withCloudUi = true; 
+    };
+
+    configDir = {
+      "go.d/sensors.conf" = pkgs.writeText "sensors.conf" ''
+        jobs:
+          - name: sensors
+            binary_path: ${pkgs.lm_sensors}/bin/sensors
+      '';
+    };
+
+
+    config = {
+      global = {
+        # STEP 2: Tell Netdata exactly where the web files are in the Nix store
+        "web files directory" = "${config.services.netdata.package}/share/netdata/web";
+        
+        "update every" = 5;
+        "memory mode" = "ram";
+        "history" = 3600;       # How much RAM to give Netdata's internal history (in MB)
+      };
+
+      web = {
+        # Bind to all IPs so the Docker container (172.17.0.x) can reach it
+        "bind to" = "0.0.0.0";
+        # Allow localhost AND the Docker Subnet (172.17.*)
+        "allow connections from" = "localhost 127.0.0.1 ::1 172.17.* 192.168.*";
+        "allow dashboard from" = "localhost 127.0.0.1 ::1 172.17.* 192.168.*";
+      };
+
+      cloud = {
+        "enabled" = "no";
+      };
+      analytics = {
+        "enabled" = "no";
+      };
+      ml = {
+        "enabled" = "no";
+      };
+      
+      "plugin:freeipmi" = {
+       "enabled" = "no";
+      };
+    };
+  };
+
+  # STEP 3: Security & Sandbox Fix
+  # Systemd on NixOS sandboxes Netdata. We must allow it to read its own store path.
+  systemd.services.netdata.serviceConfig = {
+    RuntimeDirectory = "netdata";
+    RuntimeDirectoryMode = "0750";
+    ProtectSystem = "full";
+    # This allows the netdata process to see the web files in /nix/store
+    BindReadOnlyPaths = [ "/nix/store" ];
   };
 }

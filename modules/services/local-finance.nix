@@ -85,11 +85,11 @@ in
   virtualisation.oci-containers.containers."${serviceName}" = {
     image = "${serviceName}:latest";
     ports = [ (myConstants.bind servicePort) ];
-    volumes = [ "/var/lib/${serviceName}/data:/app/data" ];
+    volumes = [ "${myConstants.paths.servicesSSD}/${serviceName}/data:/app/data" ];
     extraOptions = [ "--pull=never" ];
   };
   
   systemd.tmpfiles.rules = [
-    "d /var/lib/${serviceName}/data 0777 root root -"
+    "d ${myConstants.paths.servicesSSD}/${serviceName}/data 0777 root root -"
   ];
 }

@@ -16,7 +16,7 @@
   services.tailscale.enable = true;
   networking.firewall.checkReversePath = "loose";
   networking.firewall.allowedTCPPorts = [ 22 ];
-  networking.firewall.trustedInterfaces = [ "tailscale0" ];
+  networking.firewall.trustedInterfaces = [ "tailscale0" "docker0" ];
 
   virtualisation.oci-containers.backend = "docker";
 

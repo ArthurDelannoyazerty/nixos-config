@@ -47,4 +47,10 @@ in
     force  = true;
   };
 
+  # Starship
+  xdg.configFile."starship.toml" = {
+    source = link "starship/starship.toml";
+    force = true;
+  };
+
 }

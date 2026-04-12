@@ -1,7 +1,7 @@
 { config, pkgs, myConstants, ... }:
 
 let
-  envFile = "/var/lib/authentik/secrets.env";
+  envFile = "${myConstants.paths.servicesSSD}/authentik/secrets.env";
 
   # Common optimization settings to make Authentik fast on Homelabs
   commonEnv = {
@@ -11,8 +11,8 @@ let
     AUTHENTIK_AUTHENTIK__GEOIP = "/dev/null"; # This effectively disables GeoIP
     
     # 2. Redis/DB Connection info
-    AUTHENTIK_REDIS__HOST = "authentik-redis";
-    AUTHENTIK_POSTGRESQL__HOST = "authentik-db";
+    AUTHENTIK_REDIS__HOST = myConstants.services.authentik-redis.containerName;
+    AUTHENTIK_POSTGRESQL__HOST = myConstants.services.authentik-db.containerName;
     AUTHENTIK_POSTGRESQL__USER = "authentik";
     AUTHENTIK_POSTGRESQL__NAME = "authentik";
 
@@ -23,55 +23,73 @@ let
   };
 in
 {
+  # Virtual user for secrets owning
+  users.groups.authentik = { gid = 1000; };
+  users.users.authentik = {
+    isSystemUser = true;
+    group = "authentik";
+  };
+
   virtualisation.oci-containers.containers = {
-    # 1. The Database
-    authentik-db = {
-      image = "docker.io/library/postgres:16-alpine";
+    # Server
+    ${myConstants.services.authentik.containerName} = {
+      image = "ghcr.io/goauthentik/server:${myConstants.services.authentik.version}";
+      dependsOn = [ 
+        myConstants.services.authentik-db.containerName
+        myConstants.services.authentik-redis.containerName 
+      ];
+      cmd = [ "server" ];
+      ports = [ (myConstants.bind myConstants.services.authentik.port) ];
+
+      environment = commonEnv // {
+        AUTHENTIK_LISTEN__HTTP = "0.0.0.0:${toString myConstants.services.authentik.port}";
+      };
+      environmentFiles = [ envFile ];
+      volumes = [ 
+        "${myConstants.paths.servicesSSD}/authentik/media:/media" 
+        "${myConstants.paths.servicesSSD}/authentik/custom-templates:/templates" 
+       ];
+      extraOptions = [ 
+        "--add-host=host.docker.internal:host-gateway" 
+        "--link=${myConstants.services.authentik-db.containerName}:${myConstants.services.authentik-db.containerName}" 
+        "--link=${myConstants.services.authentik-redis.containerName}:${myConstants.services.authentik-redis.containerName}" 
+      ];
+    };
+
+    # The Database
+    ${myConstants.services.authentik-db.containerName} = {
+      image = "docker.io/library/postgres:${myConstants.services.authentik-db.version}";
       environment = {
         POSTGRES_DB = "authentik";
         POSTGRES_USER = "authentik";
       };
       environmentFiles = [ envFile ];
-      volumes = [ "/var/lib/authentik/postgres:/var/lib/postgresql/data" ];
+      volumes = [ "${myConstants.paths.servicesSSD}/authentik/postgres:/var/lib/postgresql/data" ];
+      ports = [ "127.0.0.1:${toString myConstants.services.authentik-db.port}:6379" ];
     };
 
-    # 2. The Cache
-    authentik-redis = {
-      image = "docker.io/library/redis:alpine";
+    # The Cache
+    ${myConstants.services.authentik-redis.containerName} = {
+      image = "docker.io/library/redis:${toString myConstants.services.authentik-redis.version}";
       cmd = [ "redis-server" "--maxmemory" "256mb" "--maxmemory-policy" "allkeys-lru" ];
+      ports = [ "127.0.0.1:${toString myConstants.services.authentik-redis.port}:6379" ];
     };
 
-    # 3. Server
-    authentik-server = {
-      image = "ghcr.io/goauthentik/server:2024.12.3";
-      dependsOn = [ "authentik-db" "authentik-redis" ];
-      cmd = [ "server" ];
-      ports = [ (myConstants.bind myConstants.services.authentik.port) ];
-
-      environment = commonEnv // {
-        AUTHENTIK_LISTEN__HTTP = "0.0.0.0:9000";
-      };
-      environmentFiles = [ envFile ];
-      volumes = [ "/var/lib/authentik/media:/media" "/var/lib/authentik/custom-templates:/templates" ];
-      # Find the database by name
-      extraOptions = [ 
-        "--link=authentik-db:authentik-db" 
-        "--link=authentik-redis:authentik-redis" 
-      ];
-    };
-
-    # 4. The Worker (Handles the heavy lifting)
-    authentik-worker = {
-      image = "ghcr.io/goauthentik/server:2024.12.3";
-      dependsOn = [ "authentik-db" "authentik-redis" ];
+    # The Worker
+    ${myConstants.services.authentik-worker.containerName} = {
+      image = "ghcr.io/goauthentik/server:${toString myConstants.services.authentik-worker.version}";
+      dependsOn = [ (myConstants.services.authentik-db.containerName) (myConstants.services.authentik-redis.containerName) ];
       cmd = [ "worker" ];
       environment = commonEnv;
       environmentFiles = [ envFile ];
-      volumes = [ "/var/lib/authentik/media:/media" "/var/lib/authentik/certs:/certs" ];
+      volumes = [ 
+        "${myConstants.paths.servicesSSD}/authentik/media:/media" 
+        "${myConstants.paths.servicesSSD}/authentik/certs:/certs"  
+      ];
       extraOptions = [ 
-        "--link=authentik-db:authentik-db" 
-        "--link=authentik-redis:authentik-redis" 
+        "--link=${myConstants.services.authentik-db.containerName}:${myConstants.services.authentik-db.containerName}" 
+        "--link=${myConstants.services.authentik-redis.containerName}:${myConstants.services.authentik-redis.containerName}" 
       ];
     };
   };
-}
+} 

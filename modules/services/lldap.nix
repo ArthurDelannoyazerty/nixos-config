@@ -1,7 +1,13 @@
-# /modules/services/lldap/lldap.nix
 { config, pkgs, myConstants, ... }:
 
 {
+  # Virtual user for secrets owning
+  users.groups.lldap = { };
+  users.users.lldap = {
+    isSystemUser = true;
+    group = "lldap";
+  };
+
   services.lldap = {
     enable = true;
     # Silence the fact that modifying password in the UI desynchronize it from the one in the file that stays
@@ -13,11 +19,9 @@
       http_url = "http://${myConstants.services.lldap.subdomain}.${myConstants.publicDomain}";
       ldap_base_dn = "dc=arthur-lab,dc=com";   
 
-      jwt_secret_file = "/var/lib/lldap/secrets/jwt_secret";
-      ldap_user_pass_file = "/var/lib/lldap/secrets/admin_password";
-
-      # Allows Authentik to talk to LLDAP      
-      database_config.file = "/var/lib/lldap/lldap.db";
+      jwt_secret_file =      "${myConstants.paths.servicesSSD}/lldap/jwt_secret_file";
+      ldap_user_pass_file =  "${myConstants.paths.servicesSSD}/lldap/secrets/admin_password";
+      database_config.file = "${myConstants.paths.servicesSSD}/lldap/users.db";
     };
   };
 

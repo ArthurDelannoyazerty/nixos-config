@@ -18,20 +18,39 @@
     ../../modules/services/authentik.nix
     ../../modules/services/caddy.nix
     ../../modules/services/docker-socket-proxy.nix
-    ../../modules/services/headscale.nix
-    ../../modules/services/headscale-ui.nix
+    # ../../modules/services/headscale.nix
+    # ../../modules/services/headscale-ui.nix
     ../../modules/services/cloudflared.nix
     ../../modules/services/lldap.nix
 
     # --- APPS ---
     ../../modules/services/homepage.nix
     ../../modules/services/local-finance.nix
-    ../../modules/services/glances.nix
+    # ../../modules/services/glances.nix
     ../../modules/services/power-monitor.nix
     ../../modules/services/vikunja.nix
+    ../../modules/services/netdata.nix
+    # ../../modules/services/filebrowser.nix
+    ../../modules/services/scrutiny.nix
+    ../../modules/services/uptime-kuma.nix
+    ../../modules/services/forgejo.nix 
+    ../../modules/services/immich.nix
+    ../../modules/services/n8n.nix 
+    ../../modules/services/romm.nix 
+    ../../modules/services/grafana.nix 
+    ../../modules/services/prometheus.nix 
+    ../../modules/services/loki.nix
+    ../../modules/services/promtail.nix
+    # ../../modules/services/nextcloud.nix
+    # ../../modules/services/paperless-ngx.nix
+    ../../modules/services/filebrowser-quantum.nix  
+    ../../modules/services/quartz.nix  
 
     # Network services
-    ../../modules/security-watchdog.nix   # Keeped to check that no port are open to internet
+    ../../modules/security-watchdog.nix
+
+    # Backups
+    ../../modules/services/borgmatic.nix
     
     # users
     ../../users/arthur-homelab/default.nix
@@ -56,20 +75,104 @@
 
   console.keyMap = "fr";
 
-  # Do not sleep when the lid is closed
-  services.logind.settings = {
-    Login = {
-      HandleLidSwitch = "ignore";
-      HandleLidSwitchExternalPower = "ignore";
-      HandleLidSwitchDocked = "ignore";
-    };
-  };
   
-  # Optional: Prevent the system from sleeping automatically due to inactivity
+  boot.kernelModules = [ 
+    # CPU temps
+    "coretemp" 
+    # Load the actual INTEL HARDWARE WATCHDOG
+    "iTCO_wdt" 
+  ];
+
+  /* -------------------------------------------------------------------------- */
+  /*                                POWER OPTIONS                               */
+  /* -------------------------------------------------------------------------- */
+  # LOGIND: Correct NixOS syntax to prevent lid-close suspension
+  services.logind.settings.Login.HandleLidSwitchDocked = "ignore";
+  services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
+  services.logind.settings.Login.HandleLidSwitch = "ignore";
+
+  # SYSTEMD: Disable all sleep targets
   systemd.targets.sleep.enable = false;
   systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
+
+  # KERNEL
+  boot.kernelParams = [
+    # Disable Display C-States and Panel Self-Refresh. 
+    # This prevents the SoC electrical deadlock when no monitor is attached.
+    "i915.enable_dc=0"
+    "i915.enable_psr=0"
+
+    # Disable SATA Link Power Management (fixes SATA/NVMe controller lockups)
+    "ahci.mobile_lpm_policy=1"
+
+    # Disable Active State Power Management for PCIe
+    "pcie_aspm=off"
+
+    # Prevent deep CPU sleep states that cause "fainting"
+    "intel_idle.max_cstate=7"
+    
+    # Disable NVMe power management (often causes freezes on cheap SSDs)
+    "nvme_core.default_ps_max_latency_us=0"
+
+    # Emergency: Reboot the computer automatically 10 seconds after a crash
+    "panic=10"
+    "oops=panic"
+    "nmi_watchdog=panic"
+    "softlockup_panic=1"
+  ];
+
+  # This uses a "Dead Man's Switch". If the CPU freezes, the hardware 
+  # will notice the lack of "ticks" and force a reboot.
+  # Configure systemd to use the hardware watchdog (More reliable than watchdogd)
+  services.watchdogd.enable = false; # Disable the external daemon
+  systemd.settings.Manager.RuntimeWatchdogSec = "20s"; # systemd will pet the HW watchdog every 10s
+  systemd.settings.Manager.RebootWatchdogSec = "1m";   # If systemd hangs for 1m, the motherboard cuts power
+
+  # 4. NETWORK: Disable standard power management
+  powerManagement.enable = false; # Global disable
+  
+  # Prevent NetworkManager from putting WiFi/Ethernet to sleep
+  networking.networkmanager.wifi.powersave = false;
+
+  # Ensure Intel Microcode is updated (fixes low-level CPU bugs)
+  hardware.cpu.intel.updateMicrocode = true;
+
+  # ETHTOOL: Explicitly disable Energy Efficient Ethernet (EEE)
+  # Note: Requires 'ethtool' in system packages
+  environment.systemPackages = [ pkgs.ethtool ];
+
+  # Prevent Swap Thrashing lockups by enabling systemd-oomd
+  # This kills memory-hogging apps before they lock up the entire system
+  systemd.oomd.enable = true;
+  
+  systemd.services.disable-nic-energy-saving = {
+    description = "Disable Ethernet Energy Saving (EEE)";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      # CHANGE THIS NAME to what you found in Step 1 (e.g. eno1, eth0)
+      INTERFACE="eno1"
+      
+      # Check if interface exists before running command to avoid errors
+      if [ -d "/sys/class/net/$INTERFACE" ]; then
+        ${pkgs.ethtool}/bin/ethtool --set-eee $INTERFACE eee off || true
+        echo "Disabled EEE for $INTERFACE"
+      else
+        echo "Interface $INTERFACE not found, skipping EEE disable."
+      fi
+    '';
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                            END OF POWER OPTIONS                            */
+  /* -------------------------------------------------------------------------- */
+  
 
   # Add 4GB of emergency swap memory  
   swapDevices = [ {
