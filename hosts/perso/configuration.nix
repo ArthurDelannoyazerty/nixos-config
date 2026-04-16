@@ -29,8 +29,29 @@
   };
 
   # Basic system settings
-  boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.enable = false;    # Prefer grub
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.grub = {
+    enable = true;
+    efiSupport = true;
+    device = "nodev";           # "nodev" is required for EFI systems
+    useOSProber = true;         # Automatically detects Windows and other OS
+
+    extraEntries = ''
+      menuentry "BIOS / UEFI Settings" --class uefi {
+        fwsetup
+      }
+    '';
+  };
+
+  boot.loader.grub2-theme = {
+    enable = true;
+    theme = "vimix";         # Choose between: "tela", "vimix", "stylish", or "whitesur"
+    footer = true;           # Displays a nice footer at the bottom
+    screen = "1080p";        # Choose resolution: "1080p", "2k", "4k", "ultrawide", or "ultrawide2k"
+    icon = "white";          # Choose icon style: "color", "white", or "whitesur"
+  };
+
 
   networking.hostName = "nixos-perso";
 

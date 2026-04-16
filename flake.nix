@@ -19,6 +19,8 @@
       flake = false;
     };
     
+    grub2-themes.url = "github:vinceliuice/grub2-themes";
+
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
@@ -66,6 +68,7 @@
             {
               nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
             }
+            inputs.grub2-themes.nixosModules.default
           ];
         };
 
