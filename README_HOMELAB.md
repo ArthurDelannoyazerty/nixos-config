@@ -635,3 +635,10 @@ If you have trouble by landing on a weird bugged page with an authentik error, v
 
 1. Change the version in `constants.nix`
 2. Execute `sudo nixos-rebuild switch --flake .#homelab --impure` and then the service must be rebooted
+
+# To update a service
+
+1. Update the lock :  `nix flake update SERVICE_NAME` (example: `nix flake update local-finance`)
+2. Stop the service (`docker stop local-finance`)
+3. Rebuild : `sudo nixos-rebuild switch --flake .#homelab --impure`
+
