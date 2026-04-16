@@ -1,5 +1,4 @@
-# /modules/home-manager/vscode.nix
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, config, dotfilesDir, lib, ... }:
 
 let
   marketplace = pkgs.vscode-marketplace;
@@ -70,6 +69,18 @@ programs.vscode = {
       codediagram.codediagram 
       marketplace."076923".python-image-preview 
     ];
+  };
+
+  home.file = {
+    "${config.xdg.configHome}/Code/User/settings.json" = lib.mkForce {
+      source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/code/settings.json";
+    };
+    "${config.xdg.configHome}/Code/User/keybindings.json" = lib.mkForce {
+      source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/code/keybindings.json";
+    };
+    "${config.xdg.configHome}/Code/User/launch.json" = lib.mkForce {
+      source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/code/launch.json";
+    };
   };
 
 }

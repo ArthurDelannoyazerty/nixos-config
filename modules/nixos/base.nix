@@ -1,4 +1,3 @@
-# /modules/nixos/base.nix
 { pkgs, ... }:
 
 {
@@ -43,6 +42,10 @@
     zip
   ];
 
+  fonts.packages = with pkgs; [
+    nerd-fonts.iosevka
+    nerd-fonts.iosevka-term
+  ];
 
   # Add binary caches to speed up downloads
   nix.settings = {
