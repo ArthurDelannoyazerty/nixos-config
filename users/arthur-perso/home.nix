@@ -52,6 +52,11 @@ in
     size = 24;
   };
   gtk.enable = true;
+  qt = {
+    enable = true;
+    platformTheme.name = "qtct"; # This tells Nix to handle the integration
+    style.name = "kvantum";      # Kvantum is generally the best for Hyprland aesthetics
+  };
 
   # set the hyprland.conf to the right place
   # Note: We use the 'link' function and pass the path relative to the repo root
