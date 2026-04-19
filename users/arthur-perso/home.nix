@@ -41,6 +41,8 @@ in
     brightnessctl    # For laptop brightness keys
 
     swayosd     # On-screen display for brightness/volume changes 
+
+    reversal-icon-theme
   ];
 
   # Hyprland cursor
@@ -56,6 +58,62 @@ in
     enable = true;
     platformTheme.name = "qtct"; # This tells Nix to handle the integration
     style.name = "kvantum";      # Kvantum is generally the best for Hyprland aesthetics
+  };
+
+  # Hide rofi menu items
+  xdg.desktopEntries = {
+    # Hide htop from the application menu
+    htop = {
+      name = "htop";
+      noDisplay = true;
+    };
+    # Add any other CLI apps that keep showing up here
+    btop = {
+      name = "btop";
+      noDisplay = true;
+    };
+    nvtop = {
+      name = "nvtop";
+      noDisplay = true;
+    };
+    kvantummanager = {
+      name = "Kvantum Manager";
+      noDisplay = true;
+    };
+    # The NixOS manual often has a specific ID
+    "nixos-manual" = {
+      name = "NixOS Manual";
+      noDisplay = true;
+    };
+
+    qt5ct = {
+      name = "Qt5 Settings";
+      noDisplay = true;
+    };
+    qt6ct = {
+      name = "Qt6 Settings";
+      noDisplay = true;
+    };
+
+    rofi = {
+      name = "Rofi";
+      noDisplay = true;
+    };
+    "rofi-drun" = {
+      name = "Rofi Drun";
+      noDisplay = true;
+    };
+    "rofi-theme-selector" = {
+      name = "Rofi Theme Selector";
+      noDisplay = true;
+    };
+
+
+  };
+
+  gtk.iconTheme = {
+    name = "Reversal-black-dark";
+    package = pkgs.reversal-icon-theme;
   };
 
   # set the hyprland.conf to the right place
