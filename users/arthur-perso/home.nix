@@ -43,10 +43,25 @@ in
     swayosd     # On-screen display for brightness/volume changes 
   ];
 
+  # Hyprland cursor
+  home.pointerCursor = {
+    gtk.enable = true;
+    x11.enable = true;
+    name = "Bibata-Modern-Ice";
+    package = pkgs.bibata-cursors;
+    size = 24;
+  };
+  gtk.enable = true;
+
   # set the hyprland.conf to the right place
   # Note: We use the 'link' function and pass the path relative to the repo root
   xdg.configFile."hypr/hyprland.conf" = {
     source = link "hyprland/hyprland.conf";
+    force = true;
+  };
+  # Modular hyprland conf
+  xdg.configFile."hypr/conf" = {
+    source = link "hyprland/conf";
     force = true;
   };
   xdg.configFile."hypr/hyprlock.conf" = {

@@ -9,6 +9,8 @@
     xwayland.enable = true;
   };
 
+  programs.dconf.enable = true; 
+
   # XDG Portal Configuration
   xdg.portal = {
     enable = true;
