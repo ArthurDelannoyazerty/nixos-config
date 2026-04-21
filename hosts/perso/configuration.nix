@@ -65,4 +65,8 @@
     firefox
   ];
 
+  services.tailscale.enable = true;
+
+  boot.kernelModules = [ "nct6775" "coretemp" ];
+
 }

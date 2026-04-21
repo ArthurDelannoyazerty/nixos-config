@@ -43,4 +43,32 @@
     mangohud    # Performance overlay
     gamescope   # Micro-compositor for games
   ];
+
+  # xbox controller 
+
+  hardware.xpadneo.enable = true;
+  hardware.steam-hardware.enable = true;
+
+
+  # NVIDIA
+
+  # Load the proprietary NVIDIA driver
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    # Modesetting is required for most modern setups
+    modesetting.enable = true;
+    
+    # Use the proprietary, non-open-source driver (best for most GPUs like GTX 1000/2000/3000 series)
+    open = false; 
+    
+    # Enable the Nvidia settings menu
+    nvidiaSettings = true;
+  };
+
+  # Enable Coolbits to unlock manual fan control via NVML
+  services.xserver.deviceSection = ''
+    Option "Coolbits" "4"
+  '';
+
 }

@@ -22,6 +22,7 @@
     vim
     curl
     wget
+    unixtools.ping
     openssl
     lshw
     util-linux
@@ -40,7 +41,11 @@
     hwinfo
     unzip
     zip
+    lm_sensors
   ];
+
+
+  programs.coolercontrol.enable = true;
 
   fonts.fontDir.enable = true;
   fonts.packages = with pkgs; [

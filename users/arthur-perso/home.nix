@@ -36,6 +36,10 @@ in
     nerd-fonts.iosevka
     nerd-fonts.iosevka-term
 
+    # Only Office fonts
+    corefonts
+    vista-fonts
+
     papirus-icon-theme
 
     brightnessctl    # For laptop brightness keys
@@ -43,7 +47,14 @@ in
     swayosd     # On-screen display for brightness/volume changes 
 
     reversal-icon-theme
+
+    bitwarden-desktop
+    obsidian
+    tailscale
+    onlyoffice-desktopeditors
+    kdePackages.kdenlive
   ];
+
 
   # Hyprland cursor
   home.pointerCursor = {
