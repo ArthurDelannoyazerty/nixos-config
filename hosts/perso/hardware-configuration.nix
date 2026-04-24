@@ -24,6 +24,19 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
+  fileSystems."/mnt/windows" = {
+    device = "/dev/disk/by-uuid/0E4E39254E39074D";
+    fsType = "ntfs3"; # Modern high-performance kernel driver
+    options = [ 
+      "ro"          # Read-only for safety
+      "nofail"      # System boots even if the drive is missing
+      "uid=1000"    # Makes 'arthur' the owner of the files
+      "gid=100"     # 'users' group
+      "dmask=0222"  # Permissions: Read/Execute for directories
+      "fmask=0333"  # Permissions: Read-only for files
+    ];
+  };
+
   swapDevices = [ ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
