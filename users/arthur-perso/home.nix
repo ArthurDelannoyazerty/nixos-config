@@ -55,6 +55,8 @@ in
     kdePackages.kdenlive
   ];
 
+  # File explorer TUI
+  programs.yazi.enable = true;
 
   # Hyprland cursor
   home.pointerCursor = {
