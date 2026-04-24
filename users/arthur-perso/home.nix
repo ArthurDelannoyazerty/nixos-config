@@ -53,6 +53,8 @@ in
     tailscale
     onlyoffice-desktopeditors
     kdePackages.kdenlive
+
+    baobab
   ];
 
   # File explorer TUI
