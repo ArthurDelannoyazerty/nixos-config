@@ -1,4 +1,4 @@
-{ pkgs, home-manager, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, ... }:
+{ pkgs, home-manager, lib, config, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, ... }:
 
 {
   imports = [
@@ -67,6 +67,23 @@
 
   services.tailscale.enable = true;
 
-  boot.kernelModules = [ "nct6775" "coretemp" ];
+  # nct6775 & coretemp for fans & temperature sensors
+  # wl for wifi card
+  boot.kernelModules = [ "nct6775" "coretemp" "wl" ];
+
+
+  # Wifi
+  # Tell NixOS to permit the insecure broadcom driver to build
+  nixpkgs.config.allowInsecurePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "broadcom-sta"
+  ];
+  boot.extraModulePackages =[ config.boot.kernelPackages.broadcom_sta ];
+  # Blacklist the open-source drivers so they stop hijacking the card
+  boot.blacklistedKernelModules =[ "b43" "bcma" "brcmfmac" "brcmsmac" "ssb" ];
+  # Tell the country to activate the dual band for the wifi card
+  boot.extraModprobeConfig = ''
+    options cfg80211 ieee80211_regdom=FR
+  '';
+  hardware.wirelessRegulatoryDatabase = true;
 
 }

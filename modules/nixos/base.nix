@@ -42,6 +42,9 @@
     unzip
     zip
     lm_sensors
+    networkmanager
+    iw
+    iwd
   ];
 
 
