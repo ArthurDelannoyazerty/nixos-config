@@ -14,6 +14,7 @@
     ../../modules/dev
     ../../modules/hyprland
     ../../modules/gaming
+    ../../modules/gaming/minecraft.nix
 
     # users
     ../../users/arthur-perso/default.nix
