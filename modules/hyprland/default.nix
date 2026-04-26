@@ -34,6 +34,8 @@
     dunst         # Notification daemon
     grim          # Screenshot tool (region)
     slurp         # Screenshot tool (selector)
+
+    wlogout
   ];
 
 

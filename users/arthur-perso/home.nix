@@ -172,6 +172,16 @@ in
     force = true;
   };
 
+  # Wlogout
+  xdg.configFile."wlogout/layout" = {
+    source = link "wlogout/layout";
+    force = true;
+  };
+  xdg.configFile."wlogout/style.css" = {
+    source = link "wlogout/style.css";
+    force = true;
+  };
+
   # polkit daemon
   systemd.user.services.polkit-gnome-authentication-agent-1 = {
     Unit.Description = "polkit-gnome-authentication-agent-1";
