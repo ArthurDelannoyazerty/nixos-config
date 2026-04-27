@@ -36,17 +36,110 @@ in
     nerd-fonts.iosevka
     nerd-fonts.iosevka-term
 
+    # Only Office fonts
+    corefonts
+    vista-fonts
+
     papirus-icon-theme
 
     brightnessctl    # For laptop brightness keys
 
     swayosd     # On-screen display for brightness/volume changes 
+
+    reversal-icon-theme
+
+    bitwarden-desktop
+    obsidian
+    tailscale
+    onlyoffice-desktopeditors
+    kdePackages.kdenlive
+
+    baobab
   ];
+
+  # File explorer TUI
+  programs.yazi.enable = true;
+
+  # Hyprland cursor
+  home.pointerCursor = {
+    gtk.enable = true;
+    x11.enable = true;
+    name = "Bibata-Modern-Ice";
+    package = pkgs.bibata-cursors;
+    size = 24;
+  };
+  gtk.enable = true;
+  qt = {
+    enable = true;
+    platformTheme.name = "qtct"; # This tells Nix to handle the integration
+    style.name = "kvantum";      # Kvantum is generally the best for Hyprland aesthetics
+  };
+
+  # Hide rofi menu items
+  xdg.desktopEntries = {
+    # Hide htop from the application menu
+    htop = {
+      name = "htop";
+      noDisplay = true;
+    };
+    # Add any other CLI apps that keep showing up here
+    btop = {
+      name = "btop";
+      noDisplay = true;
+    };
+    nvtop = {
+      name = "nvtop";
+      noDisplay = true;
+    };
+    kvantummanager = {
+      name = "Kvantum Manager";
+      noDisplay = true;
+    };
+    # The NixOS manual often has a specific ID
+    "nixos-manual" = {
+      name = "NixOS Manual";
+      noDisplay = true;
+    };
+
+    qt5ct = {
+      name = "Qt5 Settings";
+      noDisplay = true;
+    };
+    qt6ct = {
+      name = "Qt6 Settings";
+      noDisplay = true;
+    };
+
+    rofi = {
+      name = "Rofi";
+      noDisplay = true;
+    };
+    "rofi-drun" = {
+      name = "Rofi Drun";
+      noDisplay = true;
+    };
+    "rofi-theme-selector" = {
+      name = "Rofi Theme Selector";
+      noDisplay = true;
+    };
+
+
+  };
+
+  gtk.iconTheme = {
+    name = "Reversal-black-dark";
+    package = pkgs.reversal-icon-theme;
+  };
 
   # set the hyprland.conf to the right place
   # Note: We use the 'link' function and pass the path relative to the repo root
   xdg.configFile."hypr/hyprland.conf" = {
     source = link "hyprland/hyprland.conf";
+    force = true;
+  };
+  # Modular hyprland conf
+  xdg.configFile."hypr/conf" = {
+    source = link "hyprland/conf";
     force = true;
   };
   xdg.configFile."hypr/hyprlock.conf" = {
@@ -76,6 +169,16 @@ in
   };
   xdg.configFile."waybar/style.css" = {
     source = link "waybar/style.css";
+    force = true;
+  };
+
+  # Wlogout
+  xdg.configFile."wlogout/layout" = {
+    source = link "wlogout/layout";
+    force = true;
+  };
+  xdg.configFile."wlogout/style.css" = {
+    source = link "wlogout/style.css";
     force = true;
   };
 

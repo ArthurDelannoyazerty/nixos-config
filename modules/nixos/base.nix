@@ -1,4 +1,3 @@
-# /modules/nixos/base.nix
 { pkgs, ... }:
 
 {
@@ -23,6 +22,7 @@
     vim
     curl
     wget
+    unixtools.ping
     openssl
     lshw
     util-linux
@@ -41,8 +41,20 @@
     hwinfo
     unzip
     zip
+    lm_sensors
+    networkmanager
+    iw
+    iwd
   ];
 
+
+  programs.coolercontrol.enable = true;
+
+  fonts.fontDir.enable = true;
+  fonts.packages = with pkgs; [
+    nerd-fonts.iosevka
+    nerd-fonts.iosevka-term
+  ];
 
   # Add binary caches to speed up downloads
   nix.settings = {

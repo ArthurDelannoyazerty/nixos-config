@@ -1,5 +1,4 @@
-# /modules/home-manager/shell.nix
-{ pkgs, dotfilesDir, dotfiles, osConfig, ... }:
+{ pkgs, config, dotfilesDir, dotfiles, osConfig, ... }:
 
 let
   # Define the auto-start script conditionally.
@@ -29,6 +28,11 @@ in
       window_padding_width = 4;
       confirm_os_window_close = 0;
     };
+  };
+
+
+  home.file = {
+    ".config/starship.toml".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/starship/starship.toml";
   };
 
   programs.bash = {
