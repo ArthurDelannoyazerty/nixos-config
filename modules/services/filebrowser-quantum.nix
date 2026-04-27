@@ -13,6 +13,7 @@ let
             createUserDir: true
 
     auth:
+      tokenExpirationHours: 48
       methods:
         password:
           enabled: true
@@ -23,7 +24,7 @@ let
           userIdentifier: "preferred_username"
           createUser: true               # create user if it does not exist
           
-          adminGroup: "authentik Admins" 
+          adminGroup: "authentik Admins"
   '';
 
 in
