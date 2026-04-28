@@ -9,9 +9,9 @@ in
 programs.vscode = {
     enable = true;
     package = pkgs.vscode;
-    mutableExtensionsDir = true; 
+    mutableExtensionsDir = false;   # Nix controls the extensions
 
-    profiles.default.extensions = with marketplace; [
+    profiles.default.extensions = (with marketplace; [
       # === PYTHON ===
       ms-python.python
       ms-python.debugpy
@@ -28,13 +28,6 @@ programs.vscode = {
       # === AI ===
       continue.continue
       google.geminicodeassist
-      
-      # === REMOTE & SSH ===
-      ms-vscode-remote.remote-ssh
-      ms-vscode-remote.remote-ssh-edit
-      ms-vscode.remote-explorer
-      ms-vscode.remote-repositories
-      ms-azuretools.vscode-containers
 
       # === GIT ===
       eamodio.gitlens
@@ -68,7 +61,13 @@ programs.vscode = {
       # === MISC ===
       codediagram.codediagram 
       marketplace."076923".python-image-preview 
-    ];
+    ]) ++ (with pkgs.vscode-extensions;[
+      # === REMOTE & SSH ===
+      ms-vscode-remote.remote-ssh
+      ms-vscode-remote.remote-ssh-edit
+      ms-vscode.remote-explorer
+      ms-vscode-remote.remote-containers
+    ]);
   };
 
   home.file = {

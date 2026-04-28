@@ -64,6 +64,12 @@
 
   environment.systemPackages = with pkgs; [
     firefox
+
+    # Add support for common USB/SD card filesystems
+    udiskie
+    exfatprogs  # For exFAT
+    ntfs3g      # For NTFS
+    usbutils    # Useful for 'lsusb'
   ];
 
   services.tailscale.enable = true;
@@ -86,5 +92,13 @@
     options cfg80211 ieee80211_regdom=FR
   '';
   hardware.wirelessRegulatoryDatabase = true;
+
+  # Utility lib that can mount volumes
+  services.udisks2.enable = true;
+  # Lib that trigger th volume mount when a new volume is detected
+  services.gvfs.enable = true;
+
+  # Add support for common USB/SD card filesystems
+  boot.supportedFilesystems = [ "ntfs" "exfat" ];
 
 }

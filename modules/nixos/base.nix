@@ -24,6 +24,7 @@
     wget
     unixtools.ping
     openssl
+    openssh
     lshw
     util-linux
     coreutils
