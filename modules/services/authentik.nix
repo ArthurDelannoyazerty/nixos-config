@@ -11,7 +11,6 @@ let
     AUTHENTIK_AUTHENTIK__GEOIP = "/dev/null"; # This effectively disables GeoIP
     
     # 2. Redis/DB Connection info
-    AUTHENTIK_REDIS__HOST = myConstants.services.authentik-redis.containerName;
     AUTHENTIK_POSTGRESQL__HOST = myConstants.services.authentik-db.containerName;
     AUTHENTIK_POSTGRESQL__USER = "authentik";
     AUTHENTIK_POSTGRESQL__NAME = "authentik";
@@ -36,7 +35,6 @@ in
       image = "ghcr.io/goauthentik/server:${myConstants.services.authentik.version}";
       dependsOn = [ 
         myConstants.services.authentik-db.containerName
-        myConstants.services.authentik-redis.containerName 
       ];
       cmd = [ "server" ];
       ports = [ (myConstants.bind myConstants.services.authentik.port) ];
@@ -52,7 +50,6 @@ in
       extraOptions = [ 
         "--add-host=host.docker.internal:host-gateway" 
         "--link=${myConstants.services.authentik-db.containerName}:${myConstants.services.authentik-db.containerName}" 
-        "--link=${myConstants.services.authentik-redis.containerName}:${myConstants.services.authentik-redis.containerName}" 
       ];
     };
 
@@ -68,17 +65,10 @@ in
       ports = [ "127.0.0.1:${toString myConstants.services.authentik-db.port}:6379" ];
     };
 
-    # The Cache
-    ${myConstants.services.authentik-redis.containerName} = {
-      image = "docker.io/library/redis:${toString myConstants.services.authentik-redis.version}";
-      cmd = [ "redis-server" "--maxmemory" "256mb" "--maxmemory-policy" "allkeys-lru" ];
-      ports = [ "127.0.0.1:${toString myConstants.services.authentik-redis.port}:6379" ];
-    };
-
     # The Worker
     ${myConstants.services.authentik-worker.containerName} = {
       image = "ghcr.io/goauthentik/server:${toString myConstants.services.authentik-worker.version}";
-      dependsOn = [ (myConstants.services.authentik-db.containerName) (myConstants.services.authentik-redis.containerName) ];
+      dependsOn = [ (myConstants.services.authentik-db.containerName) ];
       cmd = [ "worker" ];
       environment = commonEnv;
       environmentFiles = [ envFile ];
@@ -88,7 +78,6 @@ in
       ];
       extraOptions = [ 
         "--link=${myConstants.services.authentik-db.containerName}:${myConstants.services.authentik-db.containerName}" 
-        "--link=${myConstants.services.authentik-redis.containerName}:${myConstants.services.authentik-redis.containerName}" 
       ];
     };
   };
