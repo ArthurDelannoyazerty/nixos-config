@@ -30,11 +30,6 @@ in
     };
   };
 
-
-  home.file = {
-    ".config/starship.toml".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/starship/starship.toml";
-  };
-
   programs.bash = {
     enable = true;
     initExtra = ''
