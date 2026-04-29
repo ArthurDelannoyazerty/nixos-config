@@ -1,4 +1,4 @@
-{ pkgs, config, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, ... }:
+{ pkgs, config, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, osConfig, ... }:
 
 let
   # Define a helper function named 'link'
@@ -13,14 +13,18 @@ let
 
   # Access the community extension marketplace
   marketplace = pkgs.vscode-marketplace; 
+
+  # Define the auto-start script conditionally.
+  # Safely check if Hyprland is even declared before checking if it's enabled.
+  hyprlandAutoStart = if (osConfig.programs ? hyprland && osConfig.programs.hyprland.enable) then ''
+    # Start Hyprland automatically if in TTY1
+    if [ -z "$DISPLAY" ] &&[ "$(tty)" = "/dev/tty1" ]; then
+      exec Hyprland
+    fi
+  '' else "";
 in
 
 {
-  imports = [
-    ../../modules/home-manager/vscode.nix
-    ../../modules/home-manager/shell.nix
-  ];
-
   # Let Home Manager manage itself
   programs.home-manager.enable = true;
   # This needs to be set for Home Manager to work correctly
@@ -31,7 +35,7 @@ in
   home.homeDirectory = "/home/arthur";
 
   # Packages to install in your user profile
-  home.packages = with pkgs; [
+  home.packages = with pkgs;[
     # Fonts
     nerd-fonts.iosevka
     nerd-fonts.iosevka-term
@@ -55,10 +59,150 @@ in
     kdePackages.kdenlive
 
     baobab
+
+    # CLI Tools (Migrated from shell.nix)
+    btop
+    tree
+    nvitop
+    bash-preexec
   ];
+
+  /* -------------------------------------------------------------------------- */
+  /*                                SHELL CONFIGS                               */
+  /* -------------------------------------------------------------------------- */
+
+  programs.kitty = {
+    enable = true;
+    font = {
+      name = "IosevkaTerm Nerd Font Mono";
+      size = 12;
+    };
+    settings = {
+      window_padding_width = 4;
+      confirm_os_window_close = 0;
+    };
+  };
+
+  programs.bash = {
+    enable = true;
+    initExtra = ''
+      # Insert the conditional Hyprland script here
+      ${hyprlandAutoStart}
+
+      # Logic to choose the right path for bash sourcing
+      if[ -f "${dotfilesDir}/bash/.bashrc" ]; then
+        source "${dotfilesDir}/bash/.bashrc"
+      elif [ -f "${dotfiles}/bash/.bashrc" ]; then
+        source "${dotfiles}/bash/.bashrc"
+      fi
+
+      # Append to history file immediately, don't overwrite it
+      shopt -s histappend
+    '';
+  };
+
+  programs.atuin = {
+    enable = true;
+    enableBashIntegration = true;
+    settings = {
+      auto_sync = false;
+      update_check = false;
+      sync_address = "";
+      style = "compact";
+      inline_height = 10;
+      show_preview = true;
+    };
+  };
 
   # File explorer TUI
   programs.yazi.enable = true;
+
+
+  /* -------------------------------------------------------------------------- */
+  /*                                   VSCODE                                   */
+  /* -------------------------------------------------------------------------- */
+
+  programs.vscode = {
+    enable = true;
+    package = pkgs.vscode;
+    mutableExtensionsDir = false;   # Nix controls the extensions
+
+    profiles.default.extensions = (with marketplace;[
+      # === PYTHON ===
+      ms-python.python
+      ms-python.debugpy
+      ms-python.vscode-pylance
+      ms-python.vscode-python-envs
+      charliermarsh.ruff
+      njpwerner.autodocstring
+      njqdev.vscode-python-typehint
+      ms-toolsai.jupyter
+      ms-toolsai.jupyter-keymap
+      ms-toolsai.jupyter-renderers
+      ms-toolsai.vscode-jupyter-cell-tags
+      
+      # === AI ===
+      continue.continue
+      google.geminicodeassist
+
+      # === GIT ===
+      eamodio.gitlens
+      mhutchie.git-graph
+      ms-vscode.azure-repos
+
+      # === THEMES & ICONS ===
+      pkief.material-icon-theme
+      monokai.theme-monokai-pro-vscode
+      nicolaiverbaarschot.alabaster-variant-theme
+      tonsky.theme-alabaster
+      johnpapa.vscode-peacock
+
+      # === TOOLS ===
+      esbenp.prettier-vscode
+      mechatroner.rainbow-csv
+      hediet.vscode-drawio
+      mermaidchart.vscode-mermaid-chart
+      jnoortheen.nix-ide
+      christian-kohler.path-intellisense
+      ritwickdey.liveserver
+      tomoki1207.pdf
+      stackbreak.comment-divider
+      torreysmith.copyfilepathandcontent
+      irongeek.vscode-env
+      emilast.logfilehighlighter
+      alexcvzz.vscode-sqlite
+      qwtel.sqlite-viewer
+      rioj7.command-variable
+      
+      # === MISC ===
+      codediagram.codediagram 
+      marketplace."076923".python-image-preview 
+    ]) ++ (with pkgs.vscode-extensions;[
+      # === REMOTE & SSH ===
+      ms-vscode-remote.remote-ssh
+      ms-vscode-remote.remote-ssh-edit
+      ms-vscode.remote-explorer
+      ms-vscode-remote.remote-containers
+    ]);
+  };
+
+  # VSCode Configuration Links
+  xdg.configFile."Code/User/settings.json" = {
+    source = link "codium/settings.json";
+    force  = true;
+  };
+  xdg.configFile."Code/User/keybindings.json" = {
+    source = link "codium/keybindings.json";
+    force  = true;
+  };
+  xdg.configFile."Code/User/launch.json" = {
+    source = link "codium/launch.json"; # Adjust path if it's "code/launch.json"
+    force  = true;
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                                 UI / DESKTOP                               */
+  /* -------------------------------------------------------------------------- */
 
   # Hyprland cursor
   home.pointerCursor = {
@@ -68,7 +212,15 @@ in
     package = pkgs.bibata-cursors;
     size = 24;
   };
-  gtk.enable = true;
+
+  gtk = {
+    enable = true;
+    iconTheme = {
+      name = "Reversal-black-dark";
+      package = pkgs.reversal-icon-theme;
+    };
+  };
+
   qt = {
     enable = true;
     platformTheme.name = "qtct"; # This tells Nix to handle the integration
@@ -77,62 +229,19 @@ in
 
   # Hide rofi menu items
   xdg.desktopEntries = {
-    # Hide htop from the application menu
-    htop = {
-      name = "htop";
-      noDisplay = true;
-    };
-    # Add any other CLI apps that keep showing up here
-    btop = {
-      name = "btop";
-      noDisplay = true;
-    };
-    nvtop = {
-      name = "nvtop";
-      noDisplay = true;
-    };
-    kvantummanager = {
-      name = "Kvantum Manager";
-      noDisplay = true;
-    };
-    # The NixOS manual often has a specific ID
-    "nixos-manual" = {
-      name = "NixOS Manual";
-      noDisplay = true;
-    };
-
-    qt5ct = {
-      name = "Qt5 Settings";
-      noDisplay = true;
-    };
-    qt6ct = {
-      name = "Qt6 Settings";
-      noDisplay = true;
-    };
-
-    rofi = {
-      name = "Rofi";
-      noDisplay = true;
-    };
-    "rofi-drun" = {
-      name = "Rofi Drun";
-      noDisplay = true;
-    };
-    "rofi-theme-selector" = {
-      name = "Rofi Theme Selector";
-      noDisplay = true;
-    };
-
-
-  };
-
-  gtk.iconTheme = {
-    name = "Reversal-black-dark";
-    package = pkgs.reversal-icon-theme;
+    htop = { name = "htop"; noDisplay = true; };
+    btop = { name = "btop"; noDisplay = true; };
+    nvtop = { name = "nvtop"; noDisplay = true; };
+    kvantummanager = { name = "Kvantum Manager"; noDisplay = true; };
+    "nixos-manual" = { name = "NixOS Manual"; noDisplay = true; };
+    qt5ct = { name = "Qt5 Settings"; noDisplay = true; };
+    qt6ct = { name = "Qt6 Settings"; noDisplay = true; };
+    rofi = { name = "Rofi"; noDisplay = true; };
+    "rofi-drun" = { name = "Rofi Drun"; noDisplay = true; };
+    "rofi-theme-selector" = { name = "Rofi Theme Selector"; noDisplay = true; };
   };
 
   # set the hyprland.conf to the right place
-  # Note: We use the 'link' function and pass the path relative to the repo root
   xdg.configFile."hypr/hyprland.conf" = {
     source = link "hyprland/hyprland.conf";
     force = true;
@@ -150,17 +259,6 @@ in
     source = link "rofi/config.rasi";
     force = true;
   };
-
-  # VSCode
-  xdg.configFile."Code/User/settings.json" = {
-    source = link "codium/settings.json";
-    force  = true;
-  };
-  xdg.configFile."Code/User/keybindings.json" = {
-    source = link "codium/keybindings.json";
-    force  = true;
-  };
-
 
   # Waybar
   xdg.configFile."waybar/config.jsonc" = {

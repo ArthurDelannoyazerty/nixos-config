@@ -4,56 +4,52 @@
   imports = [
     home-manager.nixosModules.home-manager    
     
-    # hardware
+    /* -------------------------------- HARDWARE -------------------------------- */
     ./hardware-configuration.nix
 
-    # modules
+    /* ----------------------------- GENERIC MODULES ---------------------------- */
     ../../modules/nixos/base.nix
     ../../modules/nixos/server.nix
 
     ../../modules/terminal
     ../../modules/dev
 
-    # --- INFRASTRUCTURE ---
-    ../../modules/services/authentik.nix
-    ../../modules/services/caddy.nix
-    ../../modules/services/docker-socket-proxy.nix
-    # ../../modules/services/headscale.nix
-    # ../../modules/services/headscale-ui.nix
-    ../../modules/services/cloudflared.nix
-    ../../modules/services/lldap.nix
+    /* ---------------------------------- MEDIA --------------------------------- */
 
-    # --- APPS ---
-    ../../modules/services/homepage.nix
-    ../../modules/services/local-finance.nix
-    # ../../modules/services/glances.nix
-    ../../modules/services/power-monitor.nix
-    ../../modules/services/vikunja.nix
-    ../../modules/services/netdata.nix
-    # ../../modules/services/filebrowser.nix
-    ../../modules/services/scrutiny.nix
-    ../../modules/services/uptime-kuma.nix
-    ../../modules/services/forgejo.nix 
-    ../../modules/services/immich.nix
-    ../../modules/services/n8n.nix 
-    ../../modules/services/romm.nix 
-    ../../modules/services/grafana.nix 
-    ../../modules/services/prometheus.nix 
-    ../../modules/services/loki.nix
-    ../../modules/services/promtail.nix
-    # ../../modules/services/nextcloud.nix
-    # ../../modules/services/paperless-ngx.nix
-    ../../modules/services/filebrowser-quantum.nix  
-    ../../modules/services/quartz.nix  
+    ./services/media/filebrowser-quantum.nix 
+    ./services/media/immich.nix
 
-    # Network services
-    ../../modules/security-watchdog.nix
+    /* ------------------------------- MONITORING ------------------------------- */
+    ./services/monitoring/borgmatic.nix
+    ./services/monitoring/grafana.nix 
+    ./services/monitoring/loki.nix
+    ./services/monitoring/netdata.nix
+    ./services/monitoring/power-monitor.nix
+    ./services/monitoring/prometheus.nix 
+    ./services/monitoring/promtail.nix
+    ./services/monitoring/scrutiny.nix
+    ./services/monitoring/uptime-kuma.nix
 
-    # Backups
-    ../../modules/services/borgmatic.nix
+    /* --------------------------------- RANDOM --------------------------------- */
+    ./services/random/forgejo.nix 
+    ./services/random/homepage.nix
+    ./services/random/local-finance.nix
+    ./services/random/n8n.nix 
+    ./services/random/quartz.nix  
+    ./services/random/romm.nix  
+    ./services/random/security-watchdog.nix
+    ./services/random/vikunja.nix
+
+    /* -------------------------------- SECURITY -------------------------------- */
+    ./services/security/authentik.nix
+    ./services/security/caddy.nix
+    ./services/security/cloudflared.nix
+    ./services/security/docker-socket-proxy.nix
+    ./services/security/lldap.nix
     
-    # users
+    /* ---------------------------------- USERS --------------------------------- */
     ../../users/arthur-homelab/default.nix
+
   ];
 
   home-manager = {

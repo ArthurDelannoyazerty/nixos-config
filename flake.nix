@@ -42,7 +42,7 @@
         then (builtins.path { path = localDotfilesPath; name = "dotfiles-local"; })
         else inputs.dotfiles;
       
-      myConstants = import ./modules/constants.nix;
+      myConstants = import ./hosts/homelab/constants.nix;
 
     in {
       # Devcontainer
