@@ -86,7 +86,7 @@ rec {
     immich = {
       port = 2283;
       subdomain = "immich";
-      version = "v2.6.1";
+      version = "v2.7.5";
       containerName = "immich-server";
     };
     immich-db = {
