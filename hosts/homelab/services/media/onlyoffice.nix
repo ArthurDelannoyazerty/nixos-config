@@ -2,8 +2,12 @@
 
 {
   virtualisation.oci-containers.containers."${myConstants.services.onlyoffice.containerName}" = {
-    image = "onlyoffice/documentserver:latest";
+    image = "onlyoffice/documentserver:${myConstants.services.onlyoffice.version}";
     
+    environment = {
+      JWT_ENABLED = "true";
+    };
+
     environmentFiles =[
       "${myConstants.paths.servicesSSD}/onlyoffice/secrets.env"
     ];

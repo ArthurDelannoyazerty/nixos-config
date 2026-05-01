@@ -6,6 +6,7 @@ let
       port: 80
       database: "/home/filebrowser/data/database.db"
       cacheDir: "/home/filebrowser/data/tmp"
+      externalUrl: "https://${myConstants.services.filebrowser-quantum.subdomain}.${myConstants.publicDomain}"
       internalUrl: "http://172.17.0.1:${toString myConstants.services.filebrowser-quantum.port}"
       sources:
         - path: "/srv"

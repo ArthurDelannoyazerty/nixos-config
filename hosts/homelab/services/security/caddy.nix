@@ -92,8 +92,18 @@ in
       "http://${myConstants.services.onlyoffice.subdomain}.${domain}" = {
         extraConfig = ''
           log
+
+          @blocked path / /welcome* /example*
+          handle @blocked {
+            respond "404 Not Found" 404
+          }
+
           reverse_proxy 127.0.0.1:${toString myConstants.services.onlyoffice.port} {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
             header_up X-Forwarded-Proto https
+            header_up X-Forwarded-Host {host}
           }
         '';
       };
