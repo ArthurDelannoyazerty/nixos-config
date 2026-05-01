@@ -108,6 +108,25 @@ in
         '';
       };
 
+# --- STIRLING PDF ---
+      "http://${myConstants.services.stirling-pdf.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.stirling-pdf.port}
+        '';
+      };
+
+      # --- VERT FRONTEND ---
+      "http://${myConstants.services.vert.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.vert.port}
+        '';
+      };
+
+
       # --- QUARTZ ---
       "http://${myConstants.services.quartz.subdomain}.${domain}" = {
         extraConfig = ''

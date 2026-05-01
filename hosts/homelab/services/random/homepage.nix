@@ -143,6 +143,18 @@ let
             icon: obsidian.png
             href: https://${myConstants.services.quartz.subdomain}.${myConstants.publicDomain}
             description: Digital Garden
+        - Stirling PDF:
+            icon: stirling-pdf.png
+            href: https://${myConstants.services.stirling-pdf.subdomain}.${myConstants.publicDomain}
+            description: PDF Manipulation Suite
+            server: my-docker
+            container: ${myConstants.services.stirling-pdf.containerName}
+        - VERT Converter:
+            icon: vert.png # Assumes you download their logo, or use a simple icon like 'si-ffmpeg'
+            href: https://${myConstants.services.vert.subdomain}.${myConstants.publicDomain}
+            description: File Converter
+            server: my-docker
+            container: ${myConstants.services.vert.containerName}
 
     - Monitoring:
         - Power Costs:

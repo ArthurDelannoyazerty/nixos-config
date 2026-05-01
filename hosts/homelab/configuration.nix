@@ -38,6 +38,8 @@
     ./services/random/quartz.nix  
     ./services/random/romm.nix  
     ./services/random/security-watchdog.nix
+    ./services/random/stirling-pdf.nix
+    ./services/random/vert.nix
     ./services/random/vikunja.nix
 
     /* -------------------------------- SECURITY -------------------------------- */

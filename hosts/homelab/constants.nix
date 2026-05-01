@@ -199,9 +199,21 @@ rec {
       port = 8989; 
       subdomain = "sonarr"; 
     };
+    stirling-pdf = {
+      subdomain = "pdf";
+      port = 8080;
+      containerName = "stirling-pdf";
+      version = "latest-fat";
+    };
     uptime-kuma = {
       port = 3001;
       subdomain = "uptime-kuma";
+    };
+    vert = {
+      subdomain = "vert";
+      port = 3003;
+      containerName = "vert";
+      version = "latest";
     };
     vikunja = {
       port = 3456;
