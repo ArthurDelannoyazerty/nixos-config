@@ -15,9 +15,9 @@
     ../../modules/dev
 
     /* ---------------------------------- MEDIA --------------------------------- */
-
     ./services/media/filebrowser-quantum.nix 
     ./services/media/immich.nix
+    ./services/media/onlyoffice.nix
 
     /* ------------------------------- MONITORING ------------------------------- */
     ./services/monitoring/borgmatic.nix

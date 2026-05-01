@@ -142,6 +142,12 @@ rec {
       subdomain = "nextcloud"; 
       version = "33-apache";
     };
+    onlyoffice = {
+      port = 8099;
+      subdomain = "onlyoffice";
+      version = "9.3.1";
+      containerName = "onlyoffice";
+    };
     paperless-ngx = {
       port = 8000;
       subdomain = "paperless-ngx";
@@ -200,7 +206,7 @@ rec {
     vikunja = {
       port = 3456;
       subdomain = "vikunja";
-      version = "2.2.2";
+      version = "2.3.0";
       containerName = "vikunja";
     };
   };

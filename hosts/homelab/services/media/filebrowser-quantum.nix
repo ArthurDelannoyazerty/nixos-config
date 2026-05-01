@@ -6,11 +6,20 @@ let
       port: 80
       database: "/home/filebrowser/data/database.db"
       cacheDir: "/home/filebrowser/data/tmp"
+      internalUrl: "http://172.17.0.1:${toString myConstants.services.filebrowser-quantum.port}"
       sources:
         - path: "/srv"
           config:
             defaultEnabled: true
             createUserDir: true
+
+    integrations:
+      office:
+        # Public URL for your browser to load the OnlyOffice frontend
+        url: "https://${myConstants.services.onlyoffice.subdomain}.${myConstants.publicDomain}"
+        # Internal URL for Filebrowser backend to talk to OnlyOffice backend
+        internalUrl: "http://172.17.0.1:${toString myConstants.services.onlyoffice.port}"
+        # The secret comes from the env file
 
     auth:
       tokenExpirationHours: 48

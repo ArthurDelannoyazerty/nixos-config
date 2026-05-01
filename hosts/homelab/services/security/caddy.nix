@@ -88,6 +88,16 @@ in
         '';
       };
 
+      # --- ONLYOFFICE ---
+      "http://${myConstants.services.onlyoffice.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          reverse_proxy 127.0.0.1:${toString myConstants.services.onlyoffice.port} {
+            header_up X-Forwarded-Proto https
+          }
+        '';
+      };
+
       # --- QUARTZ ---
       "http://${myConstants.services.quartz.subdomain}.${domain}" = {
         extraConfig = ''

@@ -515,7 +515,25 @@ sudo vim /var/lib/services/filebrowser-quantum/secrets.env
 # FILEBROWSER_OIDC_CLIENT_SECRET=your_authentik_client_secret_here
 ```
 
+If using onlyoffice, add the common secret : 
+
+```bash
+sudo vim /var/lib/services/filebrowser-quantum/secrets.env
+# FILEBROWSER_ONLYOFFICE_SECRET=the_onlyoffice_secret
+```
+
 Don't forget to set permissions to auto-creates user, even auto created admin users won't have permissions to create/delete/modify file/folders
+
+
+## Onlyoffice
+
+used un pair with filebrowser quantum : 
+
+```bash
+sudo vim /var/lib/services/onlyoffice/secrets.env
+# JWT_SECRET=the_onlyoffice_secret
+sudo chmod 600 /var/lib/services/onlyoffice/secrets.env
+```
 
 
 ## Quartz
