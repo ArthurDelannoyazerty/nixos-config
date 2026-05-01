@@ -7,7 +7,7 @@
     ports =[ "127.0.0.1:${toString myConstants.services.stirling-pdf.port}:8080" ];
     
     environment = {
-      DOCKER_ENABLE_SECURITY = "false";
+      SECURITY_ENABLELOGIN = "false";
       
       LANGS = "en_GB,fr_FR";
       SYSTEM_DEFAULTLOCALE = "fr-FR";

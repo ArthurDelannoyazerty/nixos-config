@@ -200,7 +200,7 @@ rec {
       subdomain = "sonarr"; 
     };
     stirling-pdf = {
-      subdomain = "pdf";
+      subdomain = "stirling-pdf";
       port = 8080;
       containerName = "stirling-pdf";
       version = "latest-fat";

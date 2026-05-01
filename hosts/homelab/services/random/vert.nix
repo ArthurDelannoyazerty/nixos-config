@@ -9,7 +9,6 @@
     environment = {
       PUB_ENV = "production";
       PUB_HOSTNAME = "${myConstants.services.vert.subdomain}.${myConstants.publicDomain}";
-      PUB_VERTD_URL = "https://${myConstants.services.vertd.subdomain}.${myConstants.publicDomain}";
     };
   };
 }
