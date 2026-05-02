@@ -45,6 +45,12 @@ rec {
       port = 6767; 
       subdomain = "bazarr"; 
     };
+    crafty-controller = {
+      port = 8443;
+      subdomain = "crafty";
+      version = "v4.10.4";
+      containerName = "crafty-controller";
+    };
     filebrowser-quantum = {
       port = 8088;
       subdomain = "filebrowser-quantum";

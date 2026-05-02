@@ -31,6 +31,7 @@
     ./services/monitoring/uptime-kuma.nix
 
     /* --------------------------------- RANDOM --------------------------------- */
+    ./services/random/crafty-controller.nix 
     ./services/random/forgejo.nix 
     ./services/random/homepage.nix
     ./services/random/local-finance.nix

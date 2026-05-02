@@ -126,6 +126,24 @@ in
         '';
       };
 
+      # --- CRAFTY CONTROLLER ---
+      "http://${myConstants.services.crafty-controller.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          
+          reverse_proxy https://127.0.0.1:${toString myConstants.services.crafty-controller.port} {
+            transport http {
+              tls_insecure_skip_verify
+              versions 1.1
+            }
+            header_up Upgrade websocket
+            header_up Connection Upgrade
+            header_up X-Forwarded-Proto https
+            header_up X-Forwarded-For {remote}
+            header_up Host {host}
+          }
+        '';
+      };
 
       # --- QUARTZ ---
       "http://${myConstants.services.quartz.subdomain}.${domain}" = {

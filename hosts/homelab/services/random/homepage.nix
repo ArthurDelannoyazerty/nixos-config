@@ -155,6 +155,12 @@ let
             icon: obsidian.png
             href: https://${myConstants.services.quartz.subdomain}.${myConstants.publicDomain}
             description: Digital Garden
+        - Crafty Controller:
+            icon: si-minecraft
+            href: https://${myConstants.services.crafty-controller.subdomain}.${myConstants.publicDomain}
+            description: Minecraft Server Manager
+            server: my-docker
+            container: ${myConstants.services.crafty-controller.containerName}
 
     - Monitoring:
         - Power Costs:
