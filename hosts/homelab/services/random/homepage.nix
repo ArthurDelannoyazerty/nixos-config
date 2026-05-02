@@ -89,6 +89,24 @@ let
             description: Tasks & Projects
             server: my-docker
             container: ${myConstants.services.vikunja.containerName}
+        - FileBrowser Quantum:
+            icon: filebrowser-quantum.svg
+            href: https://${myConstants.services.filebrowser-quantum.subdomain}.${myConstants.publicDomain}
+            description: Personal Cloud Storage
+            server: my-docker
+            container: ${myConstants.services.filebrowser-quantum.containerName}
+        - Stirling PDF:
+            icon: stirling-pdf.png
+            href: https://${myConstants.services.stirling-pdf.subdomain}.${myConstants.publicDomain}
+            description: PDF Manipulation Suite
+            server: my-docker
+            container: ${myConstants.services.stirling-pdf.containerName}
+        - VERT Converter:
+            icon: vert.png # Assumes you download their logo, or use a simple icon like 'si-ffmpeg'
+            href: https://${myConstants.services.vert.subdomain}.${myConstants.publicDomain}
+            description: File Converter
+            server: my-docker
+            container: ${myConstants.services.vert.containerName}
 
     - Authentification:
         - Authentik:
@@ -133,28 +151,10 @@ let
             widget:
               type: romm
               url: ${internalHost}:${toString myConstants.services.romm.port}
-        - FileBrowser Quantum:
-            icon: filebrowser-quantum.svg
-            href: https://${myConstants.services.filebrowser-quantum.subdomain}.${myConstants.publicDomain}
-            description: Personal Cloud Storage
-            server: my-docker
-            container: ${myConstants.services.filebrowser-quantum.containerName}
         - Obsidian Notes:
             icon: obsidian.png
             href: https://${myConstants.services.quartz.subdomain}.${myConstants.publicDomain}
             description: Digital Garden
-        - Stirling PDF:
-            icon: stirling-pdf.png
-            href: https://${myConstants.services.stirling-pdf.subdomain}.${myConstants.publicDomain}
-            description: PDF Manipulation Suite
-            server: my-docker
-            container: ${myConstants.services.stirling-pdf.containerName}
-        - VERT Converter:
-            icon: vert.png # Assumes you download their logo, or use a simple icon like 'si-ffmpeg'
-            href: https://${myConstants.services.vert.subdomain}.${myConstants.publicDomain}
-            description: File Converter
-            server: my-docker
-            container: ${myConstants.services.vert.containerName}
 
     - Monitoring:
         - Power Costs:
