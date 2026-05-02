@@ -156,7 +156,7 @@ let
             href: https://${myConstants.services.quartz.subdomain}.${myConstants.publicDomain}
             description: Digital Garden
         - Crafty Controller:
-            icon: si-minecraft
+            icon: https://cdn.freebiesupply.com/logos/large/2x/minecraft-1-logo-png-transparent.png
             href: https://${myConstants.services.crafty-controller.subdomain}.${myConstants.publicDomain}
             description: Minecraft Server Manager
             server: my-docker

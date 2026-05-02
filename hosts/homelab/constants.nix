@@ -48,7 +48,7 @@ rec {
     crafty-controller = {
       port = 8443;
       subdomain = "crafty";
-      version = "v4.10.4";
+      version = "4.10.4";
       containerName = "crafty-controller";
     };
     filebrowser-quantum = {
