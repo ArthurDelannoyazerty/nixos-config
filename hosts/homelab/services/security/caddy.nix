@@ -108,7 +108,7 @@ in
         '';
       };
 
-# --- STIRLING PDF ---
+      # --- STIRLING PDF ---
       "http://${myConstants.services.stirling-pdf.subdomain}.${domain}" = {
         extraConfig = ''
           log
@@ -299,6 +299,32 @@ in
           redir /.well-known/caldav /remote.php/dav 301
           redir /.well-known/webfinger /index.php/.well-known/webfinger 301
           redir /.well-known/nodeinfo /index.php/.well-known/nodeinfo 301
+        '';
+      };
+
+      # --- WANDERER WEB ---
+      "http://${myConstants.services.wanderer.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          reverse_proxy 127.0.0.1:${toString myConstants.services.wanderer.port} {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto https
+          }
+        '';
+      };
+
+      # --- WANDERER DB (PocketBase) ---
+      "http://${myConstants.services.wanderer-db.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          reverse_proxy 127.0.0.1:${toString myConstants.services.wanderer-db.port} {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto https
+          }
         '';
       };
 
