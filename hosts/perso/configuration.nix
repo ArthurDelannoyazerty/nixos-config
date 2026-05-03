@@ -92,6 +92,7 @@
       thunar-volman
     ];
   };
+  services.tumbler.enable = true; # Thumbnail support
 
   services.tailscale.enable = true;
 
