@@ -42,6 +42,7 @@
     ./services/random/stirling-pdf.nix
     ./services/random/vert.nix
     ./services/random/vikunja.nix
+    ./services/random/wanderer.nix
 
     /* -------------------------------- SECURITY -------------------------------- */
     ./services/security/authentik.nix

@@ -161,6 +161,12 @@ let
             description: Minecraft Server Manager
             server: my-docker
             container: ${myConstants.services.crafty-controller.containerName}
+        - Wanderer:
+            icon: mdi-map-marker-path
+            href: https://${myConstants.services.wanderer.subdomain}.${myConstants.publicDomain}
+            description: Trail & GPS Track Database
+            server: my-docker
+            container: ${myConstants.services.wanderer.containerName}
 
     - Monitoring:
         - Power Costs:

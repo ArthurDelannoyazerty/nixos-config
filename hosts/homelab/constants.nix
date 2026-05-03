@@ -227,5 +227,22 @@ rec {
       version = "2.3.0";
       containerName = "vikunja";
     };
+    wanderer = {
+      port = 3010;
+      subdomain = "wanderer";
+      version = "latest";
+      containerName = "wanderer-web";
+    };
+    wanderer-db = {
+      port = 8090;
+      subdomain = "wanderer-db";
+      version = "latest";
+      containerName = "wanderer-db";
+    };
+    wanderer-search = {
+      port = 7700;
+      version = "v1.36.0";
+      containerName = "wanderer-search";
+    };
   };
 }

@@ -598,6 +598,21 @@ sudo borgmatic list
 
 ```
 
+## Wanderer
+
+```bash
+sudo mkdir -p /var/lib/services/wanderer
+
+ENCRYPTION_KEY=$(openssl rand -hex 16)
+MEILI_KEY=$(openssl rand -hex 24)
+
+sudo bash -c "cat > /var/lib/services/wanderer/.env <<EOF
+POCKETBASE_ENCRYPTION_KEY=$ENCRYPTION_KEY
+MEILI_MASTER_KEY=$MEILI_KEY
+EOF"
+
+sudo chmod 600 /var/lib/services/wanderer/.env
+```
 
 # To add other services
 
