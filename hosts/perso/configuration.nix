@@ -70,6 +70,20 @@
     exfatprogs  # For exFAT
     ntfs3g      # For NTFS
     usbutils    # Useful for 'lsusb'
+
+    # Doplhin file manager 
+    kdePackages.dolphin
+    kdePackages.ark                         # Allows right-click "Extract" for zip/rar files
+    kdePackages.ffmpegthumbs                # Video thumbnails
+    kdePackages.kdegraphics-thumbnailers    # Image thumbnails (RAW, SVG, etc.)
+    kdePackages.kio                         # Needed since 25.11
+    kdePackages.kio-fuse                    # To mount remote filesystems via FUSE
+    kdePackages.kio-extras                  # Extra protocols (like mtp for phone access)(sftp, fish and more)
+    kdePackages.breeze-icons
+    kdePackages.breeze                      # The theme engine
+    kdePackages.qtstyleplugin-kvantum       # For advanced skinning
+    kdePackages.qtsvg
+    
   ];
 
   services.tailscale.enable = true;
@@ -100,5 +114,14 @@
 
   # Add support for common USB/SD card filesystems
   boot.supportedFilesystems = [ "ntfs" "exfat" ];
+
+
+  # Dolphin fix
+  qt = {
+    enable = true;
+    platformTheme = "qt5ct";
+    style = "breeze";
+  };
+
 
 }
