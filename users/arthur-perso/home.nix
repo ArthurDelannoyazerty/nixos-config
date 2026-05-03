@@ -90,7 +90,7 @@ in
       ${hyprlandAutoStart}
 
       # Logic to choose the right path for bash sourcing
-      if[ -f "${dotfilesDir}/bash/.bashrc" ]; then
+      if [ -f "${dotfilesDir}/bash/.bashrc" ]; then
         source "${dotfilesDir}/bash/.bashrc"
       elif [ -f "${dotfiles}/bash/.bashrc" ]; then
         source "${dotfiles}/bash/.bashrc"
@@ -186,18 +186,28 @@ in
     ]);
   };
 
-  # VSCode Configuration Links
+
+  /* -------------------------------------------------------------------------- */
+  /*                               DORFILES LINKS                               */
+  /* -------------------------------------------------------------------------- */
+  # VSCode dotfiles Links
   xdg.configFile."Code/User/settings.json" = {
-    source = link "codium/settings.json";
+    source = link "code/settings.json";
     force  = true;
   };
   xdg.configFile."Code/User/keybindings.json" = {
-    source = link "codium/keybindings.json";
+    source = link "code/keybindings.json";
     force  = true;
   };
   xdg.configFile."Code/User/launch.json" = {
-    source = link "codium/launch.json"; # Adjust path if it's "code/launch.json"
+    source = link "code/launch.json";
     force  = true;
+  };
+
+  # Starship dotfiles link
+  xdg.configFile."starship.toml" = {
+    source = link "starship/starship.toml";
+    force = true;
   };
 
   /* -------------------------------------------------------------------------- */

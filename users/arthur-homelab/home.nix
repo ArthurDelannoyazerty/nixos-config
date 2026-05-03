@@ -17,7 +17,7 @@ let
   # Safely check if Hyprland is even declared before checking if it's enabled.
   hyprlandAutoStart = if (osConfig.programs ? hyprland && osConfig.programs.hyprland.enable) then ''
     # Start Hyprland automatically if in TTY1
-    if[ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+    if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
       exec Hyprland
     fi
   '' else "";

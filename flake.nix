@@ -35,7 +35,11 @@
 
       # --- Smart Dotfiles Logic ---
       localDotfilesPath = "/home/arthur/dotfiles";
-      localDotfilesExists = builtins.pathExists localDotfilesPath;    # Check if that directory exists
+      localDotfilesExists = 
+        let 
+          exists = builtins.pathExists localDotfilesPath;
+        in 
+          builtins.trace "Checking for local dotfiles at ${localDotfilesPath}: ${if exists then "FOUND" else "NOT FOUND"}" exists;
 
       # Choose the source based on the check (github or local)
       dotfilesSrc = if localDotfilesExists
@@ -56,12 +60,11 @@
       nixosConfigurations = {
         "perso" = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          # Pass our dynamically chosen `dotfilesSrc` to all modules as `dotfiles`.
           specialArgs = { 
             inherit inputs home-manager nix-vscode-extensions; 
-            dotfiles = dotfilesSrc;
-            dotfilesDir = localDotfilesPath;
-            isLocal = localDotfilesExists;
+            dotfiles = inputs.dotfiles;
+            dotfilesDir = "/home/arthur/dotfiles";
+            isLocal = true;
           };
           modules = [ 
             ./hosts/perso/configuration.nix
@@ -74,13 +77,12 @@
 
         
         "homelab" = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
+         system = "x86_64-linux";
           specialArgs = { 
-            inherit inputs home-manager nix-vscode-extensions; 
-            dotfiles = dotfilesSrc;
-            dotfilesDir = localDotfilesPath;
-            isLocal = localDotfilesExists;
-            myConstants = myConstants;
+            inherit inputs home-manager nix-vscode-extensions myConstants; 
+            dotfiles = inputs.dotfiles;               # Immutable GitHub repo
+            dotfilesDir = "/home/arthur/dotfiles"; 
+            isLocal = true;
           };
           modules = [ 
             ./hosts/homelab/configuration.nix
