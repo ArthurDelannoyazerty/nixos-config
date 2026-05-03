@@ -71,18 +71,8 @@
     ntfs3g      # For NTFS
     usbutils    # Useful for 'lsusb'
 
-    # Doplhin file manager 
-    kdePackages.dolphin
-    kdePackages.ark                         # Allows right-click "Extract" for zip/rar files
-    kdePackages.ffmpegthumbs                # Video thumbnails
-    kdePackages.kdegraphics-thumbnailers    # Image thumbnails (RAW, SVG, etc.)
-    kdePackages.kio                         # Needed since 25.11
-    kdePackages.kio-fuse                    # To mount remote filesystems via FUSE
-    kdePackages.kio-extras                  # Extra protocols (like mtp for phone access)(sftp, fish and more)
-    kdePackages.breeze-icons
-    kdePackages.breeze                      # The theme engine
-    kdePackages.qtstyleplugin-kvantum       # For advanced skinning
-    kdePackages.qtsvg
+    # File manager
+    nautilus
     
     grim          # Image capture
     slurp         # Interactive selection
@@ -90,11 +80,18 @@
     jq            # JSON parser 
     wl-clipboard  # Clipboard support
     libnotify     # Desktop notifications
-    
 
     imv     # image viewer
     mpv     # video viewer
   ];
+
+  programs.thunar = {
+    enable = true;
+    plugins = with pkgs.xfce; [
+      thunar-archive-plugin
+      thunar-volman
+    ];
+  };
 
   services.tailscale.enable = true;
 
