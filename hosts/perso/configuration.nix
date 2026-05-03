@@ -85,6 +85,32 @@
     mpv     # video viewer
   ];
 
+  environment.sessionVariables = {
+    # Fix for NVIDIA on Wayland
+    LIBVA_DRIVER_NAME = "nvidia";
+    GBM_BACKEND = "nvidia-drm";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    
+    # Force Firefox to use Wayland mode
+    MOZ_ENABLE_WAYLAND = "1";
+
+    # Required for Electron apps (Discord, VS Code) to run natively on Wayland
+    NIXOS_OZONE_WL = "1";
+
+    # Forces Firefox to use the NVIDIA backend for its internal compositor
+    NVD_BACKEND = "direct";
+    
+    # Ensure Firefox doesn't use the old GLX path
+    MOZ_DISABLE_RDD_SANDBOX = "1";
+    EGL_PLATFORM = "wayland";
+    
+    # NVIDIA specific Wayland fixes
+    __GL_GSYNC_ALLOWED = "0";
+    __GL_VRR_ALLOWED = "0";
+  };
+  boot.kernelParams = [ "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1" ];
+
+
   programs.thunar = {
     enable = true;
     plugins = with pkgs.xfce; [

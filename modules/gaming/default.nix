@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 {
   # =========================================================================
@@ -64,6 +64,8 @@
     
     # Enable the Nvidia settings menu
     nvidiaSettings = true;
+
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
   # Enable Coolbits to unlock manual fan control via NVML
