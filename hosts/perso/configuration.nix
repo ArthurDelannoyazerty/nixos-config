@@ -84,6 +84,16 @@
     kdePackages.qtstyleplugin-kvantum       # For advanced skinning
     kdePackages.qtsvg
     
+    grim          # Image capture
+    slurp         # Interactive selection
+    wf-recorder  # Video capture
+    jq            # JSON parser 
+    wl-clipboard  # Clipboard support
+    libnotify     # Desktop notifications
+    
+
+    imv     # image viewer
+    mpv     # video viewer
   ];
 
   services.tailscale.enable = true;

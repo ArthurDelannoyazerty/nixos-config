@@ -251,20 +251,26 @@ in
     "rofi-theme-selector" = { name = "Rofi Theme Selector"; noDisplay = true; };
   };
 
-  # set the hyprland.conf to the right place
+  # Modular hyprland conf
   xdg.configFile."hypr/hyprland.conf" = {
     source = link "hyprland/hyprland.conf";
     force = true;
   };
-  # Modular hyprland conf
   xdg.configFile."hypr/conf" = {
     source = link "hyprland/conf";
     force = true;
   };
+  xdg.configFile."hypr/capture.sh" = {
+    source = link "hyprland/capture.sh";
+    force = true;
+  };
+
+
   xdg.configFile."hypr/hyprlock.conf" = {
     source = link "hyprlock/hyprlock.conf";
     force = true;
   };
+
   xdg.configFile."rofi/config.rasi" = {
     source = link "rofi/config.rasi";
     force = true;
