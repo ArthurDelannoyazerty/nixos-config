@@ -614,6 +614,13 @@ EOF"
 sudo chmod 600 /var/lib/services/wanderer/.env
 ```
 
+After that you will need to create an admin user. Either :
+- follow the url in the wanderer db log
+- use the command : `docker exec -it <wanderer-db-container-name> /pocketbase superuser upsert your_email@example.com your_secure_password`
+
+Then go to the pocketbase (wanderer-db) page, left menu: database | table: users | "edit collection" | "Options" | "Oauth2" : Enable+"Add Provider" | "OpenID Connect" | Enter the OIDC Provider 
+
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:

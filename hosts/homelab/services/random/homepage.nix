@@ -102,7 +102,7 @@ let
             server: my-docker
             container: ${myConstants.services.stirling-pdf.containerName}
         - VERT Converter:
-            icon: vert.png # Assumes you download their logo, or use a simple icon like 'si-ffmpeg'
+            icon: https://avatars.githubusercontent.com/u/198117259?s=200&v=4
             href: https://${myConstants.services.vert.subdomain}.${myConstants.publicDomain}
             description: File Converter
             server: my-docker

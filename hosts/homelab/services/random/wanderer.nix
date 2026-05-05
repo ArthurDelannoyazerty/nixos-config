@@ -34,7 +34,7 @@ in
       ORIGIN = "https://${myConstants.services.wanderer.subdomain}.${myConstants.publicDomain}";
     };
     volumes =[
-      "${myConstants.paths.servicesSSD}/wanderer/pb_data:/pb_data"
+      "${myConstants.paths.servicesSSD}/wanderer/pb_data_new:/pb_data"
     ];
   };
 
