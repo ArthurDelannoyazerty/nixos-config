@@ -40,15 +40,14 @@ in
 
   virtualisation.oci-containers.containers.${myConstants.services.wanderer.containerName} = {
     image = "flomp/wanderer-web:${myConstants.services.wanderer.version}";
-    ports =[ (myConstants.bind myConstants.services.wanderer.port) ];
-
+    ports =[ "0.0.0.0:${toString myConstants.services.wanderer.port}:3000" ];
+    
     dependsOn = [ myConstants.services.wanderer-db.containerName ];
     
     environmentFiles = [ secretEnvFile ];
 
     environment = cenv // {
       ORIGIN = "https://${myConstants.services.wanderer.subdomain}.${myConstants.publicDomain}";
-      PORT = toString myConstants.services.wanderer.port;
       
       BODY_SIZE_LIMIT = "Infinity";
       PUBLIC_POCKETBASE_URL = "https://${myConstants.services.wanderer-db.subdomain}.${myConstants.publicDomain}";

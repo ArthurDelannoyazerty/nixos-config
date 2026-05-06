@@ -620,6 +620,13 @@ After that you will need to create an admin user. Either :
 
 Then go to the pocketbase (wanderer-db) page, left menu: database | table: users | "edit collection" | "Options" | "Oauth2" : Enable+"Add Provider" | "OpenID Connect" | Enter the OIDC Provider 
 
+FOR BULK UPLOAD  :
+```bash
+# sudo cp /mnt/storage-4tb/services/filebrowser-quantum/files/arthur-delannoy/030-Projets_Et_Loisirs/randonnée/a_faire/randoxygene/* /var/lib/services/wanderer/uploads/
+sudo cp FILEPATH_GPX /var/lib/services/wanderer/uploads/
+
+docker exec -it wanderer-web run-parts /etc/periodic/15min
+```
 
 # To add other services
 
