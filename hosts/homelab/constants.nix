@@ -198,24 +198,20 @@ rec {
       subdomain = "sabnzbd"; 
     };
     scanopy = {
-      port = 8091;
+      port = 60072;
       subdomain = "scanopy";
       version = "latest";
-      containerName = "scanopy-ui";
-    };
-    scanopy-server = {
-      port = 8092;
-      version = "latest";
       containerName = "scanopy-server";
+    };
+    scanopy-daemon = {
+      port = 60073;
+      version = "latest";
+      containerName = "scanopy-daemon";
     };
     scanopy-db = {
       port = 5435;
       version = "16-alpine";
       containerName = "scanopy-db";
-    };
-    scanopy-redis = {
-      version = "7-alpine";
-      containerName = "scanopy-redis";
     };
     scrutiny = {
       port = 8082;

@@ -632,19 +632,15 @@ docker exec -it wanderer-web run-parts /etc/periodic/15min
 ## Scanopy
 
 ```bash
-# 1. Create directory
 sudo mkdir -p /var/lib/services/scanopy
 
-# 2. Generate database password
-DB_PW=$(openssl rand -base64 24)
+DB_PW=$(openssl rand -hex 24)
 
-# 3. Create secrets file
 sudo bash -c "cat <<EOF > /var/lib/services/scanopy/secrets.env
 POSTGRES_PASSWORD=$DB_PW
-DB_PASSWORD=$DB_PW
+SCANOPY_DATABASE_URL=postgresql://postgres:$DB_PW@scanopy-db:5432/scanopy
 EOF"
 
-# 4. Secure the file
 sudo chmod 600 /var/lib/services/scanopy/secrets.env
 ```
 

@@ -333,16 +333,7 @@ in
         extraConfig = ''
           log
           ${authentikMiddleware}
-
-          # Route API requests to the server container
-          handle /api/* {
-            reverse_proxy 127.0.0.1:${toString myConstants.services.scanopy-server.port}
-          }
-
-          # Route everything else to the UI
-          handle {
-            reverse_proxy 127.0.0.1:${toString myConstants.services.scanopy.port}
-          }
+          reverse_proxy 127.0.0.1:${toString myConstants.services.scanopy.port}
         '';
       };
 
