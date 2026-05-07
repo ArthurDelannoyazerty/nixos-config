@@ -628,6 +628,27 @@ sudo cp FILEPATH_GPX /var/lib/services/wanderer/uploads/
 docker exec -it wanderer-web run-parts /etc/periodic/15min
 ```
 
+
+## Scanopy
+
+```bash
+# 1. Create directory
+sudo mkdir -p /var/lib/services/scanopy
+
+# 2. Generate database password
+DB_PW=$(openssl rand -base64 24)
+
+# 3. Create secrets file
+sudo bash -c "cat <<EOF > /var/lib/services/scanopy/secrets.env
+POSTGRES_PASSWORD=$DB_PW
+DB_PASSWORD=$DB_PW
+EOF"
+
+# 4. Secure the file
+sudo chmod 600 /var/lib/services/scanopy/secrets.env
+```
+
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:

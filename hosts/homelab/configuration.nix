@@ -37,7 +37,8 @@
     ./services/random/local-finance.nix
     ./services/random/n8n.nix 
     ./services/random/quartz.nix  
-    ./services/random/romm.nix  
+    ./services/random/romm.nix      
+    ./services/random/scanopy.nix
     ./services/random/security-watchdog.nix
     ./services/random/stirling-pdf.nix
     ./services/random/vert.nix

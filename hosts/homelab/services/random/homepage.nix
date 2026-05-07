@@ -215,6 +215,12 @@ let
                 type: uptimekuma
                 url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
                 slug: default 
+        - Scanopy:
+            icon: https://raw.githubusercontent.com/scanopy/scanopy/main/ui/public/logo.png
+            href: https://${myConstants.services.scanopy.subdomain}.${myConstants.publicDomain}
+            description: Network Inventory & Scanner
+            server: my-docker
+            container: ${myConstants.services.scanopy.containerName}
   '';
 
   # 4. BOOKMARKS - Unchanged

@@ -328,11 +328,21 @@ in
         '';
       };
 
-      # --- PAPERLESS NGX ---
-      "http://${myConstants.services.paperless-ngx.subdomain}.${domain}" = {
+      # --- SCANOPY ---
+      "http://${myConstants.services.scanopy.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          reverse_proxy 127.0.0.1:${toString myConstants.services.paperless-ngx.port}
+          ${authentikMiddleware}
+
+          # Route API requests to the server container
+          handle /api/* {
+            reverse_proxy 127.0.0.1:${toString myConstants.services.scanopy-server.port}
+          }
+
+          # Route everything else to the UI
+          handle {
+            reverse_proxy 127.0.0.1:${toString myConstants.services.scanopy.port}
+          }
         '';
       };
 
