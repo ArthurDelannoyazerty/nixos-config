@@ -216,7 +216,7 @@ let
                 url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
                 slug: default 
         - Scanopy:
-            icon: https://scanopy.net/scanopy-logo-64.webp
+            icon: https://scanopy.net/scanopy-logo-64.webp"
             href: https://${myConstants.services.scanopy.subdomain}.${myConstants.publicDomain}
             description: Network Inventory & Scanner
             server: my-docker
