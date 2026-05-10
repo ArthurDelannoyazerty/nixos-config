@@ -133,7 +133,7 @@ let
               url: ${internalHost}:${toString myConstants.services.komga.port}
               username: admin # Komga widget needs auth
               password: password
-          - Suwayomi:
+        - Suwayomi:
             icon: suwayomi.png
             href: https://${myConstants.services.suwayomi.subdomain}.${myConstants.publicDomain}
             description: Manga Downloader

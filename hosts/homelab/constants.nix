@@ -86,7 +86,7 @@ rec {
     homepage = {
       port = 3000;
       subdomain = "homepage";
-      version = "v1.12.3";
+      version = "v1.13.0";
       containerName = "homepage";
     };
     immich = {
@@ -242,7 +242,7 @@ rec {
     suwayomi = {
       port = 4567;
       subdomain = "suwayomi";
-      version = "latest";
+      version = "v2.2.2100";
       containerName = "suwayomi";
     };
     stirling-pdf = {
