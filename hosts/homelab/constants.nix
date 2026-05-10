@@ -119,19 +119,6 @@ rec {
       port = 5055; 
       subdomain = "requests"; 
     };
-    kaizoku = {
-      subdomain = "kaizoku";
-      version = "latest";
-      containerName = "kaizoku";
-    };
-    kaizoku-db = {
-      version = "15-alpine";
-      containerName = "kaizoku-db";
-    };
-    kaizoku-redis = {
-      version = "7-alpine";
-      containerName = "kaizoku-redis";
-    };
     komga = {
       port = 8086;
       subdomain = "komga";
@@ -193,6 +180,7 @@ rec {
       port = 9696; 
       subdomain = "prowlarr"; 
       version = "2.3.5";
+      containerName = "prowlarr";
     };
     quartz = {
       subdomain = "quartz";
@@ -250,6 +238,12 @@ rec {
       subdomain = "sonarr"; 
       version = "latest";
       containerName = "sonarr";
+    };
+    suwayomi = {
+      port = 4567;
+      subdomain = "suwayomi";
+      version = "latest";
+      containerName = "suwayomi";
     };
     stirling-pdf = {
       subdomain = "stirling-pdf";

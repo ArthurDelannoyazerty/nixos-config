@@ -133,12 +133,15 @@ let
               url: ${internalHost}:${toString myConstants.services.komga.port}
               username: admin # Komga widget needs auth
               password: password
-        - Kaizoku:
-            icon: kaizoku.png
-            href: https://${myConstants.services.kaizoku.subdomain}.${myConstants.publicDomain}
+          - Suwayomi:
+            icon: suwayomi.png
+            href: https://${myConstants.services.suwayomi.subdomain}.${myConstants.publicDomain}
             description: Manga Downloader
             server: my-docker
-            container: ${myConstants.services.kaizoku.containerName}
+            container: ${myConstants.services.suwayomi.containerName}
+            widget:
+              type: suwayomi
+              url: ${internalHost}:${toString myConstants.services.suwayomi.port}
         - Sonarr:
             icon: sonarr.png
             href: https://${myConstants.services.sonarr.subdomain}.${myConstants.publicDomain}

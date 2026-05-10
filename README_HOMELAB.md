@@ -695,6 +695,8 @@ sudo chmod 600 /var/lib/services/scanopy/secrets.env
 
 If you have trouble by landing on a weird bugged page with an authentik error, verify that you added the applciation to the authentik outpost
 
+If you find an empty page, you most likely forgot to update caddy.
+
 # To update a docker service
 
 1. Change the version in `constants.nix`

@@ -145,6 +145,15 @@ in
         '';
       };
 
+      # --- SUWAYOMI ---
+      "http://${myConstants.services.suwayomi.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.suwayomi.port}
+        '';
+      };
+
       # --- QUARTZ ---
       "http://${myConstants.services.quartz.subdomain}.${domain}" = {
         extraConfig = ''
