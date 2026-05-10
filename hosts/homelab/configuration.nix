@@ -17,7 +17,14 @@
     /* ---------------------------------- MEDIA --------------------------------- */
     ./services/media/filebrowser-quantum.nix 
     ./services/media/immich.nix
+    # ./services/media/jellyfin.nix
+    ./services/media/kaizoku.nix
+    # ./services/media/komga.nix
     ./services/media/onlyoffice.nix
+    # ./services/media/prowlarr.nix
+    # ./services/media/qbittorrent.nix
+    # ./services/media/sonarr.nix
+
 
     /* ------------------------------- MONITORING ------------------------------- */
     ./services/monitoring/borgmatic.nix
@@ -27,6 +34,7 @@
     ./services/monitoring/power-monitor.nix
     ./services/monitoring/prometheus.nix 
     ./services/monitoring/promtail.nix
+    # ./services/random/scanopy.nix     # Disabled because not really useful
     ./services/monitoring/scrutiny.nix
     ./services/monitoring/uptime-kuma.nix
 
@@ -38,7 +46,6 @@
     ./services/random/n8n.nix 
     ./services/random/quartz.nix  
     ./services/random/romm.nix      
-    ./services/random/scanopy.nix
     ./services/random/security-watchdog.nix
     ./services/random/stirling-pdf.nix
     ./services/random/vert.nix

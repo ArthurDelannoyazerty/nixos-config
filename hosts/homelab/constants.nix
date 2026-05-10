@@ -112,10 +112,31 @@ rec {
     jellyfin = { 
       port = 8096; 
       subdomain = "jellyfin"; 
+      version = "latest";
+      containerName = "jellyfin";
     };
     jellyseerr = { 
       port = 5055; 
       subdomain = "requests"; 
+    };
+    kaizoku = {
+      subdomain = "kaizoku";
+      version = "latest";
+      containerName = "kaizoku";
+    };
+    kaizoku-db = {
+      version = "15-alpine";
+      containerName = "kaizoku-db";
+    };
+    kaizoku-redis = {
+      version = "7-alpine";
+      containerName = "kaizoku-redis";
+    };
+    komga = {
+      port = 8086;
+      subdomain = "komga";
+      version = "latest";
+      containerName = "komga";
     };
     lidarr = { 
       port = 8686; 
@@ -171,9 +192,16 @@ rec {
     prowlarr = { 
       port = 9696; 
       subdomain = "prowlarr"; 
+      version = "2.3.5";
     };
     quartz = {
       subdomain = "quartz";
+    };
+    qbittorrent = {
+      port = 8095;
+      subdomain = "torrent";
+      version = "latest";
+      containerName = "qbittorrent";
     };
     radarr = { 
       port = 7878; 
@@ -220,6 +248,8 @@ rec {
     sonarr = { 
       port = 8989; 
       subdomain = "sonarr"; 
+      version = "latest";
+      containerName = "sonarr";
     };
     stirling-pdf = {
       subdomain = "stirling-pdf";

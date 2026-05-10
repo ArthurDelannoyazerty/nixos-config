@@ -25,6 +25,9 @@ let
       Family:
         tab: Home
         columns: 2
+      Media:
+        tab: Home
+        columns: 4
       Authentification:
         tab: Home
         columns: 2
@@ -107,6 +110,60 @@ let
             description: File Converter
             server: my-docker
             container: ${myConstants.services.vert.containerName}
+
+    - Media:
+        - Jellyfin:
+            icon: jellyfin.png
+            href: https://${myConstants.services.jellyfin.subdomain}.${myConstants.publicDomain}
+            description: Streaming Video
+            server: my-docker
+            container: ${myConstants.services.jellyfin.containerName}
+            widget:
+              type: jellyfin
+              url: ${internalHost}:${toString myConstants.services.jellyfin.port}
+              enable_now_playing: true # Shows what people are currently watching
+        - Komga:
+            icon: komga.png
+            href: https://${myConstants.services.komga.subdomain}.${myConstants.publicDomain}
+            description: Manga & Comics Reader
+            server: my-docker
+            container: ${myConstants.services.komga.containerName}
+            widget:
+              type: komga
+              url: ${internalHost}:${toString myConstants.services.komga.port}
+              username: admin # Komga widget needs auth
+              password: password
+        - Kaizoku:
+            icon: kaizoku.png
+            href: https://${myConstants.services.kaizoku.subdomain}.${myConstants.publicDomain}
+            description: Manga Downloader
+            server: my-docker
+            container: ${myConstants.services.kaizoku.containerName}
+        - Sonarr:
+            icon: sonarr.png
+            href: https://${myConstants.services.sonarr.subdomain}.${myConstants.publicDomain}
+            description: Anime Management
+            server: my-docker
+            container: ${myConstants.services.sonarr.containerName}
+            widget:
+              type: sonarr
+              url: ${internalHost}:${toString myConstants.services.sonarr.port}
+              key: REPLACE_ME_WITH_SONARR_API_KEY
+        - qBittorrent:
+            icon: qbittorrent.png
+            href: https://${myConstants.services.qbittorrent.subdomain}.${myConstants.publicDomain}
+            description: Torrent Client
+            server: my-docker
+            container: ${myConstants.services.qbittorrent.containerName}
+            widget:
+              type: qbittorrent
+              url: ${internalHost}:${toString myConstants.services.qbittorrent.port}
+        - Prowlarr:
+            icon: prowlarr.png
+            href: https://${myConstants.services.prowlarr.subdomain}.${myConstants.publicDomain}
+            description: Indexer Manager
+            server: my-docker
+            container: ${myConstants.services.prowlarr.containerName}
 
     - Authentification:
         - Authentik:
