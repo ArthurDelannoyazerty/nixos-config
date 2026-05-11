@@ -8,11 +8,11 @@
   environment.systemPackages = with pkgs; [
     # --- Essentials ---
     git       # Version control is non-negotiable
-    gcc       # C compiler, needed by many tools and libraries
-    gnumake   # The standard build tool
+    # gcc       # C compiler, needed by many tools and libraries
+    # gnumake   # The standard build tool
 
     # --- Nix Language Support ---
-    nixpkgs-fmt # Formatter for your Nix code, helps keep it clean
+    # nixpkgs-fmt # Formatter for your Nix code, helps keep it clean
   ]
   ++
   # =========================================================================
@@ -32,7 +32,7 @@
 
   [
     # We install the latest Long-Term Support (LTS) version of OpenJDK.
-    jdk21
+    # jdk21
 
     # If you need a different version, simply change the package name.
     # Common options include: jdk17, jdk11, jdk8

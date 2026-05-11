@@ -75,6 +75,23 @@
           ];
         };
 
+
+        "portable" = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { 
+            inherit inputs home-manager nix-vscode-extensions; 
+            dotfiles = inputs.dotfiles;
+            dotfilesDir = "/home/arthur/dotfiles";
+            isLocal = true;
+          };
+          modules = [ 
+            ./hosts/portable/configuration.nix
+            {
+              nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
+            }
+            inputs.grub2-themes.nixosModules.default
+          ];
+        };
         
         "homelab" = nixpkgs.lib.nixosSystem {
          system = "x86_64-linux";
