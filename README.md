@@ -86,3 +86,15 @@ Then
 nix flake update
 sudo nixos-rebuild switch --flake .#YOUR-HOST --impure
 ```
+
+
+
+# For SSH connection with bitwarden
+1. open Bitwarden, connect, settings -> activate ssh agent
+2. in ~/.ssh/config :
+```
+Host nixos-homelab
+	HostName nixos-homelab
+	User arthur
+	IdentityAgent ~/.bitwarden-ssh-agent.sock
+```

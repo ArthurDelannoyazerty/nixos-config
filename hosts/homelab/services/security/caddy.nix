@@ -154,6 +154,20 @@ in
         '';
       };
 
+      # --- QBITTORRENT ---
+      "http://${myConstants.services.qbittorrent.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.qbittorrent.port} {
+            # qBittorrent requires these headers to prevent CSRF errors when behind a proxy
+            header_up Host {host}
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-For {remote}
+          }
+        '';
+      };
+
       # --- QUARTZ ---
       "http://${myConstants.services.quartz.subdomain}.${domain}" = {
         extraConfig = ''

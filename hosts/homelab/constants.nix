@@ -187,7 +187,7 @@ rec {
     };
     qbittorrent = {
       port = 8095;
-      subdomain = "torrent";
+      subdomain = "qbittorrent";
       version = "latest";
       containerName = "qbittorrent";
     };
