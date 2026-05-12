@@ -154,6 +154,14 @@ in
         '';
       };
 
+      # --- KOMGA ---
+      "http://${myConstants.services.komga.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          reverse_proxy 127.0.0.1:${toString myConstants.services.komga.port}
+        '';
+      };
+
       # --- QBITTORRENT ---
       "http://${myConstants.services.qbittorrent.subdomain}.${domain}" = {
         extraConfig = ''

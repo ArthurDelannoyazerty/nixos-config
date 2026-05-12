@@ -1,10 +1,14 @@
 { config, myConstants, ... }:
 
 {
-  virtualisation.oci-containers.containers."${services.komga.containerName}" = {
-    image = "gotson/komga:${services.komga.version}";
+  virtualisation.oci-containers.containers."${myConstants.services.komga.containerName}" = {
+    image = "gotson/komga:${myConstants.services.komga.version}";
 
-    ports = [ (myConstants.bind services.komga.port) ];
+    ports = [ "${toString myConstants.services.komga.port}:25600" ];
+
+    environmentFiles = [
+      "${myConstants.paths.servicesSSD}/komga/secrets.env"
+    ];
 
     environment = { 
       PUID = "1000"; 
@@ -13,8 +17,14 @@
     };
 
     volumes = [
-      "${paths.servicesSSD}/komga:/config"
-      "${paths.disk4TB}/media/manga:/data"
+      # Komga config
+      "${myConstants.paths.servicesSSD}/komga:/config"
+      
+      # Your manually added local manga (if you have any)
+      "${myConstants.paths.disk4TB}/media/manga:/data"
+      
+      # FIX: Mount the Suwayomi downloads folder directly into Komga!
+      "${myConstants.paths.disk4TB}/services/suwayomi/downloads:/suwayomi-downloads"
     ];
   };
 }

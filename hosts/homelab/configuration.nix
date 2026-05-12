@@ -18,7 +18,7 @@
     ./services/media/filebrowser-quantum.nix 
     ./services/media/immich.nix
     # ./services/media/jellyfin.nix
-    # ./services/media/komga.nix
+    ./services/media/komga.nix
     ./services/media/onlyoffice.nix
     # ./services/media/prowlarr.nix
     ./services/media/qbittorrent.nix

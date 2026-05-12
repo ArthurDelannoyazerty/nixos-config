@@ -86,7 +86,7 @@ rec {
     homepage = {
       port = 3000;
       subdomain = "homepage";
-      version = "v1.13.0";
+      version = "v1.13.1";
       containerName = "homepage";
     };
     immich = {
@@ -120,7 +120,7 @@ rec {
       subdomain = "requests"; 
     };
     komga = {
-      port = 8086;
+      port = 8089;
       subdomain = "komga";
       version = "latest";
       containerName = "komga";

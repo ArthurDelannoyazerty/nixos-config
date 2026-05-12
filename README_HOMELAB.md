@@ -645,6 +645,33 @@ sudo chmod 600 /var/lib/services/scanopy/secrets.env
 ```
 
 
+## Komga
+
+```bash
+sudo vim /var/lib/services/komga/secrets.env
+```
+
+```env 
+# /var/lib/services/komga/secrets.env
+
+# Tell Komga to use Authentik
+SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUTHENTIK_CLIENT_ID=komga
+SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUTHENTIK_CLIENT_SECRET=your_authentik_client_secret_here
+SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUTHENTIK_SCOPE=openid,profile,email
+SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUTHENTIK_AUTHORIZATION_GRANT_TYPE=authorization_code
+SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUTHENTIK_CLIENT_NAME=Authentik
+
+# The URL to your Authentik Application (MUST end in a trailing slash)
+SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUTHENTIK_ISSUER_URI=https://authentik.arthur-lab.com/application/o/komga/
+
+# Allow Komga to automatically create a user on their first Authentik login
+KOMGA_OAUTH2ACCOUNTCREATION=true
+```
+
+```bash
+sudo chmod 600 /var/lib/services/komga/secrets.env
+```
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:
