@@ -19,6 +19,7 @@
   # Install common system-wide packages
   environment.systemPackages = with pkgs; [
     git
+    git-lfs
     vim
     curl
     wget
