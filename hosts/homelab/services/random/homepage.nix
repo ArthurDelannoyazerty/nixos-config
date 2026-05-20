@@ -128,11 +128,6 @@ let
             description: Manga & Comics Reader
             server: my-docker
             container: ${myConstants.services.komga.containerName}
-            widget:
-              type: komga
-              url: ${internalHost}:${toString myConstants.services.komga.port}
-              username: admin # Komga widget needs auth
-              password: password
         - Suwayomi:
             icon: suwayomi.png
             href: https://${myConstants.services.suwayomi.subdomain}.${myConstants.publicDomain}
