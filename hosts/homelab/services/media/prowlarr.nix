@@ -11,6 +11,6 @@
       PGID = "1000"; 
       TZ = "Europe/Paris"; 
     };
-    volumes = [ "${paths.servicesSSD}/prowlarr:/config" ];
+    volumes = [ "${myConstants.paths.servicesSSD}/prowlarr:/config" ];
   };
 }

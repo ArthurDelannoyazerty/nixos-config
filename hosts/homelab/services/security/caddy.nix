@@ -176,6 +176,24 @@ in
         '';
       };
 
+      # --- PROWLARR ---
+      "http://${myConstants.services.prowlarr.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.prowlarr.port}
+        '';
+      };
+
+      # --- SONARR ---
+      "http://${myConstants.services.sonarr.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.sonarr.port}
+        '';
+      };
+
       # --- QUARTZ ---
       "http://${myConstants.services.quartz.subdomain}.${domain}" = {
         extraConfig = ''

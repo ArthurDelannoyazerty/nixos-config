@@ -13,9 +13,11 @@
     };
     
     volumes = [
-      "${paths.servicesSSD}/sonarr:/config"
-      "${paths.disk4TB}/media/anime:/anime" # Final library
-      "${paths.disk2TB}/downloads:/downloads" # Access to qbit downloads
+      "${myConstants.paths.servicesSSD}/sonarr:/config"
+      # Drive where qBittorrent downloads
+      "${myConstants.paths.services2TB}/qbittorrent/downloads:/downloads"
+      # Drive where Jellyfin reads media
+      "${myConstants.paths.disk4TB}/media/anime:/media/anime" 
     ];
   };
 }

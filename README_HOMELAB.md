@@ -672,6 +672,18 @@ KOMGA_OAUTH2ACCOUNTCREATION=true
 sudo chmod 600 /var/lib/services/komga/secrets.env
 ```
 
+
+
+## Sonarr & Prowlarr
+
+```bash
+sudo docker stop prowlarr
+sudo nano /var/lib/services/prowlarr/config.xml
+# Change to: <AuthenticationMethod>External</AuthenticationMethod>
+sudo docker restart prowlarr
+```
+
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:

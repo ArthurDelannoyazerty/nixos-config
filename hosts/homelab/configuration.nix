@@ -20,9 +20,9 @@
     # ./services/media/jellyfin.nix
     ./services/media/komga.nix
     ./services/media/onlyoffice.nix
-    # ./services/media/prowlarr.nix
+    ./services/media/prowlarr.nix
     ./services/media/qbittorrent.nix
-    # ./services/media/sonarr.nix
+    ./services/media/sonarr.nix
     ./services/media/suwayomi.nix
 
 
