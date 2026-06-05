@@ -49,6 +49,8 @@ in
   virtualisation.oci-containers.containers."${toString myConstants.services.filebrowser-quantum.containerName}" = {
     image = "gtstef/filebrowser:${myConstants.services.filebrowser-quantum.version}";
     
+    dependsOn = [ "${myConstants.services.authentik.containerName}" ];
+
     user = "1000:1000";
 
     volumes =[
@@ -68,5 +70,13 @@ in
     ports =[
       "0.0.0.0:${toString myConstants.services.filebrowser-quantum.port}:80"
     ];
+  };
+
+  systemd.services."docker-${toString myConstants.services.filebrowser-quantum.containerName}" = {
+    # Wait 10 seconds between restart attempts
+    serviceConfig.RestartSec = "10s";
+    
+    # Disable the systemd limit that gives up after too many rapid failures
+    # unitConfig.StartLimitIntervalSec = 0;
   };
 }
