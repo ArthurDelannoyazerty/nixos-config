@@ -27,9 +27,7 @@ let
     which
     util-linux
     glibc
-    findutils 
     binutils
-    # glibc.bin
     stdenv.cc.cc.lib
     dotnet-sdk
     openssl
@@ -61,6 +59,13 @@ let
     uv
     docker
     tailscale
+
+    # --- Geospatial & Data MVP dependencies ---
+    gdal
+    geos
+    proj
+    libspatialindex
+    sqlite
   ];
 
   # This builds an environment that contains symlinks to all our packages.
@@ -68,7 +73,6 @@ let
     name = "nix-profile";
     paths = myPackages;
   };
-
 
   devSetup = pkgs.runCommand "dev-setup" { } ''
     mkdir -p $out/etc
@@ -119,7 +123,6 @@ let
 
     # ------------------------------ VSCODE SETUP ------------------------------ 
 
-    # VSCODE SETUP 
     EXTENSION_FILE="$DOTFILES_DIR/codium/extensions.txt"
     echo "--- VS Code Extension Installer ---"
     
@@ -177,15 +180,12 @@ pkgs.dockerTools.buildLayeredImage {
     atuinConfig
   ] ++ myPackages;
 
-  # You can keep your fakeRootCommands for /usr/bin/env compatibility,
-  # but we rely less on the library symlinks now.
   fakeRootCommands = ''
     mkdir -p ./home/arthur
     mkdir -p ./tmp
     mkdir -p ./usr/bin
 
     # --- 1. CLEANUP ---
-    # Remove existing library dirs and any ldconfig that might have snuck in
     rm -rf ./lib ./lib64 ./usr/lib64
     rm -f ./bin/ldconfig ./sbin/ldconfig ./usr/sbin/ldconfig
 
@@ -196,45 +196,35 @@ pkgs.dockerTools.buildLayeredImage {
     ln -sf usr/lib lib64
     ln -sf lib usr/lib64
 
-    # --- 3. CONFIGURE LDCONFIG (THE FIX) ---
-    
-    # A. Create the config file telling ldconfig to look in /usr/lib
+    # --- 3. CONFIGURE LDCONFIG ---
     echo "/usr/lib" > ./etc/ld.so.conf
     
-    # B. Generate the cache NOW (during build)
-    # This creates a valid ./etc/ld.so.cache that VS Code can read later
     ${pkgs.glibc.bin}/bin/ldconfig -r . -f /etc/ld.so.conf -C /etc/ld.so.cache || echo "Cache gen warning"
 
-    # C. Create the Wrapper Script
-    # VS Code calls 'ldconfig'. We intercept it and force it to use our 
-    # valid cache file instead of the read-only Nix store path.
     cat <<EOF > ./bin/ldconfig
 #!/bin/sh
 exec ${pkgs.glibc.bin}/bin/ldconfig -C /etc/ld.so.cache "\$@"
 EOF
     chmod +x ./bin/ldconfig
     
-    # D. Symlink the wrapper to sbin (where VS Code looks)
     ln -sf ../bin/ldconfig ./sbin/ldconfig
     ln -sf ../bin/ldconfig ./usr/sbin/ldconfig
 
     # --- 4. POPULATE LIBRARIES ---
-    
-    # VS Code Scripts compatibility
     ln -sf ${pkgs.coreutils}/bin/env ./usr/bin/env
-
-    # Dynamic Loader
     ln -sf ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./usr/lib/ld-linux-x86-64.so.2
 
-    # Standard Libraries (Libstdc++, Glibc, GCC)
     find ${pkgs.stdenv.cc.cc.lib} -name "libstdc++.so.6*" -exec ln -sf {} ./usr/lib/ \;
     find ${pkgs.glibc}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
     find ${pkgs.stdenv.cc.cc.lib} -name "libgcc_s.so.1" -exec ln -sf {} ./usr/lib/ \;
     find ${pkgs.openssl.out}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
 
-    # ----------------------------------------------
+    # --- 5. CONFIGURE NIX (Fixes internal Nix bwrap issues) ---
+    mkdir -p ./etc/nix
+    echo "sandbox = false" > ./etc/nix/nix.conf
+    echo "experimental-features = nix-command flakes" >> ./etc/nix/nix.conf
 
-    # Permission setup
+    # Permissions setup
     chown -R 999:999 ./home/arthur
     chown -R 999:999 ./tmp
     chmod 755 ./home/arthur
@@ -256,7 +246,12 @@ EOF
       "LANG=C.UTF-8"
       "LC_ALL=C.UTF-8"
       "ATUIN_CONFIG_DIR=/etc/atuin" 
-      "LD_LIBRARY_PATH=/usr/lib"
+      # Ensures Python modules built by `uv` discover libraries at runtime
+      "LD_LIBRARY_PATH=${nixProfile}/lib:/usr/lib"
+      # Expose paths so compilers find C-extensions during building
+      "PKG_CONFIG_PATH=${nixProfile}/lib/pkgconfig:${nixProfile}/share/pkgconfig"
+      "C_INCLUDE_PATH=${nixProfile}/include"
+      "CPLUS_INCLUDE_PATH=${nixProfile}/include"
     ];
   };
 }
