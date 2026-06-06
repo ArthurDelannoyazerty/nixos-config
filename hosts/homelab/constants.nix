@@ -51,6 +51,12 @@ rec {
       version = "4.10.4";
       containerName = "crafty-controller";
     };
+    byparr = {
+      port = 8191;
+      subdomain = "byparr";
+      version = "latest";
+      containerName = "byparr";
+    };
     filebrowser-quantum = {
       port = 8088;
       subdomain = "filebrowser-quantum";

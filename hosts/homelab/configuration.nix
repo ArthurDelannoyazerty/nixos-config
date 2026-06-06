@@ -15,6 +15,7 @@
     ../../modules/dev
 
     /* ---------------------------------- MEDIA --------------------------------- */
+    ./services/media/byparr.nix
     ./services/media/filebrowser-quantum.nix 
     ./services/media/immich.nix
     # ./services/media/jellyfin.nix

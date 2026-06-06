@@ -162,6 +162,12 @@ let
             description: Indexer Manager
             server: my-docker
             container: ${myConstants.services.prowlarr.containerName}
+        - Byparr:
+            icon: si-cloudflare
+            href: https://${myConstants.services.byparr.subdomain}.${myConstants.publicDomain}/docs
+            description: Anti-Bot & Captcha Solver
+            server: my-docker
+            container: ${myConstants.services.byparr.containerName}
 
     - Authentification:
         - Authentik:

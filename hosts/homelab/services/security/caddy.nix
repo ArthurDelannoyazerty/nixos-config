@@ -162,6 +162,15 @@ in
         '';
       };
 
+      # --- BYPARR ---
+      "http://${myConstants.services.byparr.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.byparr.port}
+        '';
+      };
+
       # --- QBITTORRENT ---
       "http://${myConstants.services.qbittorrent.subdomain}.${domain}" = {
         extraConfig = ''
