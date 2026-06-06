@@ -162,6 +162,12 @@ let
             description: Indexer Manager
             server: my-docker
             container: ${myConstants.services.prowlarr.containerName}
+        - Tranga: 
+            icon: mdi-book-open-page-variant
+            href: https://${myConstants.services.tranga.subdomain}.${myConstants.publicDomain}
+            description: Automatic Manga Downloader
+            server: my-docker
+            container: ${myConstants.services.tranga.containerName}
         - Byparr:
             icon: si-cloudflare
             href: https://${myConstants.services.byparr.subdomain}.${myConstants.publicDomain}/docs

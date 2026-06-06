@@ -25,6 +25,7 @@
     ./services/media/qbittorrent.nix
     ./services/media/sonarr.nix
     ./services/media/suwayomi.nix
+    ./services/media/tranga.nix
 
 
     /* ------------------------------- MONITORING ------------------------------- */

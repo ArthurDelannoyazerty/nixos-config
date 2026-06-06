@@ -257,6 +257,22 @@ rec {
       containerName = "stirling-pdf";
       version = "latest-fat";
     };
+    tranga = {
+      port = 9660;
+      subdomain = "tranga";
+      version = "latest";
+      containerName = "tranga";
+    };
+    tranga-api = {
+      port = 6531;
+      subdomain = "tranga-api";
+      version = "latest";
+      containerName = "tranga-api";
+    };
+    tranga-db = {
+      version = "17";
+      containerName = "tranga-pg";
+    };
     uptime-kuma = {
       port = 3001;
       subdomain = "uptime-kuma";
