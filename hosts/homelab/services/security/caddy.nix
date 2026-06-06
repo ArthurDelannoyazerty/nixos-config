@@ -171,27 +171,12 @@ in
         '';
       };
 
-
-      # --- TRANGA FRONTEND ---
+      # --- TRANGA ---
       "http://${myConstants.services.tranga.subdomain}.${domain}" = {
         extraConfig = ''
           log
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.tranga.port}
-        '';
-      };
-
-      # --- TRANGA API ---
-      "http://${myConstants.services.tranga-api.subdomain}.${domain}" = {
-        extraConfig = ''
-          log
-          ${authentikMiddleware}
-          
-          # We need to allow slightly larger headers/buffers for API requests
-          reverse_proxy 127.0.0.1:${toString myConstants.services.tranga-api.port} {
-             header_up Host {host}
-             header_up X-Real-IP {remote}
-          }
         '';
       };
 

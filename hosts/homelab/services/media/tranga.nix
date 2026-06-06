@@ -59,6 +59,10 @@
       
       # The frontend image listens on port 80 internally
       ports = [ "127.0.0.1:${toString myConstants.services.tranga.port}:80" ];
+
+      extraOptions = [
+        "--link=${myConstants.services.tranga-api.containerName}:tranga-api"
+      ];
     };
   };
 }

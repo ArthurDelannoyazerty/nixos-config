@@ -261,7 +261,7 @@ rec {
       port = 9660;
       subdomain = "tranga";
       version = "latest";
-      containerName = "tranga";
+      containerName = "tranga-website";
     };
     tranga-api = {
       port = 6531;
@@ -271,7 +271,7 @@ rec {
     };
     tranga-db = {
       version = "17";
-      containerName = "tranga-pg";
+      containerName = "tranga-db";
     };
     uptime-kuma = {
       port = 3001;
