@@ -30,7 +30,7 @@
       dependsOn = [ myConstants.services.tranga-db.containerName ];
       
       # Internal port for Tranga API is 6531. We bind it to localhost for Caddy.
-      ports = [ "127.0.0.1:${toString myConstants.services.tranga-api.port}:6531" ];
+      ports = [ (myConstants.bind myConstants.services.tranga-api.port) ];      
       
       environment = {
         TZ = "Europe/Paris";
