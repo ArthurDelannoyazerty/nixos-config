@@ -7,6 +7,14 @@
     "d ${myConstants.paths.services2TB}/qbittorrent/downloads 0755 1000 1000 -"
   ];
 
+  # AUTOMATIC RECOVERY: Delete stale lockfiles right before Docker starts the container
+  systemd.services."docker-${myConstants.services.qbittorrent.containerName}" = {
+    preStart = ''
+      rm -f ${myConstants.paths.servicesSSD}/qbittorrent/qBittorrent/lockfile
+      rm -f ${myConstants.paths.servicesSSD}/qbittorrent/qBittorrent/ipc-socket
+    '';
+  };
+
   virtualisation.oci-containers.containers."${myConstants.services.qbittorrent.containerName}" = {
     image = "lscr.io/linuxserver/qbittorrent:${myConstants.services.qbittorrent.version}";
 

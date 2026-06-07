@@ -20,11 +20,11 @@
       # Komga config
       "${myConstants.paths.servicesSSD}/komga:/config"
       
-      # Your manually added local manga (if you have any)
+      # Your manually added local manga
       "${myConstants.paths.disk4TB}/media/manga:/data"
       
-      # FIX: Mount the Suwayomi downloads folder directly into Komga!
       "${myConstants.paths.disk4TB}/services/suwayomi/downloads:/suwayomi-downloads"
+      "${myConstants.paths.disk4TB}/services/tranga/downloads:/manga"
     ];
   };
 }
