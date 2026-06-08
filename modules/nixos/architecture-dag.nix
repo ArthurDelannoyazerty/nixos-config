@@ -1,6 +1,8 @@
-{ pkgs, dotfilesDir ? "/home/arthur/dotfiles", ... }:
+{ pkgs, ... }:
 
 let
+  nixosDir = "/home/arthur/nixos-config";
+
   generateDagScript = pkgs.writeScript "generate-dag.py" ''
     #!${pkgs.python3}/bin/python
     import sys
@@ -18,9 +20,7 @@ let
             
         queue = [root]
         visited = set()
-        
-        # Mapping: parent_file -> set(imported_files)
-        deps = defaultdict(set)
+        edges = set()
         
         while queue:
             current = queue.pop(0)
@@ -28,30 +28,31 @@ let
             visited.add(current)
             
             try:
-                content = current.read_text(encoding='utf-8')
+                content = current.read_text(encoding="utf-8")
             except: 
                 continue
                 
-            # Remove Nix comments to avoid parsing commented-out code
-            content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
-            content = re.sub(r'#.*', '', content)
-            
-            # Find literal relative Nix paths (e.g., ./foo.nix, ../../bar)
-            matches = re.findall(r'(?<![\w\-])(\.\.?/[\w\.\-\/]+)', content)
+            content = re.sub(r"/\*.*?\*/", "", content, flags=re.DOTALL)
+            content = re.sub(r"#.*", "", content)
+            matches = re.findall(r"(?<![\w\-])(\.\.?/[\w\.\-\/]+)", content)
             
             for m in matches:
                 target = (current.parent / m).resolve()
                 final_target = None
                 
-                # Emulate Nix's path resolution logic
-                if target.is_file() and target.suffix == '.nix':
+                if target.is_dir() and (target / "default.nix").is_file():
+                    final_target = target / "default.nix"
+                elif target.is_file() and target.suffix == ".nix":
                     final_target = target
-                elif target.is_dir() and (target / 'default.nix').is_file():
-                    final_target = target / 'default.nix'
                     
-                # Only track imports that exist inside your flake
                 if final_target and str(final_target).startswith(str(base_dir)):
-                    deps[current].add(final_target)
+                    try:
+                        p_rel = current.relative_to(base_dir).as_posix()
+                        c_rel = final_target.relative_to(base_dir).as_posix()
+                        edges.add((p_rel, c_rel))
+                    except ValueError:
+                        pass
+                        
                     if final_target not in visited:
                         queue.append(final_target)
 
@@ -59,60 +60,50 @@ let
         md_path = base_dir / "ARCHITECTURE.md"
         with open(md_path, "w", encoding="utf-8") as f:
             f.write("# ❄️ NixOS Inter-File Dependency Graph\n\n")
-            f.write("> **Note:** Auto-generated based on actual logical `imports` and paths.\n\n")
             f.write("```mermaid\n")
-            f.write("graph LR\n")
+            # Enable the advanced layout engine for better line routing
+            f.write("%%{init: {\"flowchart\": {\"defaultRenderer\": \"elk\"}} }%%\n")
+            f.write("graph LR\n\n")
             
-            node_ids = {}
-            id_counter = 0
-            def get_id(k):
-                nonlocal id_counter
-                if k not in node_ids:
-                    node_ids[k] = f"N{id_counter}"
-                    id_counter += 1
-                return node_ids[k]
-
-            global_folders = defaultdict(set)
-            edges = []
+            nodes = set()
+            for p, c in edges:
+                nodes.add(p)
+                nodes.add(c)
+                
+            if not nodes:
+                nodes.add("flake.nix")
+                
+            # Assign IDs
+            node_ids = {n: f"N{i}" for i, n in enumerate(sorted(nodes))}
             
-            # Analyze all parent files and map the targets to their respective folders
-            for parent, targets in deps.items():
-                try: parent_rel = parent.relative_to(base_dir)
-                except ValueError: parent_rel = parent.name
+            # Group nodes by their parent directory to use Subgraphs
+            by_dir = defaultdict(list)
+            for n in sorted(nodes):
+                path = Path(n)
+                folder = str(path.parent)
+                if folder == ".":
+                    folder = "/"
+                by_dir[folder].append(n)
                 
-                parent_id = get_id(str(parent_rel))
-                f.write(f'  {parent_id}["📄 {parent_rel}"]\n')
-                
-                parent_calls_folders = set()
-                for t in targets:
-                    try: t_rel = t.relative_to(base_dir)
-                    except ValueError: t_rel = t.name
-                    folder = str(t_rel.parent)
-                    
-                    global_folders[folder].add(t_rel.name)
-                    parent_calls_folders.add(folder)
-                    
-                # Create edges from the Parent File to the Target Group Folder
-                for folder in parent_calls_folders:
-                    folder_id = get_id(f"DIR_{folder}")
-                    edges.append((parent_id, folder_id))
-                    
-            # Print the grouped nodes ("Merge similar nodes")
-            for folder, files in global_folders.items():
-                folder_id = get_id(f"DIR_{folder}")
-                files_sorted = sorted(list(files))
-                
-                if len(files_sorted) == 1 and files_sorted[0] == "default.nix":
-                    label = f"📁 {folder}"
+            # Output nodes inside subgraphs
+            for folder, files in by_dir.items():
+                if folder == "/":
+                    for file in files:
+                        name = Path(file).name
+                        f.write(f"  {node_ids[file]}[\"📄 {name}\"]\n")
                 else:
-                    files_str = "<br>".join([f"📄 {fn}" for fn in files_sorted])
-                    label = f"📁 {folder}<br>──────────<br>{files_str}"
-                
-                f.write(f'  {folder_id}["{label}"]\n')
-                
+                    # Create a visual bounding box for the folder
+                    f.write(f"  subgraph \"📂 {folder}\"\n")
+                    f.write("    direction LR\n")
+                    for file in files:
+                        name = Path(file).name
+                        # Only display the filename in the box to keep it small
+                        f.write(f"    {node_ids[file]}[\"📄 {name}\"]\n")
+                    f.write("  end\n\n")
+            
             # Output the linking arrows
-            for pid, fid in edges:
-                f.write(f'  {pid} --> {fid}\n')
+            for p, c in sorted(edges):
+                f.write(f"  {node_ids[p]} --> {node_ids[c]}\n")
             
             f.write("```\n")
 
@@ -123,9 +114,9 @@ let
 in {
   system.activationScripts.generateArchitectureDag = {
     text = ''
-      if [ -d "${dotfilesDir}" ]; then
-        ${generateDagScript} "${dotfilesDir}"
-        chown -R arthur:users "${dotfilesDir}/ARCHITECTURE.md" || true
+      if [ -d "${nixosDir}" ]; then
+        ${generateDagScript} "${nixosDir}"
+        chown -R arthur:users "${nixosDir}/ARCHITECTURE.md" || true
       fi
     '';
   };
