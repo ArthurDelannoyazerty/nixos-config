@@ -6,6 +6,11 @@
   time.timeZone = "Europe/Paris";
   i18n.defaultLocale = "en_US.UTF-8";
 
+  # Documentation DAG Nix config
+  imports = [
+    ./architecture-dag.nix
+  ];
+
   # Enable networking
   networking.networkmanager.enable = true;
 
