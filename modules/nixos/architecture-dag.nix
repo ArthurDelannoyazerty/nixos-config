@@ -20,7 +20,7 @@ let
             
         queue = [root]
         visited = set()
-        edges = set()
+        edges_raw = set()
         
         while queue:
             current = queue.pop(0)
@@ -49,63 +49,84 @@ let
                     try:
                         p_rel = current.relative_to(base_dir).as_posix()
                         c_rel = final_target.relative_to(base_dir).as_posix()
-                        edges.add((p_rel, c_rel))
+                        edges_raw.add((p_rel, c_rel))
                     except ValueError:
                         pass
                         
                     if final_target not in visited:
                         queue.append(final_target)
 
-        # Build Mermaid Markdown
-        md_path = base_dir / "ARCHITECTURE.md"
-        with open(md_path, "w", encoding="utf-8") as f:
-            f.write("# ❄️ NixOS Inter-File Dependency Graph\n\n")
-            f.write("```mermaid\n")
-            # Enable the advanced layout engine for better line routing
-            f.write("%%{init: {\"flowchart\": {\"defaultRenderer\": \"elk\"}} }%%\n")
-            f.write("graph LR\n\n")
+        nodes = set()
+        for p, c in edges_raw:
+            nodes.add(p)
+            nodes.add(c)
             
-            nodes = set()
-            for p, c in edges:
-                nodes.add(p)
-                nodes.add(c)
-                
-            if not nodes:
-                nodes.add("flake.nix")
-                
-            # Assign IDs
-            node_ids = {n: f"N{i}" for i, n in enumerate(sorted(nodes))}
+        if not nodes: nodes.add("flake.nix")
             
-            # Group nodes by their parent directory to use Subgraphs
-            by_dir = defaultdict(list)
-            for n in sorted(nodes):
-                path = Path(n)
-                folder = str(path.parent)
-                if folder == ".":
-                    folder = "/"
-                by_dir[folder].append(n)
-                
-            # Output nodes inside subgraphs
+        node_ids = {n: f"N{i}" for i, n in enumerate(sorted(nodes))}
+        
+        by_dir = defaultdict(list)
+        for n in sorted(nodes):
+            folder = str(Path(n).parent)
+            if folder == ".": folder = "/"
+            by_dir[folder].append(n)
+
+        def sanitize_id(text):
+            return re.sub(r'[^a-zA-Z0-9]', '_', text)
+
+        # Build Graphviz DOT file
+        dot_path = base_dir / "dag.dot"
+        with open(dot_path, "w", encoding="utf-8") as f:
+            f.write("digraph NixOS {\n")
+            
+            # --- STYLING ---
+            f.write('  rankdir=LR;\n') # Left to Right
+            f.write('  compound=true;\n') # Allow edges to subgraphs
+            f.write('  splines=polyline;\n') # Orthogonal, clean lines instead of messy curves
+            f.write('  nodesep=0.3;\n')
+            f.write('  ranksep=1.2;\n')
+            
+            # Global node styling (Modern, rounded boxes)
+            f.write('  node [fontname="Helvetica,Arial,sans-serif", fontsize=10, shape=box, style="rounded,filled", fillcolor="#f8f9fa", color="#ced4da", fontcolor="#212529"];\n')
+            # Global edge styling
+            f.write('  edge [color="#6c757d", penwidth=1.0, arrowsize=0.7];\n\n')
+
+            # --- NODES & FOLDERS ---
             for folder, files in by_dir.items():
                 if folder == "/":
                     for file in files:
                         name = Path(file).name
-                        f.write(f"  {node_ids[file]}[\"📄 {name}\"]\n")
+                        f.write(f'  {node_ids[file]} [label="📄 {name}"];\n')
                 else:
-                    # Create a visual bounding box for the folder
-                    f.write(f"  subgraph \"📂 {folder}\"\n")
-                    f.write("    direction LR\n")
+                    cluster_id = sanitize_id(folder)
+                    f.write(f'  subgraph cluster_{cluster_id} {{\n')
+                    f.write(f'    label="📁 {folder}";\n')
+                    # Folder styling
+                    f.write('    style="rounded,filled";\n')
+                    f.write('    fillcolor="#e9ecef";\n')
+                    f.write('    color="#adb5bd";\n')
+                    f.write('    fontname="Helvetica-Bold";\n')
+                    f.write('    fontsize=12;\n')
+                    f.write('    fontcolor="#495057";\n')
+                    f.write('    margin=15;\n')
+                    
                     for file in files:
                         name = Path(file).name
-                        # Only display the filename in the box to keep it small
-                        f.write(f"    {node_ids[file]}[\"📄 {name}\"]\n")
-                    f.write("  end\n\n")
+                        f.write(f'    {node_ids[file]} [label="📄 {name}"];\n')
+                    f.write("  }\n\n")
             
-            # Output the linking arrows
-            for p, c in sorted(edges):
-                f.write(f"  {node_ids[p]} --> {node_ids[c]}\n")
+            # --- EDGES ---
+            for p, c in sorted(edges_raw):
+                f.write(f'  {node_ids[p]} -> {node_ids[c]};\n')
             
-            f.write("```\n")
+            f.write("}\n")
+
+        # Create the Markdown wrapper
+        md_path = base_dir / "ARCHITECTURE.md"
+        with open(md_path, "w", encoding="utf-8") as f:
+            f.write("# ❄️ NixOS Inter-File Dependency Graph\n\n")
+            f.write("> Auto-generated during `nixos-rebuild`.\n\n")
+            f.write("![Architecture Diagram](./ARCHITECTURE.svg)\n")
 
     if __name__ == "__main__":
         if len(sys.argv) > 1:
@@ -115,8 +136,17 @@ in {
   system.activationScripts.generateArchitectureDag = {
     text = ''
       if [ -d "${nixosDir}" ]; then
+        # 1. Generate the dag.dot and ARCHITECTURE.md files
         ${generateDagScript} "${nixosDir}"
-        chown -R arthur:users "${nixosDir}/ARCHITECTURE.md" || true
+        
+        # 2. Compile the .dot file into a beautiful SVG
+        ${pkgs.graphviz}/bin/dot -Tsvg "${nixosDir}/dag.dot" -o "${nixosDir}/ARCHITECTURE.svg"
+        
+        # 3. Clean up the temporary dot file
+        rm -f "${nixosDir}/dag.dot"
+        
+        # 4. Fix permissions so you can commit them
+        chown -R arthur:users "${nixosDir}/ARCHITECTURE.md" "${nixosDir}/ARCHITECTURE.svg" || true
       fi
     '';
   };
