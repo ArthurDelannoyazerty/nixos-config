@@ -36,7 +36,6 @@
     ./services/monitoring/netdata.nix
     ./services/monitoring/power-monitor.nix
     ./services/monitoring/prometheus.nix 
-    ./services/monitoring/promtail.nix
     # ./services/random/scanopy.nix     # Disabled because not really useful
     ./services/monitoring/scrutiny.nix
     ./services/monitoring/uptime-kuma.nix
