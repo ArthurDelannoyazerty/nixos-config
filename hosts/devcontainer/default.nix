@@ -32,6 +32,10 @@ let
     dotnet-sdk
     openssl
     gnupg 
+    bubblewrap
+    strace
+    file
+    patchelf
     
     # --- Terminal Tools ---
     atuin
@@ -178,6 +182,7 @@ pkgs.dockerTools.buildLayeredImage {
     dotfilesLayer
     devContainerSetupScript
     atuinConfig
+    nixProfile
   ] ++ myPackages;
 
   fakeRootCommands = ''
@@ -199,7 +204,6 @@ pkgs.dockerTools.buildLayeredImage {
     # --- 3. CONFIGURE LDCONFIG ---
     echo "/usr/lib" > ./etc/ld.so.conf
     
-    ${pkgs.glibc.bin}/bin/ldconfig -r . -f /etc/ld.so.conf -C /etc/ld.so.cache || echo "Cache gen warning"
 
     cat <<EOF > ./bin/ldconfig
 #!/bin/sh
@@ -214,12 +218,21 @@ EOF
     ln -sf ${pkgs.coreutils}/bin/env ./usr/bin/env
     ln -sf ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./usr/lib/ld-linux-x86-64.so.2
 
+    ln -sf ${pkgs.bashInteractive}/bin/bash ./bin/bash
+    ln -sf ${pkgs.bashInteractive}/bin/bash ./bin/sh
+    ln -sf ${pkgs.bashInteractive}/bin/bash ./usr/bin/bash
+
     find ${pkgs.stdenv.cc.cc.lib} -name "libstdc++.so.6*" -exec ln -sf {} ./usr/lib/ \;
     find ${pkgs.glibc}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
     find ${pkgs.stdenv.cc.cc.lib} -name "libgcc_s.so.1" -exec ln -sf {} ./usr/lib/ \;
     find ${pkgs.openssl.out}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
+    
+    ${pkgs.glibc.bin}/bin/ldconfig -r . -f /etc/ld.so.conf -C /etc/ld.so.cache || echo "Cache gen warning"
 
-    # --- 5. CONFIGURE NIX (Fixes internal Nix bwrap issues) ---
+
+    # --- 5. CONFIGURE NIX ---
+    # This disables Nix's own build sandbox only.
+    # It does not affect Codex's Linux sandbox, which uses bubblewrap.
     mkdir -p ./etc/nix
     echo "sandbox = false" > ./etc/nix/nix.conf
     echo "experimental-features = nix-command flakes" >> ./etc/nix/nix.conf
@@ -234,6 +247,7 @@ EOF
   config = {
     User = "arthur";
     WorkingDir = "/home/arthur";
+    Entrypoint = [ "/bin/setup_devcontainer.sh" ];
     Cmd = [ "/bin/bash" ];
     
     Env = [
@@ -242,7 +256,8 @@ EOF
       "HISTFILE=/home/arthur/.bash_history"
       "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "GIT_SSL_CAINFO=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-      "PATH=${nixProfile}/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin"
+      "PATH=/home/arthur/.local/bin:${nixProfile}/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin"
+      "NPM_CONFIG_PREFIX=/home/arthur/.local"
       "LANG=C.UTF-8"
       "LC_ALL=C.UTF-8"
       "ATUIN_CONFIG_DIR=/etc/atuin" 
