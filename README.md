@@ -84,7 +84,7 @@ Do **NOT** change the line `system.stateVersion` !
 Then 
 ```bash
 nix flake update
-sudo nixos-rebuild switch --flake .#YOUR-HOST --impure
+sudo nixos-rebuild switch --impure --flake .#YOUR-HOST 
 ```
 
 

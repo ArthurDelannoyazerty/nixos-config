@@ -1,4 +1,3 @@
-# /modules/services/grafana.nix
 { config, pkgs, myConstants, ... }:
 
 {
@@ -15,8 +14,12 @@
         root_url = "https://${myConstants.services.grafana.subdomain}.${myConstants.publicDomain}/";
       };
 
+      # TODO
+      security = {
+        secret_key = "SW2YcwTIb9zpOOhoPsMm";
+      };
+
       # SEAMLESS AUTHENTIK SSO
-      # Reads the headers injected by your Caddy 'authentikMiddleware'
       "auth.proxy" = {
         enabled = true;
         header_name = "X-Authentik-Username";
@@ -48,5 +51,4 @@
       ];
     };
   };
-
 }
