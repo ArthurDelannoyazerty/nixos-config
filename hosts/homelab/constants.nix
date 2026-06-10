@@ -247,7 +247,7 @@ rec {
     };
     seerr = { 
       port = 5055; 
-      subdomain = "seer"; 
+      subdomain = "seer";
       version = "latest";
       containerName = "seerr";
     };
