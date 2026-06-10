@@ -76,6 +76,12 @@ rec {
       subdomain = "glances";
       version = "4.4.1-full";
     };
+    gluetun = {
+      port = 8001; 
+      subdomain = "gluetun";
+      version = "latest";
+      containerName = "gluetun";
+    };
     grafana = {
       port = 3002;
       subdomain = "grafana";
