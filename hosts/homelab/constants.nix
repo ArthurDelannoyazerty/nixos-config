@@ -245,6 +245,12 @@ rec {
       port = 8082;
       subdomain = "scrutiny";
     };
+    seerr = { 
+      port = 5055; 
+      subdomain = "seer"; 
+      version = "latest";
+      containerName = "seerr";
+    };
     sonarr = { 
       port = 8989; 
       subdomain = "sonarr"; 

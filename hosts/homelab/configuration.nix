@@ -23,6 +23,7 @@
     ./services/media/onlyoffice.nix
     ./services/media/prowlarr.nix
     ./services/media/qbittorrent.nix
+    ./services/media/seer.nix
     ./services/media/sonarr.nix
     ./services/media/suwayomi.nix
     ./services/media/tranga.nix

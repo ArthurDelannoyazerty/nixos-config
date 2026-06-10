@@ -203,6 +203,14 @@ in
         '';
       };
 
+      # --- SEERR ---
+      "http://${myConstants.services.seerr.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          reverse_proxy 127.0.0.1:${toString myConstants.services.seerr.port}
+        '';
+      };
+
       # --- SONARR ---
       "http://${myConstants.services.sonarr.subdomain}.${domain}" = {
         extraConfig = ''
