@@ -59,6 +59,7 @@
     ./services/security/caddy.nix
     ./services/security/cloudflared.nix
     ./services/security/docker-socket-proxy.nix
+    ./services/security/gluetun.nix
     ./services/security/lldap.nix
     
     /* ---------------------------------- USERS --------------------------------- */
