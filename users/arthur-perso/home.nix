@@ -115,8 +115,10 @@ in
   };
 
   # File explorer TUI
-  programs.yazi.enable = true;
-
+  programs.yazi = {
+    enable = true;
+    shellWrapperName = "y";
+  };
 
   /* -------------------------------------------------------------------------- */
   /*                                   VSCODE                                   */

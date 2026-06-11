@@ -113,7 +113,7 @@
 
   programs.thunar = {
     enable = true;
-    plugins = with pkgs.xfce; [
+    plugins = with pkgs; [
       thunar-archive-plugin
       thunar-volman
     ];
@@ -128,10 +128,15 @@
 
 
   # Wifi
-  # Tell NixOS to permit the insecure broadcom driver to build
-  nixpkgs.config.allowInsecurePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "broadcom-sta"
-  ];
+  # Tell NixOS to permit unfree packages and specific insecure dependencies
+  nixpkgs.config = {
+    allowUnfree = true; 
+    permittedInsecurePackages = [
+      "electron-39.8.10"
+      "broadcom-sta-6.30.223.271-59-6.18.34"
+    ];
+  };
+
   boot.extraModulePackages =[ config.boot.kernelPackages.broadcom_sta ];
   # Blacklist the open-source drivers so they stop hijacking the card
   boot.blacklistedKernelModules =[ "b43" "bcma" "brcmfmac" "brcmsmac" "ssb" ];
