@@ -110,6 +110,9 @@
   };
   boot.kernelParams = [ "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1" ];
 
+  # Force CPU to prioritize performance over power saving
+  powerManagement.cpuFreqGovernor = "performance";
+
 
   programs.thunar = {
     enable = true;

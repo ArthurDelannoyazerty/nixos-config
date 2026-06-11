@@ -19,7 +19,7 @@ let
   hyprlandAutoStart = if (osConfig.programs ? hyprland && osConfig.programs.hyprland.enable) then ''
     # Start Hyprland automatically if in TTY1
     if [ -z "$DISPLAY" ] &&[ "$(tty)" = "/dev/tty1" ]; then
-      exec Hyprland
+      exec start-hyprland
     fi
   '' else "";
 in

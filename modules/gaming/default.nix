@@ -65,7 +65,8 @@
     # Enable the Nvidia settings menu
     nvidiaSettings = true;
 
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    # For Legacy Pascal GPUs
+    package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
   };
 
   # Enable Coolbits to unlock manual fan control via NVML
