@@ -18,11 +18,12 @@
     ./services/media/byparr.nix
     ./services/media/filebrowser-quantum.nix 
     ./services/media/immich.nix
-    # ./services/media/jellyfin.nix
+    ./services/media/jellyfin.nix
     ./services/media/komga.nix
     ./services/media/onlyoffice.nix
     ./services/media/prowlarr.nix
     ./services/media/qbittorrent.nix
+    ./services/media/seer.nix
     ./services/media/sonarr.nix
     ./services/media/suwayomi.nix
     ./services/media/tranga.nix
@@ -59,6 +60,7 @@
     ./services/security/caddy.nix
     ./services/security/cloudflared.nix
     ./services/security/docker-socket-proxy.nix
+    ./services/security/gluetun.nix
     ./services/security/lldap.nix
     
     /* ---------------------------------- USERS --------------------------------- */

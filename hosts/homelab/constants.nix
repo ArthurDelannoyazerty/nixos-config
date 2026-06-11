@@ -76,6 +76,12 @@ rec {
       subdomain = "glances";
       version = "4.4.1-full";
     };
+    gluetun = {
+      port = 8001; 
+      subdomain = "gluetun";
+      version = "latest";
+      containerName = "gluetun";
+    };
     grafana = {
       port = 3002;
       subdomain = "grafana";
@@ -238,6 +244,12 @@ rec {
     scrutiny = {
       port = 8082;
       subdomain = "scrutiny";
+    };
+    seerr = { 
+      port = 5055; 
+      subdomain = "seer";
+      version = "latest";
+      containerName = "seerr";
     };
     sonarr = { 
       port = 8989; 

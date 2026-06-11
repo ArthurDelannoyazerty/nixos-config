@@ -80,6 +80,30 @@ in
         '';
       };
 
+
+      # --- JELLYFIN ---
+      "http://${myConstants.services.jellyfin.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+
+          # 1. Detect if the traffic comes from the Cloudflare Proxy
+          @cloudflare {
+            header Cf-Ray *
+          }
+
+          # 2. Block Cloudflare requests with your custom message
+          respond @cloudflare "Streaming via Cloudflare is disabled. Please connect to Tailscale to access Jellyfin." 403
+
+          # 3. Pass everything else (Tailscale / Local LAN) directly to Jellyfin
+          reverse_proxy 127.0.0.1:${toString myConstants.services.jellyfin.port} {
+             header_up Host {host}
+             header_up X-Real-IP {remote}
+             header_up X-Forwarded-For {remote}
+             header_up X-Forwarded-Proto {scheme}
+          }
+        '';
+      };
+
       # --- VIKUNJA ---
       "http://${myConstants.services.vikunja.subdomain}.${domain}" = {
         extraConfig = ''
@@ -200,6 +224,14 @@ in
           log
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.prowlarr.port}
+        '';
+      };
+
+      # --- SEERR ---
+      "http://${myConstants.services.seerr.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          reverse_proxy 127.0.0.1:${toString myConstants.services.seerr.port}
         '';
       };
 

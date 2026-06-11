@@ -174,6 +174,12 @@ let
             description: Anti-Bot & Captcha Solver
             server: my-docker
             container: ${myConstants.services.byparr.containerName}
+        - Seerr:
+            icon: https://raw.githubusercontent.com/seerr-team/seerr/refs/heads/develop/public/os_icon.svg
+            href: https://${myConstants.services.seerr.subdomain}.${myConstants.publicDomain}
+            description: Media Requests
+            server: my-docker
+            container: ${myConstants.services.seerr.containerName}
 
     - Authentification:
         - Authentik:
