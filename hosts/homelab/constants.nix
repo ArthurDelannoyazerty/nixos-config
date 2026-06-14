@@ -5,6 +5,8 @@ rec {
   # Public domain
   publicDomain = "arthur-lab.com"; 
 
+  tailscaleServerName = "nixos-homelab"; 
+
   dockerSocketProxy = "172.17.0.1";
   
   # Usage: bind 8501 -> "172.17.0.1:8501:8501"
