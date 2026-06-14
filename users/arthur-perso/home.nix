@@ -19,7 +19,7 @@ let
   hyprlandAutoStart = if (osConfig.programs ? hyprland && osConfig.programs.hyprland.enable) then ''
     # Start Hyprland automatically if in TTY1
     if [ -z "$DISPLAY" ] &&[ "$(tty)" = "/dev/tty1" ]; then
-      exec Hyprland
+      exec start-hyprland
     fi
   '' else "";
 in
@@ -59,6 +59,8 @@ in
     kdePackages.kdenlive
 
     baobab
+
+    crosspipe
 
     # CLI Tools (Migrated from shell.nix)
     btop
@@ -115,8 +117,10 @@ in
   };
 
   # File explorer TUI
-  programs.yazi.enable = true;
-
+  programs.yazi = {
+    enable = true;
+    shellWrapperName = "y";
+  };
 
   /* -------------------------------------------------------------------------- */
   /*                                   VSCODE                                   */
