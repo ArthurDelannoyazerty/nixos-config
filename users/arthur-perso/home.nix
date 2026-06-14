@@ -60,6 +60,8 @@ in
 
     baobab
 
+    crosspipe
+
     # CLI Tools (Migrated from shell.nix)
     btop
     tree
