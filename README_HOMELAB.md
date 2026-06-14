@@ -684,6 +684,21 @@ sudo docker restart prowlarr
 ```
 
 
+## Recyclaar
+
+We need to inject Sonarr and Radarr API key in the config file
+
+```bash
+sudo vim /var/lib/services/recyclarr/secrets.env
+
+# Add these lines with the right keys :
+# SONARR_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# RADARR_API_KEY=yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+```
+
+
+
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:
