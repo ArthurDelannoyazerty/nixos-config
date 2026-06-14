@@ -696,7 +696,11 @@ sudo vim /var/lib/services/recyclarr/secrets.env
 # RADARR_API_KEY=yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
 ```
 
+Check its zorking zith :
 
+```bash
+docker exec -it recyclarr recyclarr sync
+```
 
 
 # To add other services
