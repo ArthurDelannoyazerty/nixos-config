@@ -180,6 +180,11 @@ let
             description: Media Requests
             server: my-docker
             container: ${myConstants.services.seerr.containerName}
+        - Recyclarr:
+            icon: mdi-recycle
+            description: TRaSH Guides Sync
+            server: my-docker
+            container: ${myConstants.services.recyclarr.containerName}
 
     - Authentification:
         - Authentik:

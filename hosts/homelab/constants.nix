@@ -100,7 +100,7 @@ rec {
     homepage = {
       port = 3000;
       subdomain = "homepage";
-      version = "v1.13.1";
+      version = "v1.13.2";
       containerName = "homepage";
     };
     immich = {
@@ -208,6 +208,10 @@ rec {
     radarr = { 
       port = 7878; 
       subdomain = "radarr";
+    };
+    recyclarr = {
+      version = "latest";
+      containerName = "recyclarr";
     };
     romm = {
       port = 8085;
