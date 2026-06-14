@@ -16,6 +16,7 @@
 
     /* ---------------------------------- MEDIA --------------------------------- */
     ./services/media/byparr.nix
+    ./services/media/cleanuparr.nix
     ./services/media/filebrowser-quantum.nix 
     ./services/media/immich.nix
     ./services/media/jellyfin.nix

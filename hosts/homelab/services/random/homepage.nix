@@ -185,6 +185,12 @@ let
             description: TRaSH Guides Sync
             server: my-docker
             container: ${myConstants.services.recyclarr.containerName}
+        - Cleanuparr:
+            icon: mdi-broom
+            href: https://${myConstants.services.cleanuparr.subdomain}.${myConstants.publicDomain}
+            description: Storage Cleanup Manager
+            server: my-docker
+            container: ${myConstants.services.cleanuparr.containerName}
 
     - Authentification:
         - Authentik:

@@ -178,6 +178,15 @@ in
         '';
       };
 
+      # --- CLEANUPARR ---
+      "http://${myConstants.services.cleanuparr.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.cleanuparr.port}
+        '';
+      };
+
       # --- KOMGA ---
       "http://${myConstants.services.komga.subdomain}.${domain}" = {
         extraConfig = ''

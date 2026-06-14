@@ -47,6 +47,12 @@ rec {
       port = 6767; 
       subdomain = "bazarr"; 
     };
+    cleanuparr = {
+      port = 11011;
+      subdomain = "cleanuparr";
+      version = "latest";
+      containerName = "cleanuparr";
+    };
     crafty-controller = {
       port = 8443;
       subdomain = "crafty";
