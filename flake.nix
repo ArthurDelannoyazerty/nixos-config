@@ -48,6 +48,17 @@
       
       myConstants = import ./hosts/homelab/constants.nix;
 
+      # Define a reusable Lix module with the overlay
+      lixModule = { pkgs, ... }: {
+        nix.package = pkgs.lixPackageSets.stable.lix;
+        nixpkgs.overlays = [
+          (final: prev: {
+            inherit (prev.lixPackageSets.stable)
+              nixpkgs-review nix-eval-jobs nix-fast-build colmena;
+          })
+        ];
+      };
+
     in {
       # Devcontainer
       packages.${system} = {
@@ -72,6 +83,7 @@
               nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
             }
             inputs.grub2-themes.nixosModules.default
+            lixModule
           ];
         };
 
