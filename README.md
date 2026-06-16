@@ -23,7 +23,6 @@ If not available, install `git` :
 
 You can first set up your dotfiles so the following impure flake can link them easily : https://github.com/ArthurDelannoyazerty/dotfiles (wihout executing the setup.sh, nixos is taking care of that)
 
-
 Then : 
 ```bash
 # Clone the repo
@@ -31,7 +30,7 @@ cd ~
 git clone https://github.com/ArthurDelannoyazerty/nixos-config.git
 cd nixos-config
 
-# Set up the hardware config file
+# Set up the hardware config file (Replace <HOST> with the right folder, e.g., perso)
 nixos-generate-config --show-hardware-config > ~/nixos-config/hosts/<HOST>/hardware-configuration.nix
 
 # For every file change, add it to git
@@ -40,23 +39,37 @@ git add .
 (git config --global user.email "EMAIL")
 git commit -m "added hardware config file" 
 
-# Install the flake (the '#' tell nix the right config to install) 
+# FIRST INSTALLATION ONLY (nh is not installed yet)
 # (--impure for the flake to link some dotfiles not to the nix store but to the give dotfile folder)
-# (you can add "--fast" to not reinstall the bootloader for common rebuild)
-sudo nixos-rebuild switch --flake .#perso --impure 
+sudo nixos-rebuild switch --flake .#nixos-perso --impure 
 ```
 
-# Dotfiles update 
+**After the first installation, you can simply use:**
 ```bash
-cd ~/nixos-config
-sudo nix flake update dotfiles
-sudo nixos-rebuild switch --flake .#perso --impure --fast
+nh os switch . --impure
+```
+
+# Dotfiles / Config update 
+Since `nh` is configured, you don't need to specify the flake path or run as `sudo` (it will ask for your password automatically if needed).
+
+```bash
+# To update the dotfiles input lock
+nix flake update dotfiles
+
+# To build and switch
+nh os switch . --impure
 ```
 
 # Garbage Collector
 
+`nh` provides a much safer and cleaner garbage collector. 
+
 ```bash
-sudo nix-collect-garbage -d
+# Clean everything that is not the current system
+nh clean all
+
+# Or to keep the last 3 generations and everything younger than 7 days:
+nh clean all --keep 3 --keep-since 7d
 ```
 
 # Optimise
@@ -65,28 +78,31 @@ Compact current libs
 ```bash
 nix-store --optimise
 ```
+
 # Analyze build
 
+With `nh`, **builds are automatically analyzed and displayed beautifully!** `nh` natively uses `nix-output-monitor` (nom) under the hood. You will automatically see the tree representation and build times when you run `nh os switch`.
+
+If you just want to build a configuration (like the homelab) to check for errors/analyze it *without* applying it:
 ```bash
-nix shell nixpkgs#nix-output-monitor --command nom build .#nixosConfigurations.homelab.config.system.build.toplevel
+nh os build .#nixos-homelab --impure
 ```
 
 # For system update
 
 Change this line in `flake.nix` to the right version :
 ```nix
-nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 # Change also the home-manager "url" field to the right release
 ```
 
 Do **NOT** change the line `system.stateVersion` !
 
-Then 
+Then simply use `nh`'s built-in update flag:
 ```bash
-nix flake update
-sudo nixos-rebuild switch --impure --flake .#YOUR-HOST 
+nh os switch . --update --impure
 ```
-
+*(This automatically runs `nix flake update` and then builds/switches your system).*
 
 
 # For SSH connection with bitwarden
