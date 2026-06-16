@@ -69,7 +69,7 @@
       };
 
       nixosConfigurations = {
-        "perso" = nixpkgs.lib.nixosSystem {
+        "nixos-perso" = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { 
             inherit inputs home-manager nix-vscode-extensions; 
