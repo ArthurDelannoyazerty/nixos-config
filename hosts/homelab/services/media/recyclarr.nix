@@ -10,27 +10,34 @@ let
       series:
         base_url: http://172.17.0.1:${toString myConstants.services.sonarr.port}
         api_key: !env_var SONARR_API_KEY
+        
         quality_definition:
           type: series
+
         quality_profiles:
-          # Standard: WEB-1080p
-          # (For the French version [French MULTi.VO] WEB-1080p, use trash_id: 4c48f506c1116a3a57ae33f12346bd15)
+          # 1. Standard TV: WEB-1080p
           - trash_id: 72dae194fc92bf828f32cde7744e51a1 
             reset_unmatched_scores:
               enabled: true
 
-    radarr:
-      movies:
-        base_url: http://172.17.0.1:${toString myConstants.services.radarr.port}
-        api_key: !env_var RADARR_API_KEY
-        quality_definition:
-          type: movie
-        quality_profiles:
-          # Standard: HD Bluray + WEB (1080p)
-          # (For the French version [French MULTi.VO] HD Bluray + WEB, use trash_id: 2572ce3ea4eef1c19d59e0e20ed1cea7)
-          - trash_id: d1d67249d3890e49bc12e275d989a7e9 
+          # 2. Anime: [Anime] Remux-1080p
+          - trash_id: 20e0fc959f1f1704bed501f23bdae76f
             reset_unmatched_scores:
               enabled: true
+
+
+    # radarr:
+    #   movies:
+    #     base_url: http://172.17.0.1:${toString myConstants.services.radarr.port}
+    #     api_key: !env_var RADARR_API_KEY
+    #     quality_definition:
+    #       type: movie
+    #     quality_profiles:
+    #       # Standard: HD Bluray + WEB (1080p)
+    #       # (For the French version [French MULTi.VO] HD Bluray + WEB, use trash_id: 2572ce3ea4eef1c19d59e0e20ed1cea7)
+    #       - trash_id: d1d67249d3890e49bc12e275d989a7e9 
+    #         reset_unmatched_scores:
+    #           enabled: true
   '';
 
   # Location of the secure environment file where you will put your API Keys
