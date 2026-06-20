@@ -21,6 +21,11 @@
   # run dynamically linked binaries 
   programs.nix-ld.enable = true;
 
+  programs.nh = {
+    enable = true;
+    flake = "/home/arthur/nixos-config";
+  };
+
   # Install common system-wide packages
   environment.systemPackages = with pkgs; [
     git

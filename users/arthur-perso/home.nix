@@ -160,6 +160,8 @@ in
       nicolaiverbaarschot.alabaster-variant-theme
       tonsky.theme-alabaster
       johnpapa.vscode-peacock
+      fxzer.theme-vitesse-dark-custom
+
 
       # === TOOLS ===
       esbenp.prettier-vscode
