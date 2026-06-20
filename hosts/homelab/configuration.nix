@@ -89,6 +89,8 @@
 
   console.keyMap = "fr";
 
+  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+
   
   boot.kernelModules = [ 
     # CPU temps

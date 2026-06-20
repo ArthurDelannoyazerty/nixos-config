@@ -17,7 +17,7 @@
       # Drive where qBittorrent downloads
       "${myConstants.paths.services2TB}/qbittorrent/downloads:/downloads"
       # Drive where Jellyfin reads media
-      "${myConstants.paths.disk4TB}/media/anime:/media/anime" 
+      "${myConstants.paths.disk4TB}/media:/media" 
     ];
   };
 }
