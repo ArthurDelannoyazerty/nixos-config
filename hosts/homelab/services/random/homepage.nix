@@ -22,22 +22,30 @@ let
     statusStyle: dot 
 
     layout:
-      Family:
-        tab: Home
+      Sauvegarde:
+        tab: Public
         columns: 2
       Media:
-        tab: Home
-        columns: 4
-      Authentification:
-        tab: Home
+        tab: Public
         columns: 2
-      Other Services:
-        tab: Home
-        columns: 4
+      Autres:
+        tab: Public
+        columns: 2
+      Authentification:
+        tab: Public
+        columns: 2
+      Random:
+        tab: Privé
+        columns: 2
+      Lecteur Médias:
+        tab: Privé
+        columns: 2
+      Gestion Médias:
+        tab: Privé
+        columns: 2
       Monitoring:
-        tab: Server
-        style: row
-        columns: 4
+        tab: Privé
+        columns: 2
   '';
 
   # 2. WIDGETS (Header)
@@ -74,11 +82,11 @@ let
 
   # 3. SERVICES
   servicesYaml = pkgs.writeText "services.yaml" ''
-    - Family:
+    - Sauvegarde:
         - Immich: 
             icon: immich.png
             href: https://${myConstants.services.immich.subdomain}.${myConstants.publicDomain}
-            description: Stockage Photos
+            description: Archive Photos
             server: my-docker
             container: ${myConstants.services.immich.containerName}
             widget:
@@ -86,28 +94,24 @@ let
                 url: ${internalHost}:${toString myConstants.services.immich.port}
                 key: 1CcVvq9WjwqL1gL9j5O3qpbRI0nUCeNOscfAMK6HaYI
                 version: 2
-        - Vikunja:
-            icon: vikunja.png
-            href: https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}
-            description: Tasks & Projects
-            server: my-docker
-            container: ${myConstants.services.vikunja.containerName}
         - FileBrowser Quantum:
             icon: filebrowser-quantum.svg
             href: https://${myConstants.services.filebrowser-quantum.subdomain}.${myConstants.publicDomain}
-            description: Personal Cloud Storage
+            description: Stockage Fichiers
             server: my-docker
             container: ${myConstants.services.filebrowser-quantum.containerName}
+
+    - Autres:
         - Stirling PDF:
             icon: stirling-pdf.png
             href: https://${myConstants.services.stirling-pdf.subdomain}.${myConstants.publicDomain}
-            description: PDF Manipulation Suite
+            description: Suite PDF
             server: my-docker
             container: ${myConstants.services.stirling-pdf.containerName}
         - VERT Converter:
             icon: https://avatars.githubusercontent.com/u/198117259?s=200&v=4
             href: https://${myConstants.services.vert.subdomain}.${myConstants.publicDomain}
-            description: File Converter
+            description: Conversion Images, Audio, Documents, Video 
             server: my-docker
             container: ${myConstants.services.vert.containerName}
 
@@ -115,82 +119,36 @@ let
         - Jellyfin:
             icon: jellyfin.png
             href: http://${myConstants.tailscaleServerName}:${toString myConstants.services.jellyfin.port}
-            description: Streaming Video (Tailscale)
+            description: Streaming (Tailscale)
             server: my-docker
             container: ${myConstants.services.jellyfin.containerName}
             widget:
               type: jellyfin
               url: ${internalHost}:${toString myConstants.services.jellyfin.port}
+              key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
               enable_now_playing: true # Shows what people are currently watching
-        - Komga:
-            icon: komga.png
-            href: https://${myConstants.services.komga.subdomain}.${myConstants.publicDomain}
-            description: Manga & Comics Reader
-            server: my-docker
-            container: ${myConstants.services.komga.containerName}
-        - Suwayomi:
-            icon: suwayomi.png
-            href: https://${myConstants.services.suwayomi.subdomain}.${myConstants.publicDomain}
-            description: Manga Downloader
-            server: my-docker
-            container: ${myConstants.services.suwayomi.containerName}
-            widget:
-              type: suwayomi
-              url: ${internalHost}:${toString myConstants.services.suwayomi.port}
-        - Sonarr:
-            icon: sonarr.png
-            href: https://${myConstants.services.sonarr.subdomain}.${myConstants.publicDomain}
-            description: Anime Management
-            server: my-docker
-            container: ${myConstants.services.sonarr.containerName}
-            widget:
-              type: sonarr
-              url: ${internalHost}:${toString myConstants.services.sonarr.port}
-              key: REPLACE_ME_WITH_SONARR_API_KEY
-        - qBittorrent:
-            icon: qbittorrent.png
-            href: https://${myConstants.services.qbittorrent.subdomain}.${myConstants.publicDomain}
-            description: Torrent Client
-            server: my-docker
-            container: ${myConstants.services.qbittorrent.containerName}
-            widget:
-              type: qbittorrent
-              url: ${internalHost}:${toString myConstants.services.qbittorrent.port}
-        - Prowlarr:
-            icon: prowlarr.png
-            href: https://${myConstants.services.prowlarr.subdomain}.${myConstants.publicDomain}
-            description: Indexer Manager
-            server: my-docker
-            container: ${myConstants.services.prowlarr.containerName}
-        - Tranga: 
-            icon: mdi-book-open-page-variant
-            href: https://${myConstants.services.tranga.subdomain}.${myConstants.publicDomain}
-            description: Automatic Manga Downloader
-            server: my-docker
-            container: ${myConstants.services.tranga.containerName}
-        - Byparr:
-            icon: si-cloudflare
-            href: https://${myConstants.services.byparr.subdomain}.${myConstants.publicDomain}/docs
-            description: Anti-Bot & Captcha Solver
-            server: my-docker
-            container: ${myConstants.services.byparr.containerName}
         - Seerr:
             icon: https://raw.githubusercontent.com/seerr-team/seerr/refs/heads/develop/public/os_icon.svg
             href: https://${myConstants.services.seerr.subdomain}.${myConstants.publicDomain}
-            description: Media Requests
+            description: Requête Media
             server: my-docker
             container: ${myConstants.services.seerr.containerName}
-        - Recyclarr:
-            icon: mdi-recycle
-            description: TRaSH Guides Sync
+            widget:
+              type: seerr
+              url: https://${myConstants.services.seerr.subdomain}.${myConstants.publicDomain}
+              key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
+        - Komga:
+            icon: komga.png
+            href: https://${myConstants.services.komga.subdomain}.${myConstants.publicDomain}
+            description: Lecteur Manga
             server: my-docker
-            container: ${myConstants.services.recyclarr.containerName}
-        - Cleanuparr:
-            icon: mdi-broom
-            href: https://${myConstants.services.cleanuparr.subdomain}.${myConstants.publicDomain}
-            description: Storage Cleanup Manager
-            server: my-docker
-            container: ${myConstants.services.cleanuparr.containerName}
+            container: ${myConstants.services.komga.containerName}
+            # widget:
+            #   type: komga
+            #   url: https://${myConstants.services.komga.subdomain}.${myConstants.publicDomain}
+            #   username: "{{HOMEPAGE_VAR_KOMGA_USERNAME}}"
+            #   password: "{{HOMEPAGE_VAR_KOMGA_PASSWORD}}"
+            #   key: "{{HOMEPAGE_VAR_KOMGA_KEY}}"
 
     - Authentification:
         - Authentik:
@@ -207,29 +165,35 @@ let
         - Log Out:
             icon: mdi-logout
             href: https://${myConstants.services.homepage.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/sign_out
-            description: End Session
+            description: Se Deconnecter
 
-    - Other Services:
+    - Random:
+        - Vikunja:
+            icon: vikunja.png
+            href: https://${myConstants.services.vikunja.subdomain}.${myConstants.publicDomain}
+            description: TODO List
+            server: my-docker
+            container: ${myConstants.services.vikunja.containerName}
         - Finance:
             icon: si-streamlit
             href: https://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.finance.port}
-            description: Personal Finance Tracker
+            description: Finances
         - Forgejo:
             icon: forgejo.png
             href: https://${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.forgejo.port}
-            description: Git Repositories
+            description: Forrge Git
         - n8n:
             icon: n8n.png
             href: https://${myConstants.services.n8n.subdomain}.${myConstants.publicDomain}
-            description: Worflow Automation
+            description: Worflows
             server: my-docker
             container: ${myConstants.services.n8n.containerName}
         - RomM:
             icon: romm.png
             href: https://${myConstants.services.romm.subdomain}.${myConstants.publicDomain}
-            description: Retro Game Manager
+            description: Retro Game Library and Emulator
             server: my-docker
             container: ${myConstants.services.romm.containerName}
             widget:
@@ -238,7 +202,7 @@ let
         - Obsidian Notes:
             icon: obsidian.png
             href: https://${myConstants.services.quartz.subdomain}.${myConstants.publicDomain}
-            description: Digital Garden
+            description: Site Statique Obsidian Notes
         - Crafty Controller:
             icon: https://cdn.freebiesupply.com/logos/large/2x/minecraft-1-logo-png-transparent.png
             href: https://${myConstants.services.crafty-controller.subdomain}.${myConstants.publicDomain}
@@ -248,9 +212,69 @@ let
         - Wanderer:
             icon: mdi-map-marker-path
             href: https://${myConstants.services.wanderer.subdomain}.${myConstants.publicDomain}
-            description: Trail & GPS Track Database
+            description: GPX Viewer
             server: my-docker
             container: ${myConstants.services.wanderer.containerName}
+
+
+    - Gestion Médias:
+        - Suwayomi:
+            icon: suwayomi.png
+            href: https://${myConstants.services.suwayomi.subdomain}.${myConstants.publicDomain}
+            description: Manga Downloader
+            server: my-docker
+            container: ${myConstants.services.suwayomi.containerName}
+            # widget:
+            #   type: suwayomi
+            #   url: ${internalHost}:${toString myConstants.services.suwayomi.port}
+        - Tranga: 
+            icon: mdi-book-open-page-variant
+            href: https://${myConstants.services.tranga.subdomain}.${myConstants.publicDomain}
+            description: Manga Downloader
+            server: my-docker
+            container: ${myConstants.services.tranga.containerName}
+        - qBittorrent:
+            icon: qbittorrent.png
+            href: https://${myConstants.services.qbittorrent.subdomain}.${myConstants.publicDomain}
+            description: Torrent Client
+            server: my-docker
+            container: ${myConstants.services.qbittorrent.containerName}
+            widget:
+              type: qbittorrent
+              url: ${internalHost}:${toString myConstants.services.qbittorrent.port}
+        - Prowlarr:
+            icon: prowlarr.png
+            href: https://${myConstants.services.prowlarr.subdomain}.${myConstants.publicDomain}
+            description: Indexers
+            server: my-docker
+            container: ${myConstants.services.prowlarr.containerName}
+        - Sonarr:
+            icon: sonarr.png
+            href: https://${myConstants.services.sonarr.subdomain}.${myConstants.publicDomain}
+            description: Anime Backend Downloader
+            server: my-docker
+            container: ${myConstants.services.sonarr.containerName}
+            widget:
+              type: sonarr
+              url: ${internalHost}:${toString myConstants.services.sonarr.port}
+              key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
+        - Byparr:
+            icon: https://raw.githubusercontent.com/ThePhaseless/Byparr/557152ccdcf32025b77438ab51c93f58eb284980/icon/logo-byparr.svg
+            href: https://${myConstants.services.byparr.subdomain}.${myConstants.publicDomain}/docs
+            description: Cloudflare Bypass
+            server: my-docker
+            container: ${myConstants.services.byparr.containerName}
+        - Recyclarr:
+            icon: https://recyclarr.dev/img/recyclarr.png
+            description: Media Profiles 
+            server: my-docker
+            container: ${myConstants.services.recyclarr.containerName}
+        - Cleanuparr:
+            icon: https://raw.githubusercontent.com/Cleanuparr/Cleanuparr/refs/heads/main/Logo/256.png
+            href: https://${myConstants.services.cleanuparr.subdomain}.${myConstants.publicDomain}
+            description: Storage Cleanup Manager
+            server: my-docker
+            container: ${myConstants.services.cleanuparr.containerName}
 
     - Monitoring:
         - Power Costs:
@@ -281,12 +305,12 @@ let
             icon: grafana.png
             href: https://${myConstants.services.grafana.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.grafana.port}
-            description: Long-term Metrics Dashboard
+            description: Server Dashboard
         - Netdata:
             icon: netdata.png
             href: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.netdata.port}
-            description: Realtime Node Monitoring
+            description: Server Usage Monitoring
             widget:
                 type: netdata
                 url: ${internalHost}:${toString myConstants.services.netdata.port}
@@ -300,7 +324,7 @@ let
                 url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
                 slug: default 
         - Scanopy:
-            icon: https://scanopy.net/scanopy-logo-64.webp"
+            icon: https://scanopy.net/scanopy-logo-64.webp
             href: https://${myConstants.services.scanopy.subdomain}.${myConstants.publicDomain}
             description: Network Inventory & Scanner
             server: my-docker
@@ -328,6 +352,10 @@ in
       HOMEPAGE_ALLOWED_HOSTS = "*"; 
       DOCKER_HOST = "tcp://172.17.0.1:2375";
     };
+
+    environmentFiles = [
+      "/var/lib/homepage/secrets.env"
+    ];
 
     volumes = [
       "${settingsYaml}:/app/config/settings.yaml"
