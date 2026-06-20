@@ -102,10 +102,11 @@
               nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
             }
             inputs.grub2-themes.nixosModules.default
+            lixModule
           ];
         };
         
-        "homelab" = nixpkgs.lib.nixosSystem {
+        "nixos-homelab" = nixpkgs.lib.nixosSystem {
          system = "x86_64-linux";
           specialArgs = { 
             inherit inputs home-manager nix-vscode-extensions myConstants; 
@@ -118,6 +119,7 @@
             {
               nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
             }
+            lixModule
           ];
         };
       };

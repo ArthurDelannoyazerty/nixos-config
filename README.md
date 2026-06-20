@@ -51,6 +51,7 @@ nh os switch . --impure
 
 # Dotfiles / Config update 
 Since `nh` is configured, you don't need to specify the flake path or run as `sudo` (it will ask for your password automatically if needed).
+However you need to set `  networking.hostName = "NAME";` as the name of the flake
 
 ```bash
 # To update the dotfiles input lock
