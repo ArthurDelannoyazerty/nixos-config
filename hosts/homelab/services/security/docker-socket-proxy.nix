@@ -2,7 +2,6 @@
 {
   virtualisation.oci-containers.containers.socket-proxy = {
     image = "tecnativa/docker-socket-proxy";
-    ports = [ "2375:2375" ];
     volumes = [ "/var/run/docker.sock:/var/run/docker.sock:ro" ]; # Read-only mount
     environment = {
       CONTAINERS = "1"; # Allow listing containers

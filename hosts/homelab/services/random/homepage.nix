@@ -343,7 +343,7 @@ let
   # 5. DOCKER - Unchanged
   dockerYaml = pkgs.writeText "docker.yaml" ''
     my-docker:
-      host: 172.17.0.1
+      host: socket-proxy
       port: 2375
     '';
 
@@ -500,6 +500,9 @@ in
       "${myConstants.paths.disk4TB}:${myConstants.paths.disk4TB}:ro"
     ];
 
-    extraOptions = [ "--add-host=host.docker.internal:host-gateway" ];
+    extraOptions = [ 
+        "--add-host=host.docker.internal:host-gateway" 
+        "--link=socket-proxy:socket-proxy"
+    ];
   };
 }
