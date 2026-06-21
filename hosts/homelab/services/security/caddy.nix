@@ -98,25 +98,22 @@ in
 
 
       # --- JELLYFIN ---
-      "http://${myConstants.services.jellyfin.subdomain}.${domain}" = {
+      "${myConstants.services.jellyfin.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          ${privateOnly}
 
-          # 1. Detect if the traffic comes from the Cloudflare Proxy
+          # 1. Block accidental Cloudflare Proxy traffic (saving your CF account)
           @cloudflare {
             header Cf-Ray *
           }
+          respond @cloudflare "Streaming via Cloudflare is disabled. Please connect directly." 403
 
-          # 2. Block Cloudflare requests with your custom message
-          respond @cloudflare "Streaming via Cloudflare is disabled. Please connect to Tailscale to access Jellyfin." 403
-
-          # 3. Pass everything else (Tailscale / Local LAN) directly to Jellyfin
+          # 2. Pass to Jellyfin
           reverse_proxy 127.0.0.1:${toString myConstants.services.jellyfin.port} {
-             header_up Host {host}
-             header_up X-Real-IP {remote}
-             header_up X-Forwarded-For {remote}
-             header_up X-Forwarded-Proto {scheme}
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
           }
         '';
       };
@@ -126,7 +123,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:3456 
+          reverse_proxy 127.0.0.1:${toString myConstants.services.vikunja.port} 
         '';
       };
 

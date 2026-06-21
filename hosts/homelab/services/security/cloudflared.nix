@@ -25,7 +25,7 @@ in
 
   services.cloudflare-dyndns = {
     enable = true;
-    domains = [ "immich.arthur-lab.com" ];
+    domains = [ "${myConstants.services.immich.subdomain}.${myConstants.publicDomain}" "${myConstants.services.jellyfin.subdomain}.${myConstants.publicDomain}" ];
     apiTokenFile = "/var/lib/cloudflare-dyndns/token"; 
   };
 }

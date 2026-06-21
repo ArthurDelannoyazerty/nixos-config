@@ -122,8 +122,8 @@ let
     - Media:
         - Jellyfin:
             icon: jellyfin.png
-            href: http://${myConstants.tailscaleServerName}:${toString myConstants.services.jellyfin.port}
-            description: Streaming (Tailscale)
+            href: https://${myConstants.services.jellyfin.subdomain}.${myConstants.publicDomain}
+            description: Streaming
             server: my-docker
             container: ${myConstants.services.jellyfin.containerName}
             widget:
