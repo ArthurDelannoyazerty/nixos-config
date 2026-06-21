@@ -17,7 +17,7 @@ let
   authentikMiddleware = ''
     # A. Handle Authentik Outpost (Bypass Auth)
     handle /outpost.goauthentik.io/* {
-      reverse_proxy 127.0.0.1:${toString myConstants.services.authentik.port}
+      reverse_proxy 172.17.0.1:${toString myConstants.services.authentik.port}
     }
 
     # B. Auth Check (Forward to Authentik)
@@ -67,7 +67,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.authentik.port} {
+          reverse_proxy 172.17.0.1:${toString myConstants.services.authentik.port} {
             header_up Host {host}
             header_up X-Real-IP {remote}
             header_up X-Forwarded-For {remote}
@@ -82,7 +82,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware} # Inject the auth logic
-          reverse_proxy 127.0.0.1:${toString myConstants.services.homepage.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.homepage.port}
         '';
       };
 
@@ -92,7 +92,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.finance.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.finance.port}
         '';
       };
 
@@ -109,7 +109,7 @@ in
           respond @cloudflare "Streaming via Cloudflare is disabled. Please connect directly." 403
 
           # 2. Pass to Jellyfin
-          reverse_proxy 127.0.0.1:${toString myConstants.services.jellyfin.port} {
+          reverse_proxy 172.17.0.1:${toString myConstants.services.jellyfin.port} {
             header_up Host {host}
             header_up X-Real-IP {remote}
             header_up X-Forwarded-For {remote}
@@ -123,7 +123,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.vikunja.port} 
+          reverse_proxy 172.17.0.1:${toString myConstants.services.vikunja.port} 
         '';
       };
 
@@ -138,7 +138,7 @@ in
             respond "404 Not Found" 404
           }
 
-          reverse_proxy 127.0.0.1:${toString myConstants.services.onlyoffice.port} {
+          reverse_proxy 172.17.0.1:${toString myConstants.services.onlyoffice.port} {
             header_up Host {host}
             header_up X-Real-IP {remote}
             header_up X-Forwarded-For {remote}
@@ -154,7 +154,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.stirling-pdf.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.stirling-pdf.port}
         '';
       };
 
@@ -164,7 +164,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.vert.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.vert.port}
         '';
       };
 
@@ -194,7 +194,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.suwayomi.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.suwayomi.port}
         '';
       };
 
@@ -204,7 +204,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.cleanuparr.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.cleanuparr.port}
         '';
       };
 
@@ -213,7 +213,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.komga.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.komga.port}
         '';
       };
 
@@ -223,7 +223,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.byparr.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.byparr.port}
         '';
       };
 
@@ -233,7 +233,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.tranga.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.tranga.port}
         '';
       };
 
@@ -243,7 +243,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.qbittorrent.port} {
+          reverse_proxy 172.17.0.1:${toString myConstants.services.qbittorrent.port} {
             header_up Host {host}
             header_up X-Forwarded-Host {host}
             header_up X-Forwarded-For {remote}
@@ -257,7 +257,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.prowlarr.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.prowlarr.port}
         '';
       };
 
@@ -266,7 +266,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.seerr.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.seerr.port}
         '';
       };
 
@@ -276,7 +276,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.sonarr.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.sonarr.port}
         '';
       };
 
@@ -303,7 +303,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.glances.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.glances.port}
         '';
       };
 
@@ -313,7 +313,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.filebrowser.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.filebrowser.port}
         '';
       };
 
@@ -322,7 +322,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.filebrowser-quantum.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.filebrowser-quantum.port}
         '';
       };
 
@@ -334,14 +334,14 @@ in
           
           # 1. Allow external webhooks to bypass Authentik SSO
           handle /webhook/* {
-            reverse_proxy 127.0.0.1:${toString myConstants.services.n8n.port}
+            reverse_proxy 172.17.0.1:${toString myConstants.services.n8n.port}
           }
 
           # 2. Protect the rest of the n8n UI with Authentik
           handle {
             # A. Handle Authentik Outpost (Bypass Auth)
             handle /outpost.goauthentik.io/* {
-              reverse_proxy 127.0.0.1:${toString myConstants.services.authentik.port}
+              reverse_proxy 172.17.0.1:${toString myConstants.services.authentik.port}
             }
 
             # B. Auth Check (Forward to Authentik)
@@ -352,7 +352,7 @@ in
             }
             
             # C. Actually proxy to n8n
-            reverse_proxy 127.0.0.1:${toString myConstants.services.n8n.port}
+            reverse_proxy 172.17.0.1:${toString myConstants.services.n8n.port}
           }
 
           # 3. Redirect to Login if Unauthorized (401) - MUST BE OUTSIDE `handle`
@@ -370,7 +370,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.romm.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.romm.port}
         '';
       };
 
@@ -380,7 +380,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.grafana.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.grafana.port}
         '';
       };
 
@@ -390,7 +390,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.scrutiny.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.scrutiny.port}
         '';
       };
 
@@ -399,7 +399,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.uptime-kuma.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.uptime-kuma.port}
         '';
       };
 
@@ -409,7 +409,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.forgejo.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.forgejo.port}
         '';
       };
 
@@ -417,7 +417,7 @@ in
       "${myConstants.services.immich.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          reverse_proxy 127.0.0.1:${toString myConstants.services.immich.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.immich.port}
         '';
       };
 
@@ -426,7 +426,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.nextcloud.port} {
+          reverse_proxy 172.17.0.1:${toString myConstants.services.nextcloud.port} {
             header_up Host {host}
             header_up X-Real-IP {remote}
             header_up X-Forwarded-For {remote}
@@ -446,7 +446,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.wanderer.port} {
+          reverse_proxy 172.17.0.1:${toString myConstants.services.wanderer.port} {
             header_up Host {host}
             header_up X-Real-IP {remote}
             header_up X-Forwarded-For {remote}
@@ -460,7 +460,7 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.wanderer-db.port} {
+          reverse_proxy 172.17.0.1:${toString myConstants.services.wanderer-db.port} {
             header_up Host {host}
             header_up X-Real-IP {remote}
             header_up X-Forwarded-For {remote}
@@ -475,7 +475,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.scanopy.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.scanopy.port}
         '';
       };
 
@@ -484,7 +484,7 @@ in
         extraConfig = ''
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.lldap.html-port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.lldap.html-port}
         '';
       };
 
@@ -496,7 +496,7 @@ in
           ${authentikMiddleware}
           
           # Netdata needs specific headers to know it is behind a proxy
-          reverse_proxy 127.0.0.1:${toString myConstants.services.netdata.port} {
+          reverse_proxy 172.17.0.1:${toString myConstants.services.netdata.port} {
              header_up Host {host} 
              header_up X-Forwarded-Host {host}
              header_up X-Forwarded-For {remote}
