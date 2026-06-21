@@ -14,7 +14,7 @@ in
         default = "http://127.0.0.1:80"; 
         ingress = {
           # Route the Auth portal directly
-          "${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}" = "http://127.0.0.1:${toString myConstants.services.authentik.port}";
+          "${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}" = "http://127.0.0.1:80";
           
           # Headscale needs to be public for the Highway path
           "${myConstants.services.headscale.subdomain}.${myConstants.publicDomain}" = "http://127.0.0.1:${toString myConstants.services.headscale.port}";
