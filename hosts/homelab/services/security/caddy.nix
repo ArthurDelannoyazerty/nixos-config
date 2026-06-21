@@ -1,6 +1,19 @@
 { config, pkgs, myConstants, ... }:
 
 let
+  # --- SECURITY WATCHDOG FOR CADDY ---
+  # Only allow requests from:
+  # - 127.0.0.1/32 (The Cloudflare Tunnel daemon running locally)
+  # - Your local LAN IP ranges (192.168.0.0/16, etc.)
+  # - Your Tailscale network (100.64.0.0/10)
+  # Any direct external scan to your router's open ports targeting private domains will be dropped with a 403.
+  privateOnly = ''
+    @untrusted {
+      not remote_ip 127.0.0.1 ::1 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 100.64.0.0/10 fc00::/7 fe80::/10
+    }
+    respond @untrusted "Access Denied" 403
+  '';
+
   authentikMiddleware = ''
     # A. Handle Authentik Outpost (Bypass Auth)
     handle /outpost.goauthentik.io/* {
@@ -49,10 +62,11 @@ in
         '';
       };
 
-      # --- AUTHENTIK ITSELF ---
+      # --- AUTHENTIK ITSELF (Protected from direct public access) ---
       "http://${myConstants.services.authentik.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           reverse_proxy 127.0.0.1:${toString myConstants.services.authentik.port} {
             header_up Host {host}
             header_up X-Real-IP {remote}
@@ -62,19 +76,21 @@ in
         '';
       };
 
-      # --- HOMEPAGE ---
+      # --- HOMEPAGE (Protected from direct public access) ---
       "http://${myConstants.services.homepage.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware} # Inject the auth logic
           reverse_proxy 127.0.0.1:${toString myConstants.services.homepage.port}
         '';
       };
 
-      # --- FINANCE ---
+      # --- FINANCE (Protected from direct public access) ---
       "http://${myConstants.services.finance.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.finance.port}
         '';
@@ -85,6 +101,7 @@ in
       "http://${myConstants.services.jellyfin.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
 
           # 1. Detect if the traffic comes from the Cloudflare Proxy
           @cloudflare {
@@ -104,18 +121,20 @@ in
         '';
       };
 
-      # --- VIKUNJA ---
+      # --- VIKUNJA (Protected from direct public access) ---
       "http://${myConstants.services.vikunja.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           reverse_proxy 127.0.0.1:3456 
         '';
       };
 
-      # --- ONLYOFFICE ---
+      # --- ONLYOFFICE (Protected from direct public access) ---
       "http://${myConstants.services.onlyoffice.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
 
           @blocked path / /welcome* /example*
           handle @blocked {
@@ -132,28 +151,31 @@ in
         '';
       };
 
-      # --- STIRLING PDF ---
+      # --- STIRLING PDF (Protected from direct public access) ---
       "http://${myConstants.services.stirling-pdf.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.stirling-pdf.port}
         '';
       };
 
-      # --- VERT FRONTEND ---
+      # --- VERT FRONTEND (Protected from direct public access) ---
       "http://${myConstants.services.vert.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.vert.port}
         '';
       };
 
-      # --- CRAFTY CONTROLLER ---
+      # --- CRAFTY CONTROLLER (Protected from direct public access) ---
       "http://${myConstants.services.crafty-controller.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           
           reverse_proxy https://127.0.0.1:${toString myConstants.services.crafty-controller.port} {
             transport http {
@@ -169,57 +191,62 @@ in
         '';
       };
 
-      # --- SUWAYOMI ---
+      # --- SUWAYOMI (Protected from direct public access) ---
       "http://${myConstants.services.suwayomi.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.suwayomi.port}
         '';
       };
 
-      # --- CLEANUPARR ---
+      # --- CLEANUPARR (Protected from direct public access) ---
       "http://${myConstants.services.cleanuparr.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.cleanuparr.port}
         '';
       };
 
-      # --- KOMGA ---
+      # --- KOMGA (Protected from direct public access) ---
       "http://${myConstants.services.komga.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           reverse_proxy 127.0.0.1:${toString myConstants.services.komga.port}
         '';
       };
 
-      # --- BYPARR ---
+      # --- BYPARR (Protected from direct public access) ---
       "http://${myConstants.services.byparr.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.byparr.port}
         '';
       };
 
-      # --- TRANGA ---
+      # --- TRANGA (Protected from direct public access) ---
       "http://${myConstants.services.tranga.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.tranga.port}
         '';
       };
 
-      # --- QBITTORRENT ---
+      # --- QBITTORRENT (Protected from direct public access) ---
       "http://${myConstants.services.qbittorrent.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.qbittorrent.port} {
-            # qBittorrent requires these headers to prevent CSRF errors when behind a proxy
             header_up Host {host}
             header_up X-Forwarded-Host {host}
             header_up X-Forwarded-For {remote}
@@ -227,36 +254,40 @@ in
         '';
       };
 
-      # --- PROWLARR ---
+      # --- PROWLARR (Protected from direct public access) ---
       "http://${myConstants.services.prowlarr.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.prowlarr.port}
         '';
       };
 
-      # --- SEERR ---
+      # --- SEERR (Protected from direct public access) ---
       "http://${myConstants.services.seerr.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           reverse_proxy 127.0.0.1:${toString myConstants.services.seerr.port}
         '';
       };
 
-      # --- SONARR ---
+      # --- SONARR (Protected from direct public access) ---
       "http://${myConstants.services.sonarr.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.sonarr.port}
         '';
       };
 
-      # --- QUARTZ ---
+      # --- QUARTZ (Protected from direct public access) ---
       "http://${myConstants.services.quartz.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware} 
           
           # Serve the static HTML files generated by Quartz
@@ -269,36 +300,40 @@ in
         '';
       };
 
-      # --- GLANCES ---
+      # --- GLANCES (Protected from direct public access) ---
       "http://${myConstants.services.glances.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.glances.port}
         '';
       };
 
-      # --- FILEBROWSER ---
+      # --- FILEBROWSER (Protected from direct public access) ---
       "http://${myConstants.services.filebrowser.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.filebrowser.port}
         '';
       };
 
-      # --- FILEBROWSER QUANTUM ---
+      # --- FILEBROWSER QUANTUM (Protected from direct public access) ---
       "http://${myConstants.services.filebrowser-quantum.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           reverse_proxy 127.0.0.1:${toString myConstants.services.filebrowser-quantum.port}
         '';
       };
 
-      # --- N8N ---
+      # --- N8N (Protected from direct public access) ---
       "http://${myConstants.services.n8n.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           
           # 1. Allow external webhooks to bypass Authentik SSO
           handle /webhook/* {
@@ -333,68 +368,67 @@ in
         '';
       };
 
-      # --- ROMM ---
+      # --- ROMM (Protected from direct public access) ---
       "http://${myConstants.services.romm.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           reverse_proxy 127.0.0.1:${toString myConstants.services.romm.port}
         '';
       };
 
-      # --- GRAFANA ---
+      # --- GRAFANA (Protected from direct public access) ---
       "http://${myConstants.services.grafana.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.grafana.port}
         '';
       };
 
-      # --- SCRUTINY ---
+      # --- SCRUTINY (Protected from direct public access) ---
       "http://${myConstants.services.scrutiny.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.scrutiny.port}
         '';
       };
 
-      # --- UPTIME KUMA ---
+      # --- UPTIME KUMA (Protected from direct public access) ---
       "http://${myConstants.services.uptime-kuma.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          # No authentik middleware here, Uptime Kuma handles its own auth
+          ${privateOnly}
           reverse_proxy 127.0.0.1:${toString myConstants.services.uptime-kuma.port}
         '';
       };
 
-      # --- FORGEJO (Git Backup) ---
+      # --- FORGEJO (Protected from direct public access) ---
       "http://${myConstants.services.forgejo.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.forgejo.port}
         '';
       };
 
-      # --- IMMICH ---
-      "http://${myConstants.services.immich.subdomain}.${domain}" = {
+      # --- IMMICH (Public direct entrypoint - Auto HTTPS on 443) ---
+      "${myConstants.services.immich.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          reverse_proxy 127.0.0.1:${toString myConstants.services.immich.port} {
-             header_up X-Real-IP {remote}
-             # Allow large uploads (Caddy default is sometimes strict)
-             transport http {
-               read_buffer 8192
-             }
-          }
+          reverse_proxy 127.0.0.1:${toString myConstants.services.immich.port}
         '';
       };
 
-      # --- NEXTCLOUD ---
+      # --- NEXTCLOUD (Protected from direct public access) ---
       "http://${myConstants.services.nextcloud.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           reverse_proxy 127.0.0.1:${toString myConstants.services.nextcloud.port} {
             header_up Host {host}
             header_up X-Real-IP {remote}
@@ -410,10 +444,11 @@ in
         '';
       };
 
-      # --- WANDERER WEB ---
+      # --- WANDERER WEB (Protected from direct public access) ---
       "http://${myConstants.services.wanderer.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           reverse_proxy 127.0.0.1:${toString myConstants.services.wanderer.port} {
             header_up Host {host}
             header_up X-Real-IP {remote}
@@ -423,10 +458,11 @@ in
         '';
       };
 
-      # --- WANDERER DB (PocketBase) ---
+      # --- WANDERER DB (Protected from direct public access) ---
       "http://${myConstants.services.wanderer-db.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           reverse_proxy 127.0.0.1:${toString myConstants.services.wanderer-db.port} {
             header_up Host {host}
             header_up X-Real-IP {remote}
@@ -436,27 +472,30 @@ in
         '';
       };
 
-      # --- SCANOPY ---
+      # --- SCANOPY (Protected from direct public access) ---
       "http://${myConstants.services.scanopy.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.scanopy.port}
         '';
       };
 
-      # --- LLDAP ---
+      # --- LLDAP (Protected from direct public access) ---
       "http://${myConstants.services.lldap.subdomain}.${domain}" = {
         extraConfig = ''
+          ${privateOnly}
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.lldap.html-port}
         '';
       };
 
-      # --- NETDATA (Special Headers) ---
+      # --- NETDATA (Protected from direct public access) ---
       "http://${myConstants.services.netdata.subdomain}.${domain}" = {
         extraConfig = ''
           log
+          ${privateOnly}
           ${authentikMiddleware}
           
           # Netdata needs specific headers to know it is behind a proxy

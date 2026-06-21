@@ -86,10 +86,11 @@
 
   networking.hostName = "nixos-homelab";
   networking.networkmanager.enable = true; 
+  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
 
   console.keyMap = "fr";
 
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
 
   
   boot.kernelModules = [ 

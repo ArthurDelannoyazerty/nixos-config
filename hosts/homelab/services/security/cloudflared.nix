@@ -22,4 +22,10 @@ in
       };
     };
   };
+
+  services.cloudflare-dyndns = {
+    enable = true;
+    domains = [ "immich.arthur-lab.com" ];
+    apiTokenFile = "/var/lib/cloudflare-dyndns/token"; 
+  };
 }
