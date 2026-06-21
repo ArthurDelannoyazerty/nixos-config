@@ -3,7 +3,7 @@
 {
   # 1. Provide dependencies
   environment.systemPackages = with pkgs;[
-    nodejs
+    nodejs_22       # Updated: Quartz v5 requires Node 22+
     git
     git-lfs
     rsync
@@ -44,7 +44,8 @@
   systemd.services.build-quartz = {
     description = "Build Quartz Static Site from local Forgejo";
     
-    path =[ pkgs.git pkgs.git-lfs pkgs.nodejs pkgs.rsync pkgs.bash pkgs.coreutils ];
+    # Updated: Ensure Node 22+ is used inside the systemd service environment path
+    path =[ pkgs.git pkgs.git-lfs pkgs.nodejs_22 pkgs.rsync pkgs.bash pkgs.coreutils ];
     
     serviceConfig = {
       Type = "oneshot";
@@ -73,10 +74,11 @@
       git config --global url."$LOCAL_URL/".insteadOf "https://$PUBLIC_DOMAIN/"
       git config --global lfs.transfer.enableHrefRewrite true
 
-      # Step 1: Initialize Quartz if missing
+      # Step 1: Initialize Quartz if missing (or trigger manually by deleting node_modules)
       if [ ! -d "$QUARTZ_DIR/node_modules" ]; then
-        echo "Initializing Quartz Engine..."
-        rm -rf "$QUARTZ_DIR/.git" "$QUARTZ_DIR/package.json" "$QUARTZ_DIR/package-lock.json"
+        echo "Initializing Quartz Engine (v5)..."
+        # Clean up v4 files to avoid config duplication/conflict
+        rm -rf "$QUARTZ_DIR/.git" "$QUARTZ_DIR/package.json" "$QUARTZ_DIR/package-lock.json" "$QUARTZ_DIR/quartz.config.ts" "$QUARTZ_DIR/quartz.layout.ts"
         
         git clone https://github.com/jackyzha0/quartz.git /tmp/quartz-init
         cp -a /tmp/quartz-init/. "$QUARTZ_DIR/"
@@ -105,6 +107,10 @@
       # Step 4: Build the static site
       echo "Building Quartz..."
       cd $QUARTZ_DIR
+      
+      # New for Quartz v5: Must pull external plugins registered in quartz.config.yaml
+      npx quartz plugin install --from-config
+      
       npx quartz build
       
       # Step 5: Clean up credentials for security
