@@ -23,7 +23,7 @@
     wantedBy = [ "multi-user.target" ];
     after = [ "network.target" ];
     serviceConfig = {
-      ExecStart = "${pkgs.webhook}/bin/webhook -hooks /etc/webhook/hooks.json -port 9001";
+      ExecStart = "${pkgs.webhook}/bin/webhook -hooks /etc/webhook/hooks.json -ip 127.0.0.1 -port 9001";
       User = "root";
     };
   };
