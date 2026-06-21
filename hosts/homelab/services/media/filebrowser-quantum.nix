@@ -8,11 +8,35 @@ let
       cacheDir: "/home/filebrowser/data/tmp"
       externalUrl: "https://${myConstants.services.filebrowser-quantum.subdomain}.${myConstants.publicDomain}"
       internalUrl: "http://172.17.0.1:${toString myConstants.services.filebrowser-quantum.port}"
+      
+      # Multiple sources configured natively in FileBrowser Quantum
       sources:
         - path: "/srv"
+          name: "Personal Files"
           config:
             defaultEnabled: true
             createUserDir: true
+            defaultUserScope: "/" # Creates isolated /srv/personal/username folders
+
+        - path: "/admin-view"
+          name: "All Users (Admin View)"
+          config:
+            defaultEnabled: false
+
+        - path: "/media"
+          name: "Media"
+          config:
+            defaultEnabled: false # Invisible to standard users by default
+
+        - path: "/minecraft"
+          name: "Minecraft"
+          config:
+            defaultEnabled: false # Invisible to standard users by default
+
+        - path: "/immich"
+          name: "Immich Photos"
+          config:
+            defaultEnabled: false # Invisible to standard users by default
 
     integrations:
       office:
@@ -33,8 +57,7 @@ let
           scopes: "email openid profile groups"
           userIdentifier: "preferred_username"
           createUser: true               # create user if it does not exist
-          
-          adminGroup: "authentik Admins"
+          adminGroup: "authentik Admins"  # users in this group automatically get admin privileges
   '';
 
 in
@@ -54,8 +77,20 @@ in
     user = "1000:1000";
 
     volumes =[
+      # Config and personal files
       "${myConstants.paths.servicesSSD}/filebrowser-quantum/data:/home/filebrowser/data"
+      
+      # Personal files mapped for users
       "${myConstants.paths.services4TB}/filebrowser-quantum/files:/srv"
+      
+      # The exact same folder mapped to a different path so Admins can view all users
+      "${myConstants.paths.services4TB}/filebrowser-quantum/files:/admin-view"
+      
+      # Additional Admin Storage Sources
+      "${myConstants.paths.disk4TB}/media:/media"
+      "${myConstants.paths.servicesSSD}/crafty/servers:/minecraft"
+      "${myConstants.paths.services4TB}/immich/photos:/immich"
+
       "${filebrowserConfig}:/home/filebrowser/data/config.yaml:ro"
     ];
 
