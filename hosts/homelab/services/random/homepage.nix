@@ -114,6 +114,10 @@ let
             description: Conversion Images, Audio, Documents, Video 
             server: my-docker
             container: ${myConstants.services.vert.containerName}
+        - Pub:
+            icon: mdi-advertisements
+            href: "#show-my-ad"
+            description: Pub
 
     - Media:
         - Jellyfin:
@@ -183,7 +187,7 @@ let
             icon: forgejo.png
             href: https://${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.forgejo.port}
-            description: Forrge Git
+            description: Forge Git
         - n8n:
             icon: n8n.png
             href: https://${myConstants.services.n8n.subdomain}.${myConstants.publicDomain}
@@ -342,6 +346,131 @@ let
       host: 172.17.0.1
       port: 2375
     '';
+
+
+  # 6. CUSTOM JS (The Joke Advertisement)
+  customJs = pkgs.writeText "custom.js" ''
+    document.addEventListener('click', function(event) {
+        const target = event.target.closest('a');
+        
+        if (target && target.getAttribute('href') === '#show-my-ad') {
+            event.preventDefault(); 
+            
+            // Prevent spawning multiple popups
+            if (document.getElementById('my-cool-popup')) return;
+
+            const popupOverlay = document.createElement('div');
+            popupOverlay.id = 'my-cool-popup';
+            
+            popupOverlay.innerHTML = `
+                <style>
+                    #my-cool-popup {
+                        position: fixed;
+                        top: 0; left: 0; width: 100vw; height: 100vh;
+                        background: rgba(0,0,0,0.85);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 999999;
+                    }
+                    .popup-box {
+                        /* We make this relative so the background layer stays inside it */
+                        position: relative !important;
+                        z-index: 1 !important;
+                        overflow: hidden !important; /* Keeps the background inside the rounded corners */
+                        
+                        padding: 60px !important;
+                        border: 10px solid white !important;
+                        border-radius: 20px !important;
+                        box-shadow: 0 0 100px rgba(255,255,255,0.4) !important;
+                        transform: rotate(-10deg) !important;
+                        text-align: center !important;
+                        max-width: 90% !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        align-items: center !important;
+                    }
+                    
+                    /* The crazy blinking background layer */
+                    .popup-box::before {
+                        content: "" !important;
+                        position: absolute !important;
+                        top: 0 !important; left: 0 !important; 
+                        width: 100% !important; height: 100% !important;
+                        z-index: -1 !important; /* Pushes it behind the text and button */
+                        animation: bgBlink 0.4s infinite !important;
+                    }
+
+                    /* Swapping the colors discretely for the flash effect */
+                    @keyframes bgBlink {
+                        0%, 49% { 
+                            background: repeating-linear-gradient(-45deg, yellow, yellow 30px, violet 30px, violet 60px); 
+                        }
+                        50%, 100% { 
+                            background: repeating-linear-gradient(-45deg, violet, violet 30px, yellow 30px, yellow 60px); 
+                        }
+                    }
+
+                    .blinking-title {
+                        display: block !important;
+                        font-family: "Comic Sans MS", "Comic Sans", cursive !important;
+                        font-size: 4rem !important;
+                        font-weight: 900 !important;
+                        line-height: 1.2 !important;
+                        margin: 0 0 30px 0 !important;
+                        text-transform: uppercase !important;
+                        
+                        color: black !important; 
+                        text-shadow: 4px 4px 0px white !important;
+                        
+                        animation: epicBlink 0.4s infinite !important;
+                    }
+                    
+                    @keyframes epicBlink {
+                        0%, 49% { filter: invert(0%); }
+                        50%, 100% { filter: invert(100%); }
+                    }
+
+                    .dismiss-btn {
+                        background: black !important;
+                        color: white !important;
+                        border: 4px solid white !important;
+                        padding: 15px 40px !important;
+                        font-family: "Comic Sans MS", "Comic Sans", cursive !important;
+                        font-size: 2rem !important;
+                        font-weight: bold !important;
+                        cursor: pointer !important;
+                        border-radius: 10px !important;
+                        box-shadow: 5px 5px 0px white !important;
+                        transition: transform 0.1s !important;
+                        display: inline-block !important;
+                    }
+                    .dismiss-btn:hover {
+                        background: white !important;
+                        color: black !important;
+                        border-color: black !important;
+                        box-shadow: 5px 5px 0px black !important;
+                        transform: scale(1.1) !important;
+                    }
+                </style>
+                <div class="popup-box">
+                    <div class="blinking-title">Venez visiter<br>le serveur !</div>
+                    <button id="close-cool-popup" class="dismiss-btn">Fermer</button>
+                </div>
+            `;
+
+            document.body.appendChild(popupOverlay);
+
+            // Add close functionality
+            document.getElementById('close-cool-popup').addEventListener('click', function() {
+                popupOverlay.remove();
+            });
+        }
+    });
+  '';
+
+
+
 in
 {
   virtualisation.oci-containers.containers.${myConstants.services.homepage.containerName} = {
@@ -363,6 +492,9 @@ in
       "${widgetsYaml}:/app/config/widgets.yaml"
       "${dockerYaml}:/app/config/docker.yaml"
       "${bookmarksYaml}:/app/config/bookmarks.yaml" 
+
+      # Custom JS 
+      "${customJs}:/app/config/custom.js"
       
       "${myConstants.paths.disk2TB}:${myConstants.paths.disk2TB}:ro"
       "${myConstants.paths.disk4TB}:${myConstants.paths.disk4TB}:ro"
