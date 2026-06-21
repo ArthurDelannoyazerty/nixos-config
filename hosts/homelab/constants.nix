@@ -68,7 +68,7 @@ rec {
     filebrowser-quantum = {
       port = 8088;
       subdomain = "filebrowser-quantum";
-      version = "1.3.1-stable";
+      version = "1.4.0-stable";
       containerName = "filebrowser-quantum";
     };
     filebrowser = {
