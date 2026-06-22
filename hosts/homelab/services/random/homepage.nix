@@ -141,6 +141,12 @@ let
               type: seerr
               url: https://${myConstants.services.seerr.subdomain}.${myConstants.publicDomain}
               key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
+        # - Piped:
+        #     icon: https://docs.piped.video/images/logo.svg
+        #     href: https://${myConstants.services.piped-frontend.subdomain}.${myConstants.publicDomain}
+        #     description: Requête Media
+        #     server: my-docker
+        #     container: ${myConstants.services.piped-frontend.containerName}
         - Komga:
             icon: komga.png
             href: https://${myConstants.services.komga.subdomain}.${myConstants.publicDomain}
