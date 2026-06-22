@@ -297,6 +297,36 @@ in
         '';
       };
 
+
+      # --- PIPED FRONTEND (UI - Protected by Authentik) ---
+      "http://${myConstants.services.piped-frontend.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          ${authentikMiddleware}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.piped-frontend.port}
+        '';
+      };
+
+      # --- PIPED API (Must bypass Authentik so the JS player can reach it) ---
+      "http://${myConstants.services.piped-backend.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.piped-backend.port}
+        '';
+      };
+
+      # --- PIPED PROXY (Must bypass Authentik so streams can be fetched) ---
+      "http://${myConstants.services.piped-proxy.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.piped-proxy.port}
+        '';
+      };
+      
+
       # --- GLANCES (Protected from direct public access) ---
       "http://${myConstants.services.glances.subdomain}.${domain}" = {
         extraConfig = ''

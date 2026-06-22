@@ -187,6 +187,28 @@ rec {
       subdomain = "paperless-ngx";
       version = "latest";
     };
+    piped-frontend = {
+      port = 8050;
+      subdomain = "piped";
+      version = "latest";
+      containerName = "piped-frontend";
+    };
+    piped-backend = {
+      port = 8051;
+      subdomain = "pipedapi";
+      version = "latest";
+      containerName = "piped-backend";
+    };
+    piped-proxy = {
+      port = 8052;
+      subdomain = "pipedproxy";
+      version = "latest";
+      containerName = "piped-proxy";
+    };
+    piped-db = {
+      version = "15-alpine";
+      containerName = "piped-db";
+    };
     power-monitor = {
       port = 9100;
     };
