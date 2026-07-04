@@ -112,21 +112,21 @@ rec {
     immich = {
       port = 2283;
       subdomain = "immich";
-      version = "v2.7.5";
+      version = "v3.0.0";
       containerName = "immich-server";
     };
     immich-db = {
       port = 5433;
-      version = "14-vectorchord0.4.3-pgvectors0.2.0";
+      version = "14-vectorchord0.5.3";
       containerName = "immich-db";
     };
     immich-redis = {
-      version = "6.2-alpine";
+      version = "8-alpine";
       containerName = "immich-redis";
     };
     immich-machine-learning = {
       port = 2283;
-      version = "v2.6.1";
+      version = "v3.0.0";
       containerName = "immich-machine-learning";
     };
     jellyfin = { 

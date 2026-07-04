@@ -30,7 +30,7 @@ in
       # Pulls DB_PASSWORD from the secure file
       environmentFiles = [ envFile ];
       volumes = [
-        "${myConstants.paths.services4TB}/immich/photos:/usr/src/app/upload"
+        "${myConstants.paths.services4TB}/immich/photos:/data"
         "/etc/localtime:/etc/localtime:ro"
       ];
       extraOptions = [
@@ -57,7 +57,7 @@ in
 
     # The Cache
     ${myConstants.services.immich-redis.containerName} = {
-      image = "docker.io/library/redis:${myConstants.services.immich-redis.version}";
+      image = "docker.io/valkey/valkey:${myConstants.services.immich-redis.version}";
     };
 
     # Machine Learning
