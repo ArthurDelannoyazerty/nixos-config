@@ -35,6 +35,7 @@
     /* ------------------------------- MONITORING ------------------------------- */
     ./services/monitoring/alloy.nix 
     ./services/monitoring/borgmatic.nix
+    ./services/monitoring/diun.nix 
     ./services/monitoring/grafana.nix 
     ./services/monitoring/loki.nix
     ./services/monitoring/netdata.nix

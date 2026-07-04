@@ -47,6 +47,12 @@ rec {
       port = 6767; 
       subdomain = "bazarr"; 
     };
+    byparr = {
+      port = 8191;
+      subdomain = "byparr";
+      version = "latest";
+      containerName = "byparr";
+    };
     cleanuparr = {
       port = 11011;
       subdomain = "cleanuparr";
@@ -59,11 +65,9 @@ rec {
       version = "4.10.4";
       containerName = "crafty-controller";
     };
-    byparr = {
-      port = 8191;
-      subdomain = "byparr";
-      version = "latest";
-      containerName = "byparr";
+    diun = {
+      version = "4.33.0";
+      containerName = "diun";
     };
     filebrowser-quantum = {
       port = 8088;

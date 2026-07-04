@@ -703,6 +703,15 @@ docker exec -it recyclarr recyclarr sync
 ```
 
 
+## Diun
+
+```bash
+vim /var/lib/services/diun/secrets.env
+
+
+```
+
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:
