@@ -73,6 +73,8 @@
 
     # File manager
     nautilus
+    sushi           # Quick previewer (Select a file and press Spacebar)
+    file-roller     # GNOME Archive manager (Extract zip/tar files directly from Nautilus)
     
     grim          # Image capture
     slurp         # Interactive selection
