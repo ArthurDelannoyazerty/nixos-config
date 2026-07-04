@@ -30,7 +30,7 @@ rec {
     authentik = {
       port = 9000;
       subdomain = "authentik";
-      version = "2026.2.2";
+      version = "2026.5.3";
       containerName = "authentik-server";
     };
     authentik-db = {
@@ -40,7 +40,7 @@ rec {
     };
     authentik-worker = {
       port = 9000;
-      version = "2026.2.2";
+      version = "2026.5.3";
       containerName = "authentik-worker";
     };
     bazarr = { 

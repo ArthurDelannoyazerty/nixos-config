@@ -5,17 +5,17 @@ let
 
   # Common optimization settings to make Authentik fast on Homelabs
   commonEnv = {
-    # 1. Disable the massive GeoIP download (Save RAM and CPU)
+    # Disable the massive GeoIP download (Save RAM and CPU)
     AUTHENTIK_ERROR_REPORTING__ENABLED = "false";
     AUTHENTIK_DISABLE_STARTUP_ANALYTICS = "true";
     AUTHENTIK_AUTHENTIK__GEOIP = "/dev/null"; # This effectively disables GeoIP
     
-    # 2. Redis/DB Connection info
+    
     AUTHENTIK_POSTGRESQL__HOST = myConstants.services.authentik-db.containerName;
     AUTHENTIK_POSTGRESQL__USER = "authentik";
     AUTHENTIK_POSTGRESQL__NAME = "authentik";
 
-    
+
     AUTHENTIK_WEB__WORKERS = "1";         # Only run 1 server process (Default is based on CPU cores)
     AUTHENTIK_WORKER__CONCURRENCY = "1";  # Only run 1 background worker
     AUTHENTIK_WEB__THREADS = "2";         # Reduce threads per worker
@@ -62,7 +62,8 @@ in
       };
       environmentFiles = [ envFile ];
       volumes = [ "${myConstants.paths.servicesSSD}/authentik/postgres:/var/lib/postgresql/data" ];
-      ports = [ "127.0.0.1:${toString myConstants.services.authentik-db.port}:6379" ];
+      # mapping from the leftover Redis 6379 to Postgres 5432
+      ports = [ "127.0.0.1:${toString myConstants.services.authentik-db.port}:5432" ];
     };
 
     # The Worker
