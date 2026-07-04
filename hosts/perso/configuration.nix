@@ -114,15 +114,6 @@
   powerManagement.cpuFreqGovernor = "performance";
 
 
-  programs.thunar = {
-    enable = true;
-    plugins = with pkgs; [
-      thunar-archive-plugin
-      thunar-volman
-    ];
-  };
-  services.tumbler.enable = true; # Thumbnail support
-
   services.tailscale.enable = true;
 
   # nct6775 & coretemp for fans & temperature sensors
