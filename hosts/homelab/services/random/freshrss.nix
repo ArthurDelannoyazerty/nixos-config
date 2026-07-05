@@ -5,25 +5,21 @@ let
 in
 {
   virtualisation.oci-containers.containers.${myConstants.services.freshrss.containerName} = {
-    image = "lscr.io/linuxserver/freshrss:${myConstants.services.freshrss.version}";
-    ports = [ (myConstants.bind myConstants.services.freshrss.port) ];
+    image = "freshrss/freshrss:${myConstants.services.freshrss.version}";
+    
+    ports = [ "0.0.0.0:${toString myConstants.services.freshrss.port}:80" ];
     
     environment = {
-      PUID = "1000";
-      PGID = "1000";
       TZ = "Europe/Paris";
+      CRON_MIN = "*/15";
+      TRUSTED_PROXY = "172.16.0.0/12 192.168.0.0/16 10.0.0.0/8"; 
     };
 
-    # This file will contain your Authentik OIDC configuration
-    # Example contents:
-    # OIDC_ENABLED=1
-    # OIDC_CLIENT_ID=your-client-id
-    # OIDC_CLIENT_SECRET=your-client-secret
-    # OIDC_PROVIDER_METADATA_URL=https://authentik.arthur-lab.com/application/o/freshrss/.well-known/openid-configuration
     environmentFiles = [ envFile ];
 
     volumes = [
-      "${myConstants.paths.servicesSSD}/freshrss/config:/config"
+      "${myConstants.paths.servicesSSD}/freshrss/data:/var/www/FreshRSS/data"
+      "${myConstants.paths.servicesSSD}/freshrss/extensions:/var/www/FreshRSS/extensions"
     ];
 
     extraOptions = [ 

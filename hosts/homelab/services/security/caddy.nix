@@ -309,6 +309,8 @@ in
             header_up X-Real-IP {remote}
             header_up X-Forwarded-For {remote}
             header_up X-Forwarded-Proto https
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-Port 443
           }
         '';
       };

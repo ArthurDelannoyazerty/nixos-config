@@ -727,9 +727,14 @@ sudo vim /var/lib/services/freshrss/secrets.env
 
 # Then set :
 # OIDC_ENABLED=1
-# OIDC_CLIENT_ID=your-client-id
-# OIDC_CLIENT_SECRET=your-client-secret
+# OIDC_CLIENT_ID=ID
+# OIDC_CLIENT_SECRET=SECRET
 # OIDC_PROVIDER_METADATA_URL=https://authentik.arthur-lab.com/application/o/freshrss/.well-known/openid-configuration
+
+# OIDC_X_FORWARDED_HEADERS=X-Forwarded-Host X-Forwarded-Port X-Forwarded-Proto
+# OIDC_CLIENT_CRYPTO_KEY=RANDOM-STRING
+# OIDC_REMOTE_USER_CLAIM=preferred_username
+# OIDC_SCOPES=openid profile email
 ```
 
 
