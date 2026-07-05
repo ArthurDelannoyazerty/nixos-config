@@ -73,6 +73,13 @@
 
     # File manager
     nautilus
+    sushi           # Quick previewer (Select a file and press Spacebar)
+    file-roller     # GNOME Archive manager (Extract zip/tar files directly from Nautilus)
+    ffmpegthumbnailer      # Video thumbnails
+    evince                 # PDF viewer (and provides PDF thumbnails)
+    libgsf                 # Office document thumbnails (Word, Excel)
+    webp-pixbuf-loader     # WebP image thumbnails
+    poppler                # PDF rendering
     
     grim          # Image capture
     slurp         # Interactive selection
@@ -113,15 +120,6 @@
   # Force CPU to prioritize performance over power saving
   powerManagement.cpuFreqGovernor = "performance";
 
-
-  programs.thunar = {
-    enable = true;
-    plugins = with pkgs; [
-      thunar-archive-plugin
-      thunar-volman
-    ];
-  };
-  services.tumbler.enable = true; # Thumbnail support
 
   services.tailscale.enable = true;
 

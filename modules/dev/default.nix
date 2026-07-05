@@ -23,6 +23,7 @@
   [
     python3   # A system-wide Python interpreter
     uv        # The extremely fast Python package installer and resolver
+    lazydocker
   ]
   ++
   # =========================================================================
