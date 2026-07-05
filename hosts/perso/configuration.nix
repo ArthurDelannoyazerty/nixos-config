@@ -75,6 +75,11 @@
     nautilus
     sushi           # Quick previewer (Select a file and press Spacebar)
     file-roller     # GNOME Archive manager (Extract zip/tar files directly from Nautilus)
+    ffmpegthumbnailer      # Video thumbnails
+    evince                 # PDF viewer (and provides PDF thumbnails)
+    libgsf                 # Office document thumbnails (Word, Excel)
+    webp-pixbuf-loader     # WebP image thumbnails
+    poppler                # PDF rendering
     
     grim          # Image capture
     slurp         # Interactive selection
