@@ -48,6 +48,7 @@
     /* --------------------------------- RANDOM --------------------------------- */
     ./services/random/crafty-controller.nix 
     ./services/random/forgejo.nix 
+    ./services/random/freshrss.nix
     ./services/random/homepage.nix
     ./services/random/local-finance.nix
     ./services/random/n8n.nix 

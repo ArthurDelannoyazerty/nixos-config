@@ -297,6 +297,21 @@ in
         '';
       };
 
+      # --- FRESHRSS ---
+      "http://${myConstants.services.freshrss.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          
+          # Native OIDC is used here, so we don't apply authentikMiddleware
+          reverse_proxy 172.17.0.1:${toString myConstants.services.freshrss.port} {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto https
+          }
+        '';
+      };
 
       # --- PIPED FRONTEND (UI - Protected by Authentik) ---
       "http://${myConstants.services.piped-frontend.subdomain}.${domain}" = {

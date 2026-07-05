@@ -83,6 +83,12 @@ rec {
       port = 8083;
       subdomain = "forgejo";
     };
+    freshrss = {
+      port = 8084;
+      subdomain = "freshrss";
+      version = "1.29.1";
+      containerName = "freshrss";
+    };
     glances = {
       port = 61208;
       subdomain = "glances";

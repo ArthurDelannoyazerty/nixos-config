@@ -717,6 +717,24 @@ DIUN_NOTIF_MAIL_PASSWORD=PQSSWORD
 ```
 
 
+
+## FreshRSS
+
+
+```bash
+sudo mkdir /var/lib/services/freshrss
+sudo vim /var/lib/services/freshrss/secrets.env
+
+# Then set :
+# OIDC_ENABLED=1
+# OIDC_CLIENT_ID=your-client-id
+# OIDC_CLIENT_SECRET=your-client-secret
+# OIDC_PROVIDER_METADATA_URL=https://authentik.arthur-lab.com/application/o/freshrss/.well-known/openid-configuration
+```
+
+
+
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:

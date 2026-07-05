@@ -102,6 +102,12 @@ let
             container: ${myConstants.services.filebrowser-quantum.containerName}
 
     - Autres:
+        - FreshRSS:
+            icon: freshrss.png
+            href: https://${myConstants.services.freshrss.subdomain}.${myConstants.publicDomain}
+            description: News
+            server: my-docker
+            container: ${myConstants.services.freshrss.containerName}
         - Stirling PDF:
             icon: stirling-pdf.png
             href: https://${myConstants.services.stirling-pdf.subdomain}.${myConstants.publicDomain}
