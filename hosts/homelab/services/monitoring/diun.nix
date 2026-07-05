@@ -5,7 +5,7 @@ let
 in
 {
   virtualisation.oci-containers.containers.${myConstants.services.diun.containerName} = {
-    image = "ghcr.io/crazymax/diun:${myConstants.services.diun.version}";
+    image = "ghcr.io/crazy-max/diun:${myConstants.services.diun.version}";
     
     volumes = [
       "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -27,8 +27,8 @@ in
       # Example uses Gmail, change host and port if you use Outlook, Fastmail, Proton, etc.
       DIUN_NOTIF_MAIL_HOST = "smtp.gmail.com"; 
       DIUN_NOTIF_MAIL_PORT = "587";
-      DIUN_NOTIF_MAIL_FROM = "homelab@example.com"; # The email sending the alert
-      DIUN_NOTIF_MAIL_TO = "your-actual-email@example.com";   # Where you want to receive it
+      DIUN_NOTIF_MAIL_FROM = "ah.delannoy@gmail.com"; # The email sending the alert
+      DIUN_NOTIF_MAIL_TO = "ah.delannoy+diun@gmail.com";   # Where you want to receive it
 
     };
   };

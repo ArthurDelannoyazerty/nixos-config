@@ -705,10 +705,15 @@ docker exec -it recyclarr recyclarr sync
 
 ## Diun
 
+Create a STMP password (here on gmail) : https://myaccount.google.com/apppasswords
+
 ```bash
 vim /var/lib/services/diun/secrets.env
+```
 
-
+```bash
+DIUN_NOTIF_MAIL_USERNAME=your.homelab@gmail.com
+DIUN_NOTIF_MAIL_PASSWORD=PQSSWORD
 ```
 
 
