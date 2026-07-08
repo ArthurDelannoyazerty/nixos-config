@@ -35,6 +35,9 @@ in
       source_directories =[
         myConstants.paths.servicesSSD
         myConstants.paths.services4TB
+        
+        # backup manga, comics, and music
+        "${myConstants.paths.disk4TB}/media"
 
         "/var/lib/grafana"
         "/var/lib/prometheus2"
@@ -45,14 +48,32 @@ in
         "/var/lib/cloudflared"
       ];
 
-      # EXCLUSIONS: Save space by not backing up caches and logs
+      # EXCLUSIONS: Save space by not backing up massive reproducible files & caches
       exclude_patterns =[
+        # Large Media (Easily redownloadable)
+        "*/media/anime/*"
+        "*/media/movies/*"
+        "*/media/series/*"
+        
+        # System and App Caches
         "*/tmp/*"
         "*/cache/*"
-        "*/redis/*"                 # Redis is temporary cache, no need to back it up
+        "*/redis/*"                 # Redis is temporary cache
         "*/loki/chunks/*"           # Loki logs get massive
-        "*/immich/model-cache/*"    # ML models will just re-download if lost
         "*.backup"                  # Ignore temporary backup files
+
+        # Immich metadatas (Don't backup things Immich can automatically regenerate)
+      "*/immich/model-cache/*"
+      "*/immich/photos/thumbs/*"
+      "*/immich/photos/encoded-video/*"
+        
+        # Media Server Metadata Caches (Optional, but saves SSD backup space)
+        "*/jellyfin/metadata/*"
+        "*/jellyfin/transcodes/*"
+        
+        # Torrent/Usenet Downloads (If you have a scratch/download folder in services)
+        "*/qbittorrent/downloads/*"
+        "*/sabnzbd/downloads/*"
       ];
 
       compression = "zstd,3";       # Incredible compression with almost no CPU hit
