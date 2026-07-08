@@ -3,7 +3,7 @@
 {
   systemd.tmpfiles.rules =[
     "d ${myConstants.paths.servicesSSD}/suwayomi 0755 1000 1000 -"
-    "d ${myConstants.paths.disk4TB}/services/suwayomi/downloads 0755 1000 1000 -"
+    "d ${myConstants.paths.disk4TB}/media/manga/suwayomi 0755 1000 1000 -"
   ];
 
   virtualisation.oci-containers.containers."${myConstants.services.suwayomi.containerName}" = {
@@ -22,7 +22,7 @@
       # App Configuration / DB
       "${myConstants.paths.servicesSSD}/suwayomi:/home/suwayomi/.local/share/Tachidesk"
       # Point downloads directly into your bulk manga folder
-      "${myConstants.paths.disk4TB}/services/suwayomi/downloads:/home/suwayomi/.local/share/Tachidesk/downloads" 
+      "${myConstants.paths.disk4TB}/media/manga/suwayomi:/home/suwayomi/.local/share/Tachidesk/downloads" 
     ];
   };
 }

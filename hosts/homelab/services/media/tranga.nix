@@ -5,7 +5,7 @@
   systemd.tmpfiles.rules =[
     "d ${myConstants.paths.servicesSSD}/tranga 0755 1000 1000 -"
     "d ${myConstants.paths.servicesSSD}/tranga/postgres 0755 1000 1000 -"
-    "d ${myConstants.paths.disk4TB}/services/tranga/downloads 0755 1000 1000 -"
+    "d ${myConstants.paths.disk4TB}/media/manga/tranga 0755 1000 1000 -"
   ];
 
   virtualisation.oci-containers.containers = {
@@ -42,8 +42,8 @@
       volumes = [
         # Configurations and Logs
         "${myConstants.paths.servicesSSD}/tranga:/usr/share/tranga-api"
-        # Download directory mapped to your bulk 4TB disk
-        "${myConstants.paths.disk4TB}/services/tranga/downloads:/Manga" 
+        # Download directory mapped to the 4TB disk
+        "${myConstants.paths.disk4TB}/media/manga/tranga:/Manga" 
       ];
 
       extraOptions = [

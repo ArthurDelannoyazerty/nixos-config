@@ -20,11 +20,9 @@
       # Komga config
       "${myConstants.paths.servicesSSD}/komga:/config"
       
-      # Your manually added local manga
-      "${myConstants.paths.disk4TB}/media/manga:/data"
-      
-      "${myConstants.paths.disk4TB}/services/suwayomi/downloads:/suwayomi-downloads"
-      "${myConstants.paths.disk4TB}/services/tranga/downloads:/manga"
+      "${myConstants.paths.disk4TB}/media/manga:/media/manga"
+      "${myConstants.paths.disk4TB}/media/comics:/media/comics" 
+
     ];
   };
 }
