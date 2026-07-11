@@ -19,6 +19,9 @@
 
       #Disable the user management as we will use authentik for authentication      
       N8N_USER_MANAGEMENT_DISABLED = "true"; 
+
+      N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES = "false";
+      N8N_RESTRICT_FILE_ACCESS_TO = "/home/node/.n8n";
     };
   };
 }

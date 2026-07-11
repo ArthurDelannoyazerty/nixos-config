@@ -23,13 +23,11 @@ in
       DIUN_PROVIDERS_DOCKER = "true";
       DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT = "true"; # Watch all running containers automatically without needing specific labels
       
-      /* --- NOTIFICATIONS (Pick ONE and uncomment it) --- */
-      # Example uses Gmail, change host and port if you use Outlook, Fastmail, Proton, etc.
-      DIUN_NOTIF_MAIL_HOST = "smtp.gmail.com"; 
-      DIUN_NOTIF_MAIL_PORT = "587";
-      DIUN_NOTIF_MAIL_FROM = "ah.delannoy@gmail.com"; # The email sending the alert
-      DIUN_NOTIF_MAIL_TO = "ah.delannoy+diun@gmail.com";   # Where you want to receive it
-
+      /* --- NOTIFICATIONS --- */
+      # Webhook Configuration for n8n 
+      DIUN_NOTIF_WEBHOOK_ENDPOINT = "http://${myConstants.dockerSocketProxy}:5678/webhook/diun-in";
+      DIUN_NOTIF_WEBHOOK_METHOD = "POST";
+      DIUN_NOTIF_WEBHOOK_HEADERS_CONTENT_TYPE = "application/json";
     };
   };
 
