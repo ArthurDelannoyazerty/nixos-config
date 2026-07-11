@@ -79,6 +79,16 @@ rec {
       port = 8081;
       subdomain = "filebrowser";
     };
+    finance = {
+      port = 8501;
+      subdomain = "finance";
+    };
+    firefox = {
+      port = 3011;
+      subdomain = "firefox";
+      version = "1152.0.5";
+      containerName = "firefox";
+    };
     forgejo = {
       port = 8083;
       subdomain = "forgejo";
@@ -163,10 +173,6 @@ rec {
       port = 3890;
       html-port = 17171;
       subdomain = "lldap";
-    };
-    finance = {
-      port = 8501;
-      subdomain = "finance";
     };
     loki = {
       port = 3100;

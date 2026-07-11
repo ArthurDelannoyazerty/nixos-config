@@ -46,7 +46,8 @@
     ./services/monitoring/uptime-kuma.nix
 
     /* --------------------------------- RANDOM --------------------------------- */
-    ./services/random/crafty-controller.nix 
+    ./services/random/crafty-controller.nix
+    ./services/random/firefox.nix 
     ./services/random/forgejo.nix 
     ./services/random/freshrss.nix
     ./services/random/homepage.nix

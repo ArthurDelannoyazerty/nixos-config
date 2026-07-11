@@ -190,6 +190,12 @@ let
             description: TODO List
             server: my-docker
             container: ${myConstants.services.vikunja.containerName}
+        - Firefox:
+            icon: firefox.png
+            href: https://${myConstants.services.firefox.subdomain}.${myConstants.publicDomain}
+            description: Virtual Browser
+            server: my-docker
+            container: ${myConstants.services.firefox.containerName}
         - Finance:
             icon: si-streamlit
             href: https://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}

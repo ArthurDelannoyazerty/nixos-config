@@ -96,6 +96,19 @@ in
         '';
       };
 
+      # --- FIREFOX (Protected from direct public access) ---
+      "http://${myConstants.services.firefox.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          ${authentikMiddleware}
+          
+          reverse_proxy 172.17.0.1:${toString myConstants.services.firefox.port} {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+          }
+        '';
+      };
 
       # --- JELLYFIN ---
       "${myConstants.services.jellyfin.subdomain}.${domain}" = {
