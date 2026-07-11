@@ -38,6 +38,11 @@ let
           config:
             defaultEnabled: false # Invisible to standard users by default
 
+        - path: "/downloads"
+          name: "Firefox Downloads"
+          config:
+            defaultEnabled: false # Invisible to standard users by default
+
     integrations:
       office:
         # Public URL for your browser to load the OnlyOffice frontend
@@ -88,6 +93,7 @@ in
       
       # Additional Admin Storage Sources
       "${myConstants.paths.disk4TB}/media:/media"
+      "${myConstants.paths.disk4TB}/downloads:/downloads"
       "${myConstants.paths.servicesSSD}/crafty/servers:/minecraft"
       "${myConstants.paths.services4TB}/immich/photos:/immich"
 
