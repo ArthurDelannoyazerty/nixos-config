@@ -22,6 +22,8 @@
       
       "${myConstants.paths.disk4TB}/media/manga:/media/manga"
       "${myConstants.paths.disk4TB}/media/comics:/media/comics" 
+      "${myConstants.paths.disk4TB}/media/light_novel:/media/light_novel" 
+      "${myConstants.paths.disk4TB}/media/ebook:/media/ebook" 
 
     ];
   };
