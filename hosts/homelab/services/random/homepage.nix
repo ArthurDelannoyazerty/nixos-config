@@ -241,7 +241,7 @@ let
 
     - Gestion Médias:
         - AriaNg:
-            icon: aria2.png
+            icon: https://play-lh.googleusercontent.com/c2cc3NnGBdVdH4JNaW4HXJLTDXFtSk9No0u2BJOV5ya3YlOrygE3JEdNOhd4Xf9pUPI=w240-h480-rw
             href: https://${myConstants.services.ariang.subdomain}.${myConstants.publicDomain}
             description: Download Manager
             server: my-docker
