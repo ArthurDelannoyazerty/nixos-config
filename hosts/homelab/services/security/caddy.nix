@@ -131,6 +131,25 @@ in
         '';
       };
 
+      # --- ARIANG ---
+      "http://${myConstants.services.ariang.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          
+          # 1. RPC endpoint bypasses Authentik (Secured internally by ARIA2_RPC_SECRET)
+          handle /jsonrpc* {
+            reverse_proxy 172.17.0.1:${toString myConstants.services.ariang.rpc-port}
+          }
+
+          # 2. The main Web UI is protected by Authentik Forward Auth
+          handle {
+            ${authentikMiddleware}
+            reverse_proxy 172.17.0.1:${toString myConstants.services.ariang.port}
+          }
+        '';
+      };
+
       # --- VIKUNJA (Protected from direct public access) ---
       "http://${myConstants.services.vikunja.subdomain}.${domain}" = {
         extraConfig = ''

@@ -27,6 +27,13 @@ rec {
 
   # THE REGISTRY
   services = {
+    ariang = {
+      port = 8012;
+      rpc-port = 6800;
+      subdomain = "ariang";
+      version = "latest";
+      containerName = "aria2-ariang";
+    };
     authentik = {
       port = 9000;
       subdomain = "authentik";

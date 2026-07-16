@@ -240,6 +240,12 @@ let
 
 
     - Gestion Médias:
+        - AriaNg:
+            icon: aria2.png
+            href: https://${myConstants.services.ariang.subdomain}.${myConstants.publicDomain}
+            description: Download Manager
+            server: my-docker
+            container: ${myConstants.services.ariang.containerName}
         - Suwayomi:
             icon: suwayomi.png
             href: https://${myConstants.services.suwayomi.subdomain}.${myConstants.publicDomain}

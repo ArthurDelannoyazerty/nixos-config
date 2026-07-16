@@ -15,6 +15,7 @@
     ../../modules/dev
 
     /* ---------------------------------- MEDIA --------------------------------- */
+    ./services/media/ariang.nix
     ./services/media/byparr.nix
     ./services/media/cleanuparr.nix
     ./services/media/filebrowser-quantum.nix 
