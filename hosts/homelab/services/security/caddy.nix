@@ -136,16 +136,36 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          
-          # 1. RPC endpoint bypasses Authentik (Secured internally by ARIA2_RPC_SECRET)
+
+          # 1. Bypass Authentik for the RPC endpoint (Secured by RPC_SECRET)
           handle /jsonrpc* {
             reverse_proxy 172.17.0.1:${toString myConstants.services.ariang.rpc-port}
           }
 
-          # 2. The main Web UI is protected by Authentik Forward Auth
+          # 2. Protect the rest of the AriaNg UI with Authentik
           handle {
-            ${authentikMiddleware}
+            # A. Handle Authentik Outpost (Bypass Auth)
+            handle /outpost.goauthentik.io/* {
+              reverse_proxy 172.17.0.1:${toString myConstants.services.authentik.port}
+            }
+
+            # B. Auth Check (Forward to Authentik)
+            forward_auth 127.0.0.1:${toString myConstants.services.authentik.port} {
+              uri /outpost.goauthentik.io/auth/caddy
+              copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jw Remote-User Remote-Email Remote-Name Remote-Groups
+              header_up Host {host}
+            }
+            
+            # C. Actually proxy to AriaNg
             reverse_proxy 172.17.0.1:${toString myConstants.services.ariang.port}
+          }
+
+          # 3. Redirect to Login if Unauthorized (401) - MUST BE OUTSIDE `handle`
+          handle_errors {
+            @401 expression {err.status_code} == 401
+            handle @401 {
+              redir https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/start?rd={request.uri}
+            }
           }
         '';
       };

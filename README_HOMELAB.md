@@ -738,6 +738,17 @@ sudo vim /var/lib/services/freshrss/secrets.env
 ```
 
 
+## AriaNG
+
+```bash
+sudo mkdir -p /var/lib/services/ariang
+sudo vim /var/lib/services/ariang/secrets.env
+
+# RPC_SECRET=your_super_secret_password_here
+```
+
+
+
 
 
 # To add other services

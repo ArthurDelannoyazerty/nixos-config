@@ -39,7 +39,7 @@ let
             defaultEnabled: false # Invisible to standard users by default
 
         - path: "/downloads"
-          name: "Firefox Downloads"
+          name: "Downloads"
           config:
             defaultEnabled: false # Invisible to standard users by default
 
