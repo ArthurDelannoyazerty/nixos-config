@@ -52,6 +52,7 @@
     unixtools.netstat
     hwinfo
     unzip
+    unrar
     zip
     lm_sensors
     networkmanager

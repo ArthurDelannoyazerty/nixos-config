@@ -48,7 +48,7 @@
 
     /* --------------------------------- RANDOM --------------------------------- */
     ./services/random/crafty-controller.nix
-    # ./services/random/firefox.nix       # Not useful now that AriaNG run
+    ./services/random/firefox.nix
     ./services/random/forgejo.nix 
     ./services/random/freshrss.nix
     ./services/random/homepage.nix
