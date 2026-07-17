@@ -58,6 +58,7 @@
     networkmanager
     iw
     iwd
+    jq
   ];
 
 
