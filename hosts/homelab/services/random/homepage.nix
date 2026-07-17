@@ -2,7 +2,7 @@
 
 let
   # Internal Docker Gateway IP
-  internalHost = "http://172.17.0.1";
+  internalHost = "http://${myConstants.dockerSocketProxy}";
 
   # 1. SETTINGS & THEME
   settingsYaml = pkgs.writeText "settings.yaml" ''
@@ -351,6 +351,21 @@ let
                 type: uptimekuma
                 url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
                 slug: default 
+            highlight:
+                down:
+                    numeric:
+                        - level: danger
+                          when: gt
+                          value: 0
+        - Borgmatic Backups:
+            icon: mdi-database-check
+            href: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}/status/borg-backups
+            description: Nightly Backups
+            id: borg-backups
+            widget:
+                type: uptimekuma
+                url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
+                slug: borg-backups
         - Scanopy:
             icon: https://scanopy.net/scanopy-logo-64.webp
             href: https://${myConstants.services.scanopy.subdomain}.${myConstants.publicDomain}
@@ -372,8 +387,45 @@ let
     '';
 
 
-  # 6. CUSTOM JS (The Joke Advertisement)
+  # 6. CUSTOM JS (The Joke Advertisement & Borgmatic Check)
   customJs = pkgs.writeText "custom.js" ''
+    // --- Borgmatic Status Check ---
+    function checkBorgmaticStatus() {
+        const card = document.getElementById('borg-backups');
+        if (!card) return;
+
+        const allDivs = card.querySelectorAll('div');
+        let downLabelDiv = null;
+        
+        for (let div of allDivs) {
+            if (div.textContent.trim().toUpperCase() === 'SITES DOWN') {
+                downLabelDiv = div;
+                break;
+            }
+        }
+
+        if (downLabelDiv) {
+            const valueDiv = downLabelDiv.previousElementSibling;
+            
+            if (valueDiv) {
+                const downCount = parseInt(valueDiv.textContent.trim(), 10);
+                
+                if (downCount >= 1) {
+                    card.classList.add('card-danger-bg');
+                } else {
+                    card.classList.remove('card-danger-bg');
+                }
+            }
+        }
+    }
+
+    // --- DOM Loaded Observers & Intervals ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Evaluate the status of Borgmatic backups every 3 seconds
+        setInterval(checkBorgmaticStatus, 3000);
+    });
+
+    // --- The Joke Advertisement ---
     document.addEventListener('click', function(event) {
         const target = event.target.closest('a');
         
@@ -493,7 +545,13 @@ let
     });
   '';
 
-
+  # 7. CUSTOM CSS (Borgmatic Warning Background)
+  customCss = pkgs.writeText "custom.css" ''
+    .card-danger-bg {
+        background-color: rgba(220, 38, 38, 0.25) !important; 
+        border: 1px solid rgba(220, 38, 38, 0.8) !important;
+    }
+  '';
 
 in
 {
@@ -519,6 +577,9 @@ in
 
       # Custom JS 
       "${customJs}:/app/config/custom.js"
+      
+      # Custom CSS
+      "${customCss}:/app/config/custom.css"
       
       "${myConstants.paths.disk2TB}:${myConstants.paths.disk2TB}:ro"
       "${myConstants.paths.disk4TB}:${myConstants.paths.disk4TB}:ro"
