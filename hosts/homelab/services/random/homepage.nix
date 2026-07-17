@@ -387,13 +387,20 @@ let
     '';
 
 
-  # 6. CUSTOM JS (The Joke Advertisement & Borgmatic Check)
+  # 6. CUSTOM JS (The Joke Advertisement & Resilient Borgmatic Check)
   customJs = pkgs.writeText "custom.js" ''
+    console.log("--- HOMEPAGE CUSTOM JS LOADED SUCCESSFULLY ---");
+
     // --- Borgmatic Status Check ---
     function checkBorgmaticStatus() {
+        // Find the service card
         const card = document.getElementById('borg-backups');
-        if (!card) return;
+        if (!card) {
+            console.warn("[Borgmatic Check] Element with ID 'borg-backups' not found on page.");
+            return;
+        }
 
+        // Search the element tree inside this card for "SITES DOWN"
         const allDivs = card.querySelectorAll('div');
         let downLabelDiv = null;
         
@@ -404,26 +411,43 @@ let
             }
         }
 
-        if (downLabelDiv) {
-            const valueDiv = downLabelDiv.previousElementSibling;
+        if (!downLabelDiv) {
+            console.warn("[Borgmatic Check] 'SITES DOWN' text label not found inside the card.");
+            return;
+        }
+
+        // Homepage places the count value directly before the label div
+        const valueDiv = downLabelDiv.previousElementSibling;
+        
+        if (valueDiv) {
+            const downCountText = valueDiv.textContent.trim();
+            const downCount = parseInt(downCountText, 10);
             
-            if (valueDiv) {
-                const downCount = parseInt(valueDiv.textContent.trim(), 10);
-                
-                if (downCount >= 1) {
-                    card.classList.add('card-danger-bg');
-                } else {
-                    card.classList.remove('card-danger-bg');
-                }
+            console.log("[Borgmatic Check] Detected Sites Down count: " + downCountText);
+
+            if (!isNaN(downCount) && downCount >= 1) {
+                console.log("[Borgmatic Check] State is FAIL. Applying red card background.");
+                card.classList.add('card-danger-bg');
+            } else {
+                card.classList.remove('card-danger-bg');
             }
+        } else {
+            console.warn("[Borgmatic Check] Value division preceding 'SITES DOWN' label is missing.");
         }
     }
 
-    // --- DOM Loaded Observers & Intervals ---
-    document.addEventListener('DOMContentLoaded', () => {
-        // Evaluate the status of Borgmatic backups every 3 seconds
+    // Safely boot scheduler even if document is already interactive/complete
+    function initBorgmaticScheduler() {
+        console.log("[Borgmatic Check] Starting interval loop (3s)...");
         setInterval(checkBorgmaticStatus, 3000);
-    });
+        checkBorgmaticStatus(); // Run first check immediately
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initBorgmaticScheduler);
+    } else {
+        initBorgmaticScheduler();
+    }
 
     // --- The Joke Advertisement ---
     document.addEventListener('click', function(event) {
