@@ -67,6 +67,10 @@ in
     tree
     nvitop
     bash-preexec
+
+    # hyprland
+    awww
+    matugen
   ];
 
   /* -------------------------------------------------------------------------- */
@@ -276,6 +280,10 @@ in
     source = link "hyprland/capture.sh";
     force = true;
   };
+  xdg.configFile."hypr/slideshow.sh" = {
+    source = link "hyprland/slideshow.sh";
+    force = true;
+  };
 
 
   xdg.configFile."hypr/hyprlock.conf" = {
@@ -305,6 +313,11 @@ in
   };
   xdg.configFile."wlogout/style.css" = {
     source = link "wlogout/style.css";
+    force = true;
+  };
+
+  xdg.configFile."matugen" = {
+    source = link "matugen";
     force = true;
   };
 
