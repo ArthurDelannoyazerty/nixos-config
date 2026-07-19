@@ -387,7 +387,7 @@ let
     '';
 
 
-  # 6. CUSTOM JS (The Joke Advertisement & Resilient Borgmatic Check)
+# 6. CUSTOM JS (The Joke Advertisement & Resilient Borgmatic Check)
   customJs = pkgs.writeText "custom.js" ''
     console.log("--- HOMEPAGE CUSTOM JS LOADED SUCCESSFULLY ---");
 
@@ -400,39 +400,24 @@ let
             return;
         }
 
-        // Search the element tree inside this card for "SITES DOWN"
-        const allDivs = card.querySelectorAll('div');
-        let downLabelDiv = null;
+        // Grabbing the overall text content to avoid targeting specific HTML tags (div vs span)
+        const text = card.textContent.toUpperCase();
         
-        for (let div of allDivs) {
-            if (div.textContent.trim().toUpperCase() === 'SITES DOWN') {
-                downLabelDiv = div;
-                break;
-            }
-        }
-
-        if (!downLabelDiv) {
-            console.warn("[Borgmatic Check] 'SITES DOWN' text label not found inside the card.");
-            return;
-        }
-
-        // Homepage places the count value directly before the label div
-        const valueDiv = downLabelDiv.previousElementSibling;
+        // Match numbers preceding 'SITES DOWN' or 'SITE DOWN'
+        const match = text.match(/(\d+)\s*SITES?\s*DOWN/);
         
-        if (valueDiv) {
-            const downCountText = valueDiv.textContent.trim();
-            const downCount = parseInt(downCountText, 10);
-            
-            console.log("[Borgmatic Check] Detected Sites Down count: " + downCountText);
+        if (match) {
+            const downCount = parseInt(match[1], 10);
+            console.log("[Borgmatic Check] Detected Sites Down count via regex: " + downCount);
 
-            if (!isNaN(downCount) && downCount >= 1) {
+            if (downCount >= 1) {
                 console.log("[Borgmatic Check] State is FAIL. Applying red card background.");
                 card.classList.add('card-danger-bg');
             } else {
                 card.classList.remove('card-danger-bg');
             }
         } else {
-            console.warn("[Borgmatic Check] Value division preceding 'SITES DOWN' label is missing.");
+            console.warn("[Borgmatic Check] 'SITES DOWN' pattern not yet rendered on the page.");
         }
     }
 
@@ -474,10 +459,9 @@ let
                         z-index: 999999;
                     }
                     .popup-box {
-                        /* We make this relative so the background layer stays inside it */
                         position: relative !important;
                         z-index: 1 !important;
-                        overflow: hidden !important; /* Keeps the background inside the rounded corners */
+                        overflow: hidden !important;
                         
                         padding: 60px !important;
                         border: 10px solid white !important;
@@ -491,17 +475,15 @@ let
                         align-items: center !important;
                     }
                     
-                    /* The crazy blinking background layer */
                     .popup-box::before {
                         content: "" !important;
                         position: absolute !important;
                         top: 0 !important; left: 0 !important; 
                         width: 100% !important; height: 100% !important;
-                        z-index: -1 !important; /* Pushes it behind the text and button */
+                        z-index: -1 !important;
                         animation: bgBlink 0.4s infinite !important;
                     }
 
-                    /* Swapping the colors discretely for the flash effect */
                     @keyframes bgBlink {
                         0%, 49% { 
                             background: repeating-linear-gradient(-45deg, yellow, yellow 30px, violet 30px, violet 60px); 
@@ -561,7 +543,6 @@ let
 
             document.body.appendChild(popupOverlay);
 
-            // Add close functionality
             document.getElementById('close-cool-popup').addEventListener('click', function() {
                 popupOverlay.remove();
             });
@@ -569,14 +550,32 @@ let
     });
   '';
 
-  # 7. CUSTOM CSS (Borgmatic Warning Background)
+# 7. CUSTOM CSS (Borgmatic Warning Background)
   customCss = pkgs.writeText "custom.css" ''
+    /* Main card container alert styling */
     .card-danger-bg {
-        background-color: rgba(220, 38, 38, 0.25) !important; 
-        border: 1px solid rgba(220, 38, 38, 0.8) !important;
+        background-color: rgba(220, 38, 38, 0.35) !important; 
+        border: 2px solid rgba(220, 38, 38, 0.9) !important;
+        animation: pulseAlert 2.5s infinite ease-in-out;
+    }
+
+    /* Force nested structural wrappers to be transparent so our red background is visible */
+    .card-danger-bg > div,
+    .card-danger-bg > a {
+        background-color: transparent !important;
+        border-color: transparent !important;
+    }
+
+    /* Subtle pulsing effect for high visibility */
+    @keyframes pulseAlert {
+        0%, 100% {
+            box-shadow: 0 0 4px rgba(220, 38, 38, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 16px rgba(220, 38, 38, 0.7);
+        }
     }
   '';
-
 in
 {
   virtualisation.oci-containers.containers.${myConstants.services.homepage.containerName} = {
