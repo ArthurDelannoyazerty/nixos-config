@@ -121,7 +121,14 @@ in
           ];
         }
       ];
+
+      hooks = {
+        uptime_kuma = {
+          push_url = "https://uptime-kuma.arthur-lab.com/api/push/HqKUlJ5X2J03UnPKgYB0vviAZfiNZO8O";
+        };
+      };
     };
+
   };
 
   # Schedule the backup to run automatically every night at 3:00 AM
