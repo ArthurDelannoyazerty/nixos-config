@@ -61,6 +61,7 @@
     jq
   ];
 
+  programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
 
   programs.coolercontrol.enable = true;
 
