@@ -39,6 +39,7 @@ in
     # Fonts
     nerd-fonts.iosevka
     nerd-fonts.iosevka-term
+    inter
 
     # Only Office fonts
     corefonts
@@ -67,6 +68,11 @@ in
     tree
     nvitop
     bash-preexec
+
+    # hyprland
+    awww
+    matugen
+    adwaita-icon-theme
   ];
 
   /* -------------------------------------------------------------------------- */
@@ -276,6 +282,10 @@ in
     source = link "hyprland/capture.sh";
     force = true;
   };
+  xdg.configFile."hypr/slideshow.sh" = {
+    source = link "hyprland/slideshow.sh";
+    force = true;
+  };
 
 
   xdg.configFile."hypr/hyprlock.conf" = {
@@ -303,8 +313,21 @@ in
     source = link "wlogout/layout";
     force = true;
   };
+  xdg.configFile."wlogout/layout-other" = {
+    source = link "wlogout/layout-other";
+    force = true;
+  };
   xdg.configFile."wlogout/style.css" = {
     source = link "wlogout/style.css";
+    force = true;
+  };
+  xdg.configFile."wlogout/launch.sh" = {
+    source = link "wlogout/launch.sh";
+    force = true;
+  };
+
+  xdg.configFile."matugen" = {
+    source = link "matugen";
     force = true;
   };
 
