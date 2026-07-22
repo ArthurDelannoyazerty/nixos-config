@@ -52,6 +52,7 @@ in
     swayosd     # On-screen display for brightness/volume changes 
 
     reversal-icon-theme
+    tela-circle-icon-theme
 
     bitwarden-desktop
     obsidian
@@ -239,15 +240,35 @@ in
   gtk = {
     enable = true;
     iconTheme = {
-      name = "Reversal-black-dark";
-      package = pkgs.reversal-icon-theme;
+      name = "Tela-circle-dark"; 
+      package = pkgs.tela-circle-icon-theme;
     };
+    theme = {
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
+    };
+    # Silence the warning & let GTK4 apps use native Libadwaita
+    gtk4.theme = null;
   };
 
   qt = {
     enable = true;
     platformTheme.name = "qtct"; # This tells Nix to handle the integration
     style.name = "kvantum";      # Kvantum is generally the best for Hyprland aesthetics
+  };
+
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "inode/directory" = [ "nemo.desktop" ];
+      "application/x-gnome-saved-search" = [ "nemo.desktop" ];
+    };
+  };
+
+  dconf.settings = {
+    "org/cinnamon/desktop/applications/terminal" = {
+      exec = "kitty";
+    };
   };
 
   # Hide rofi menu items
