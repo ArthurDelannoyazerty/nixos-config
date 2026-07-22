@@ -136,4 +136,26 @@ in
   networking.firewall.interfaces."docker0".allowedTCPPorts = [ 8011 ];
   # Fallback in case your docker network uses a different interface name (br-xxx)
   networking.firewall.allowedTCPPorts = [ 8011 ];
+
+  # ---------------------------------------------------------------------
+  # Force Diun to forget its state daily to trigger repeat notifications
+  # ---------------------------------------------------------------------
+  systemd.timers.diun-daily-restart = {
+    description = "Daily restart of Diun to clear its database and force repeat notifications";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      # We restart it at 1:50 AM, 10 minutes before the internal schedule runs
+      OnCalendar = "*-*-* 01:50:00";
+      Persistent = true;
+    };
+  };
+
+  systemd.services.diun-daily-restart = {
+    description = "Restart Diun Container";
+    serviceConfig = {
+      Type = "oneshot";
+      # virtualisation.oci-containers automatically names services "docker-<name>.service"
+      ExecStart = "${pkgs.systemd}/bin/systemctl restart docker-${myConstants.services.diun.containerName}.service";
+    };
+  };
 }
