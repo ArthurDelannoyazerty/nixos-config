@@ -124,7 +124,7 @@ in
 
       hooks = {
         uptime_kuma = {
-          push_url = "https://uptime-kuma.arthur-lab.com/api/push/HqKUlJ5X2J03UnPKgYB0vviAZfiNZO8O";
+          push_url = "http://127.0.0.1:${toString myConstants.services.uptime-kuma.port}/api/push/HqKUlJ5X2J03UnPKgYB0vviAZfiNZO8O";
         };
       };
     };
@@ -133,7 +133,8 @@ in
 
   # Schedule the backup to run automatically every night at 3:00 AM
   systemd.timers.borgmatic.timerConfig = {
-    OnCalendar = "*-*-* 03:00:00";
+    # The empty string clears the default 'daily' schedule, ensuring it ONLY runs at 3 AM
+    OnCalendar = [ "" "*-*-* 03:00:00" ];
     Persistent = true;
   };
 }
