@@ -206,7 +206,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 172.17.0.1:${toString myConstants.services.stirling-pdf.port}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.stirling-pdf.port}
         '';
       };
 
@@ -216,7 +216,7 @@ in
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 172.17.0.1:${toString myConstants.services.vert.port}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.vert.port}
         '';
       };
 

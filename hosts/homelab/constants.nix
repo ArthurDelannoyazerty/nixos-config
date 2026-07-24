@@ -37,7 +37,7 @@ rec {
     authentik = {
       port = 9000;
       subdomain = "authentik";
-      version = "2026.5.3";
+      version = "2026.5.6";
       containerName = "authentik-server";
     };
     authentik-db = {
@@ -47,7 +47,7 @@ rec {
     };
     authentik-worker = {
       port = 9000;
-      version = "2026.5.3";
+      version = "2026.5.6";
       containerName = "authentik-worker";
     };
     bazarr = { 
@@ -79,7 +79,7 @@ rec {
     filebrowser-quantum = {
       port = 8088;
       subdomain = "filebrowser-quantum";
-      version = "1.4.0-stable";
+      version = "1.5.0-stable";
       containerName = "filebrowser-quantum";
     };
     filebrowser = {
@@ -139,7 +139,7 @@ rec {
     immich = {
       port = 2283;
       subdomain = "immich";
-      version = "v3.0.1";
+      version = "v3.0.3";
       containerName = "immich-server";
     };
     immich-db = {
@@ -153,7 +153,7 @@ rec {
     };
     immich-machine-learning = {
       port = 2283;
-      version = "v3.0.1";
+      version = "v3.0.3";
       containerName = "immich-machine-learning";
     };
     jellyfin = { 
@@ -169,7 +169,7 @@ rec {
     komga = {
       port = 8089;
       subdomain = "komga";
-      version = "latest";
+      version = "1.25.0";
       containerName = "komga";
     };
     lidarr = { 
@@ -324,7 +324,7 @@ rec {
       subdomain = "stirling-pdf";
       port = 8080;
       containerName = "stirling-pdf";
-      version = "latest-fat";
+      version = "2.14.2-fat";
     };
     tranga = {
       port = 9660;
@@ -355,7 +355,7 @@ rec {
     vikunja = {
       port = 3456;
       subdomain = "vikunja";
-      version = "2.3.0";
+      version = "2.4.0";
       containerName = "vikunja";
     };
     wanderer = {
