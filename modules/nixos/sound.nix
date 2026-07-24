@@ -18,5 +18,6 @@
   environment.systemPackages = with pkgs; [
     pavucontrol      # GUI Volume Mixer
     pulseaudio       # CLI tools
+    easyeffects      # Equalizer and audio effects
   ];
 }
