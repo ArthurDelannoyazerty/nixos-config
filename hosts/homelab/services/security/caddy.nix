@@ -62,7 +62,7 @@ in
         '';
       };
 
-      # --- AUTHENTIK ITSELF (Protected from direct public access) ---
+      # --- AUTHENTIK ITSELF ---
       "http://${myConstants.services.authentik.subdomain}.${domain}" = {
         extraConfig = ''
           log
@@ -76,7 +76,7 @@ in
         '';
       };
 
-      # --- HOMEPAGE (Protected from direct public access) ---
+      # --- HOMEPAGE ---
       "http://${myConstants.services.homepage.subdomain}.${domain}" = {
         extraConfig = ''
           log
@@ -86,7 +86,7 @@ in
         '';
       };
 
-      # --- FINANCE (Protected from direct public access) ---
+      # --- FINANCE ---
       "http://${myConstants.services.finance.subdomain}.${domain}" = {
         extraConfig = ''
           log
@@ -96,7 +96,7 @@ in
         '';
       };
 
-      # --- FIREFOX (Protected from direct public access) ---
+      # --- FIREFOX ---
       "http://${myConstants.services.firefox.subdomain}.${domain}" = {
         extraConfig = ''
           log
@@ -170,7 +170,7 @@ in
         '';
       };
 
-      # --- VIKUNJA (Protected from direct public access) ---
+      # --- VIKUNJA ---
       "http://${myConstants.services.vikunja.subdomain}.${domain}" = {
         extraConfig = ''
           log
@@ -179,7 +179,7 @@ in
         '';
       };
 
-      # --- ONLYOFFICE (Protected from direct public access) ---
+      # --- ONLYOFFICE ---
       "http://${myConstants.services.onlyoffice.subdomain}.${domain}" = {
         extraConfig = ''
           log
@@ -200,7 +200,7 @@ in
         '';
       };
 
-      # --- STIRLING PDF (Protected from direct public access) ---
+      # --- STIRLING PDF ---
       "http://${myConstants.services.stirling-pdf.subdomain}.${domain}" = {
         extraConfig = ''
           log
@@ -210,7 +210,17 @@ in
         '';
       };
 
-      # --- VERT FRONTEND (Protected from direct public access) ---
+      # --- WHAT'S UP DOCKER ---
+      "http://${myConstants.services.whats-up-docker.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          ${authentikMiddleware}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.whats-up-docker.port}
+        '';
+      };
+
+      # --- VERT FRONTEND---
       "http://${myConstants.services.vert.subdomain}.${domain}" = {
         extraConfig = ''
           log

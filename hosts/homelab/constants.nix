@@ -375,5 +375,14 @@ rec {
       version = "v1.36.0";
       containerName = "wanderer-search";
     };
+    whats-up-docker = {
+      port = 3005;
+      subdomain = "wud";
+      version = "8.3.0";
+      containerName = "whats-up-docker";
+    };
+
+
+
   };
 }

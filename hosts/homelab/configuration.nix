@@ -44,7 +44,7 @@
     # ./services/random/scanopy.nix     # Disabled because not really useful
     ./services/monitoring/scrutiny.nix
     ./services/monitoring/uptime-kuma.nix
-    ./services/monitoring/watchtower.nix
+    ./services/monitoring/whats-up-docker.nix
     
 
     /* --------------------------------- RANDOM --------------------------------- */
