@@ -36,7 +36,7 @@
     /* ------------------------------- MONITORING ------------------------------- */
     ./services/monitoring/alloy.nix 
     ./services/monitoring/borgmatic.nix
-    ./services/monitoring/diun.nix 
+    # ./services/monitoring/diun.nix 
     ./services/monitoring/grafana.nix 
     ./services/monitoring/loki.nix
     ./services/monitoring/netdata.nix
@@ -45,6 +45,8 @@
     # ./services/random/scanopy.nix     # Disabled because not really useful
     ./services/monitoring/scrutiny.nix
     ./services/monitoring/uptime-kuma.nix
+    ./services/monitoring/watchtower.nix
+    
 
     /* --------------------------------- RANDOM --------------------------------- */
     ./services/random/crafty-controller.nix
