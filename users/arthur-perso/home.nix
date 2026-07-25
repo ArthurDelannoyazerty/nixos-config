@@ -54,7 +54,6 @@ in
     reversal-icon-theme
     tela-circle-icon-theme
 
-    bitwarden-desktop
     obsidian
     tailscale
     onlyoffice-desktopeditors
@@ -110,6 +109,10 @@ in
       # Append to history file immediately, don't overwrite it
       shopt -s histappend
     '';
+  };
+
+  home.sessionVariables = {
+    SSH_AUTH_SOCK = "/home/arthur/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock";
   };
 
   programs.atuin = {
