@@ -138,7 +138,7 @@
     allowUnfree = true; 
     permittedInsecurePackages = [
       "electron-39.8.10"
-      "broadcom-sta-6.30.223.271-59-6.18.34"
+      "broadcom-sta-6.30.223.271-59-6.18.39"
     ];
   };
 

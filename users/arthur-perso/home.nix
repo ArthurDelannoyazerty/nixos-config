@@ -355,6 +355,11 @@ in
     force = true;
   };
 
+  xdg.configFile."kitty/kitty.conf" = {
+    source = link "kitty/kitty.conf";
+    force = true;
+  };
+
   # polkit daemon
   systemd.user.services.polkit-gnome-authentication-agent-1 = {
     Unit.Description = "polkit-gnome-authentication-agent-1";
