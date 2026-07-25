@@ -257,6 +257,8 @@ in
     style.name = "kvantum";      # Kvantum is generally the best for Hyprland aesthetics
   };
 
+  services.easyeffects.enable = true;
+
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
@@ -280,10 +282,10 @@ in
     "nixos-manual" = { name = "NixOS Manual"; noDisplay = true; };
     qt5ct = { name = "Qt5 Settings"; noDisplay = true; };
     qt6ct = { name = "Qt6 Settings"; noDisplay = true; };
-    rofi = { name = "Rofi"; noDisplay = true; };
-    "rofi-drun" = { name = "Rofi Drun"; noDisplay = true; };
-    "rofi-theme-selector" = { name = "Rofi Theme Selector"; noDisplay = true; };
+    rofi = { name = "Rofi"; exec = "rofi"; noDisplay = true; };
+    "rofi-theme-selector" = { name = "Rofi Theme Selector"; exec = "rofi-theme-selector"; noDisplay = true; };
   };
+
 
   # Modular hyprland conf
   xdg.configFile."hypr/hyprland.conf" = {
