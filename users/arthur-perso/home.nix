@@ -75,6 +75,9 @@ in
     adwaita-icon-theme
 
     imagemagick
+
+    rofi-network-manager
+    rofi-pulse-select
   ];
 
   /* -------------------------------------------------------------------------- */
@@ -314,8 +317,8 @@ in
     force = true;
   };
 
-  xdg.configFile."rofi/config.rasi" = {
-    source = link "rofi/config.rasi";
+  xdg.configFile."rofi/" = {
+    source = link "rofi/";
     force = true;
   };
 
