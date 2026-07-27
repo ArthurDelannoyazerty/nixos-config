@@ -78,6 +78,8 @@ in
 
     rofi-network-manager
     rofi-pulse-select
+
+    socat
   ];
 
   /* -------------------------------------------------------------------------- */
@@ -308,6 +310,10 @@ in
   };
   xdg.configFile."hypr/slideshow.sh" = {
     source = link "hyprland/slideshow.sh";
+    force = true;
+  };
+  xdg.configFile."hypr/layout_osd.sh" = {
+    source = link "hyprland/layout_osd.sh";
     force = true;
   };
 
