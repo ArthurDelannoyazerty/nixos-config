@@ -209,6 +209,9 @@ in
   };
 
 
+
+  services.swayosd.enable = true;
+
   /* -------------------------------------------------------------------------- */
   /*                               DORFILES LINKS                               */
   /* -------------------------------------------------------------------------- */
@@ -364,6 +367,15 @@ in
   # Dunst
   xdg.configFile."dunst/dunstrc" = {
     source = link "dunst/dunstrc";
+    force = true;
+  };
+
+  xdg.configFile."swayosd/style.css" = {
+    source = link "swayosd/style.css";
+    force = true;
+  };
+  xdg.configFile."swayosd/config.toml" = {
+    source = link "swayosd/config.toml";
     force = true;
   };
 
