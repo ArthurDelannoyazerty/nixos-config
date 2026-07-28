@@ -43,6 +43,16 @@ let
           config:
             defaultEnabled: false # Invisible to standard users by default
 
+        - path: "/old-hdd1-p1"
+          name: "Old Drive (Partition 1)"
+          config:
+            defaultEnabled: true
+
+        - path: "/old-hdd1-p2"
+          name: "Old Drive (Partition 2)"
+          config:
+            defaultEnabled: true
+
     integrations:
       office:
         # Public URL for your browser to load the OnlyOffice frontend
@@ -96,6 +106,9 @@ in
       "${myConstants.paths.disk4TB}/downloads:/downloads"
       "${myConstants.paths.servicesSSD}/crafty/servers:/minecraft"
       "${myConstants.paths.services4TB}/immich/photos:/immich"
+
+      "/mnt/old-hdd1-p1:/old-hdd1-p1"
+      "/mnt/old-hdd1-p2:/old-hdd1-p2"
 
       "${filebrowserConfig}:/home/filebrowser/data/config.yaml:ro"
     ];
