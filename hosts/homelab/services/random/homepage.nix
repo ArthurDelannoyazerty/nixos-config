@@ -334,6 +334,15 @@ let
             href: https://${myConstants.services.grafana.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.grafana.port}
             description: Server Dashboard
+        - What's Up Docker:
+            icon: mdi-docker
+            href: https://${myConstants.services.whats-up-docker.subdomain}.${myConstants.publicDomain}
+            description: Container Updates
+            server: my-docker
+            container: ${myConstants.services.whats-up-docker.containerName}
+            widget:
+                type: whatsupdocker
+                url: ${internalHost}:${toString myConstants.services.whats-up-docker.port}
         - Netdata:
             icon: netdata.png
             href: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}

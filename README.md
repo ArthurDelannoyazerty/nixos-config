@@ -99,11 +99,18 @@ nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
 Do **NOT** change the line `system.stateVersion` !
 
-Then simply use `nh`'s built-in update flag:
+Then update the flakes:
+```bash
+nix flake update
+```
+
+Then:
 ```bash
 nh os switch . --update --impure
 ```
-*(This automatically runs `nix flake update` and then builds/switches your system).*
+
+Then push to github, pull to other computers and only run the `nh` command as flakes are updated from the flake.lock file
+
 
 
 # For SSH connection with bitwarden

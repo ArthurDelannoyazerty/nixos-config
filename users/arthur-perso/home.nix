@@ -54,7 +54,6 @@ in
     reversal-icon-theme
     tela-circle-icon-theme
 
-    bitwarden-desktop
     obsidian
     tailscale
     onlyoffice-desktopeditors
@@ -76,6 +75,11 @@ in
     adwaita-icon-theme
 
     imagemagick
+
+    rofi-network-manager
+    rofi-pulse-select
+
+    socat
   ];
 
   /* -------------------------------------------------------------------------- */
@@ -110,6 +114,10 @@ in
       # Append to history file immediately, don't overwrite it
       shopt -s histappend
     '';
+  };
+
+  home.sessionVariables = {
+    SSH_AUTH_SOCK = "/home/arthur/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock";
   };
 
   programs.atuin = {
@@ -201,6 +209,9 @@ in
   };
 
 
+
+  services.swayosd.enable = true;
+
   /* -------------------------------------------------------------------------- */
   /*                               DORFILES LINKS                               */
   /* -------------------------------------------------------------------------- */
@@ -257,6 +268,8 @@ in
     style.name = "kvantum";      # Kvantum is generally the best for Hyprland aesthetics
   };
 
+  services.easyeffects.enable = true;
+
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
@@ -280,10 +293,10 @@ in
     "nixos-manual" = { name = "NixOS Manual"; noDisplay = true; };
     qt5ct = { name = "Qt5 Settings"; noDisplay = true; };
     qt6ct = { name = "Qt6 Settings"; noDisplay = true; };
-    rofi = { name = "Rofi"; noDisplay = true; };
-    "rofi-drun" = { name = "Rofi Drun"; noDisplay = true; };
-    "rofi-theme-selector" = { name = "Rofi Theme Selector"; noDisplay = true; };
+    rofi = { name = "Rofi"; exec = "rofi"; noDisplay = true; };
+    "rofi-theme-selector" = { name = "Rofi Theme Selector"; exec = "rofi-theme-selector"; noDisplay = true; };
   };
+
 
   # Modular hyprland conf
   xdg.configFile."hypr/hyprland.conf" = {
@@ -302,6 +315,10 @@ in
     source = link "hyprland/slideshow.sh";
     force = true;
   };
+  xdg.configFile."hypr/layout_osd.sh" = {
+    source = link "hyprland/layout_osd.sh";
+    force = true;
+  };
 
 
   xdg.configFile."hypr/hyprlock.conf" = {
@@ -309,8 +326,8 @@ in
     force = true;
   };
 
-  xdg.configFile."rofi/config.rasi" = {
-    source = link "rofi/config.rasi";
+  xdg.configFile."rofi/" = {
+    source = link "rofi/";
     force = true;
   };
 
@@ -350,6 +367,20 @@ in
   # Dunst
   xdg.configFile."dunst/dunstrc" = {
     source = link "dunst/dunstrc";
+    force = true;
+  };
+
+  xdg.configFile."swayosd/style.css" = {
+    source = link "swayosd/style.css";
+    force = true;
+  };
+  xdg.configFile."swayosd/config.toml" = {
+    source = link "swayosd/config.toml";
+    force = true;
+  };
+
+  xdg.configFile."kitty/kitty.conf" = {
+    source = link "kitty/kitty.conf";
     force = true;
   };
 

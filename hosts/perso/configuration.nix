@@ -138,7 +138,7 @@
     allowUnfree = true; 
     permittedInsecurePackages = [
       "electron-39.8.10"
-      "broadcom-sta-6.30.223.271-59-6.18.34"
+      "broadcom-sta-6.30.223.271-59-6.18.39"
     ];
   };
 
@@ -160,11 +160,20 @@
   boot.supportedFilesystems = [ "ntfs" "exfat" ];
 
 
-  # Dolphin fix
-  qt = {
+  # Enable declarative Flatpak management
+  services.flatpak = {
     enable = true;
-    platformTheme = "qt5ct";
-    style = "breeze";
+    remotes = [{ name = "flathub"; location = "https://dl.flathub.org/repo/flathub.flatpakrepo"; }];
+    packages = [ "com.bitwarden.desktop" ];
+    update.auto.enable = true;
+
+    overrides = {
+      "com.bitwarden.desktop" = {
+        Environment = {
+          BITWARDEN_SSH_AUTH_SOCK = "/home/arthur/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock";
+        };
+      };
+    };
   };
 
 
