@@ -97,10 +97,6 @@ in
       
       # Personal files mapped for users
       "${myConstants.paths.services4TB}/filebrowser-quantum/files:/srv"
-
-      # Marimo notebooks mounted inside Arthur's FileBrowser scope.
-      # Create the Marimo -> .marimo-notebooks link in Arthur's host-side user directory (see README).
-      "${myConstants.paths.services4TB}/marimo/repo/notebooks:/srv/arthur/.marimo-notebooks:ro"
       
       # The exact same folder mapped to a different path so Admins can view all users
       "${myConstants.paths.services4TB}/filebrowser-quantum/files:/admin-view"
