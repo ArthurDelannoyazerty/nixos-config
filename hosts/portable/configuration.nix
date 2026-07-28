@@ -85,6 +85,10 @@
     mpv     # video viewer
   ];
 
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-39.8.10"
+  ];
+
   environment.sessionVariables = {
     # Fix for NVIDIA on Wayland
     LIBVA_DRIVER_NAME = "nvidia";

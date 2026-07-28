@@ -75,6 +75,11 @@ in
     adwaita-icon-theme
 
     imagemagick
+
+    rofi-network-manager
+    rofi-pulse-select
+
+    socat
   ];
 
   /* -------------------------------------------------------------------------- */
@@ -204,6 +209,9 @@ in
   };
 
 
+
+  services.swayosd.enable = true;
+
   /* -------------------------------------------------------------------------- */
   /*                               DORFILES LINKS                               */
   /* -------------------------------------------------------------------------- */
@@ -307,6 +315,10 @@ in
     source = link "hyprland/slideshow.sh";
     force = true;
   };
+  xdg.configFile."hypr/layout_osd.sh" = {
+    source = link "hyprland/layout_osd.sh";
+    force = true;
+  };
 
 
   xdg.configFile."hypr/hyprlock.conf" = {
@@ -314,8 +326,8 @@ in
     force = true;
   };
 
-  xdg.configFile."rofi/config.rasi" = {
-    source = link "rofi/config.rasi";
+  xdg.configFile."rofi/" = {
+    source = link "rofi/";
     force = true;
   };
 
@@ -355,6 +367,15 @@ in
   # Dunst
   xdg.configFile."dunst/dunstrc" = {
     source = link "dunst/dunstrc";
+    force = true;
+  };
+
+  xdg.configFile."swayosd/style.css" = {
+    source = link "swayosd/style.css";
+    force = true;
+  };
+  xdg.configFile."swayosd/config.toml" = {
+    source = link "swayosd/config.toml";
     force = true;
   };
 
