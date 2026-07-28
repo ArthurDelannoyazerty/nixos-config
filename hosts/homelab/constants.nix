@@ -361,13 +361,13 @@ rec {
     wanderer = {
       port = 3010;
       subdomain = "wanderer";
-      version = "latest";
+      version = "v0.18.5";
       containerName = "wanderer-web";
     };
     wanderer-db = {
       port = 8090;
       subdomain = "wanderer-db";
-      version = "latest";
+      version = "v0.18.5";
       containerName = "wanderer-db";
     };
     wanderer-search = {
