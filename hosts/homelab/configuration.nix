@@ -54,6 +54,7 @@
     ./services/random/freshrss.nix
     ./services/random/homepage.nix
     ./services/random/local-finance.nix
+    ./services/random/marimo.nix
     ./services/random/n8n.nix 
     ./services/random/quartz.nix  
     ./services/random/romm.nix      

@@ -184,6 +184,18 @@ rec {
     loki = {
       port = 3100;
     };
+    marimo = {
+      port = 2718;
+      subdomain = "marimo";
+      version = "0.23.15-sql";
+      containerName = "marimo";
+    };
+    marimo-apps = {
+      port = 2719;
+      subdomain = "marimo-apps";
+      version = "0.23.15-sql";
+      containerName = "marimo-apps";
+    };
     n8n = {
       port = 5678;
       subdomain = "n8n";

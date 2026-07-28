@@ -96,6 +96,26 @@ in
         '';
       };
 
+      # --- MARIMO EDITOR (owner-only policy in Authentik) ---
+      "http://${myConstants.services.marimo.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.marimo.port}
+        '';
+      };
+
+      # --- MARIMO APPS (read-only gallery) ---
+      "http://${myConstants.services.marimo.apps-subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          ${authentikMiddleware}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.marimo.apps-port}
+        '';
+      };
+
       # --- FIREFOX ---
       "http://${myConstants.services.firefox.subdomain}.${domain}" = {
         extraConfig = ''

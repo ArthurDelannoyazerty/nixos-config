@@ -190,6 +190,12 @@ let
             description: TODO List
             server: my-docker
             container: ${myConstants.services.vikunja.containerName}
+        - Marimo:
+            icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/marimo.svg
+            href: https://${myConstants.services.marimo.subdomain}.${myConstants.publicDomain}
+            description: Notebooks Python
+            server: my-docker
+            container: ${myConstants.services.marimo.containerName}
         - Firefox:
             icon: firefox.png
             href: https://${myConstants.services.firefox.subdomain}.${myConstants.publicDomain}
