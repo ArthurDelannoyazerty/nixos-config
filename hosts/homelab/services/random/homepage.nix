@@ -335,7 +335,7 @@ let
             siteMonitor: ${internalHost}:${toString myConstants.services.grafana.port}
             description: Server Dashboard
         - What's Up Docker:
-            icon: mdi-docker
+            icon: https://getwud.github.io/wud/assets/wud-logo.svg
             href: https://${myConstants.services.whats-up-docker.subdomain}.${myConstants.publicDomain}
             description: Container Updates
             server: my-docker
