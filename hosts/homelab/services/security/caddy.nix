@@ -107,12 +107,12 @@ in
       };
 
       # --- MARIMO APPS (read-only gallery) ---
-      "http://${myConstants.services.marimo.apps-subdomain}.${domain}" = {
+      "http://${myConstants.services.marimo-apps.subdomain}.${domain}" = {
         extraConfig = ''
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 127.0.0.1:${toString myConstants.services.marimo.apps-port}
+          reverse_proxy 127.0.0.1:${toString myConstants.services.marimo-apps.port}
         '';
       };
 
