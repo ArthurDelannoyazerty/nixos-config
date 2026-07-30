@@ -279,7 +279,7 @@ rec {
     romm = {
       port = 8085;
       subdomain = "romm";
-      version = "latest";
+      version = "5.1.0";
       containerName = "romm";
     };
     romm-db = {
