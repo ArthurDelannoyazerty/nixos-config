@@ -32,35 +32,7 @@
       fsType = "ext4";
     };
 
-  # Temporary Mounts for HDD (500GB)
-  fileSystems."/mnt/old-hdd1-p1" = {
-    device = "/dev/disk/by-uuid/FEA8CF6DA8CF234F";
-    fsType = "ntfs-3g";
-    options = [ 
-      "rw" 
-      "uid=1000" 
-      "gid=1000" 
-      "umask=0022" 
-      "nofail" 
-      "x-systemd.automount" 
-      "x-systemd.device-timeout=5s" 
-    ];
-  };
 
-  # Temporary Mounts for HDD (500GB)
-  fileSystems."/mnt/old-hdd1-p2" = {
-    device = "/dev/disk/by-uuid/AA94D93394D9032D";
-    fsType = "ntfs-3g";
-    options = [ 
-      "rw" 
-      "uid=1000" 
-      "gid=1000" 
-      "umask=0022" 
-      "nofail" 
-      "x-systemd.automount" 
-      "x-systemd.device-timeout=5s" 
-    ];
-  };
 
   swapDevices =
     [ { device = "/dev/disk/by-uuid/79065f7d-4c11-49c3-af91-35e0e32f01f4"; }
