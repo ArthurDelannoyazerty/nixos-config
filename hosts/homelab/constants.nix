@@ -362,7 +362,7 @@ rec {
       subdomain = "vert";
       port = 3003;
       containerName = "vert";
-      version = "latest";
+      version = "sha-e1c83ba";
     };
     vikunja = {
       port = 3456;
