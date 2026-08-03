@@ -347,7 +347,7 @@ rec {
     tranga-api = {
       port = 6531;
       subdomain = "tranga-api";
-      version = "latest";
+      version = "cuttingedge";
       containerName = "tranga-api";
     };
     tranga-db = {
