@@ -5,6 +5,7 @@ let
   repoRoot = "${serviceRoot}/repo";
   notebooksRoot = "${repoRoot}/notebooks";
   stateRoot = "${serviceRoot}/state";
+  publicRoot = "${myConstants.paths.servicesSSD}/marimo-public";
 
   # Keep credentials/configuration on the SSD, while notebook data stays on the 4 TB disk.
   sshRoot = "${myConstants.paths.servicesSSD}/marimo/ssh";
@@ -20,6 +21,7 @@ in
     "d ${stateRoot} 0750 1000 1000 -"
     "d ${stateRoot}/edit 0750 1000 1000 -"
     "d ${stateRoot}/apps 0750 1000 1000 -"
+    "d ${publicRoot} 0755 1000 1000 -" 
     "d ${sshRoot} 0700 1000 1000 -"
   ];
 
@@ -162,4 +164,105 @@ in
 
   systemd.services."docker-${myConstants.services.marimo.containerName}".serviceConfig.RestartSec = "10s";
   systemd.services."docker-${myConstants.services.marimo-apps.containerName}".serviceConfig.RestartSec = "10s";
+
+
+  systemd.services.marimo-public-export = {
+    description = "Export Marimo notebooks to WASM";
+    after = [ "docker.service" ];
+    requires = [ "docker.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      User = "1000";
+      Group = "1000";
+    };
+    script = ''
+      ${pkgs.docker}/bin/docker run --rm \
+        -v ${serviceRoot}:/app/service:ro \
+        -v ${publicRoot}:/app/public \
+        -u "1000:1000" \
+        ghcr.io/marimo-team/marimo:${myConstants.services.marimo.version} \
+        sh -c '
+          shared_assets="/app/public/_shared_assets"
+          mkdir -p "$shared_assets"
+          tmp_index="/tmp/marimo_index.html"
+          
+          echo "<!DOCTYPE html><html><head><title>Public Notebooks</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><style>body{font-family: sans-serif; margin: 2rem; background: #0f172a; color: #f8fafc;} h1{color: #38bdf8;} a{color: #e2e8f0; text-decoration: none; font-size: 1.2rem; display: block; margin: 0.5rem 0; padding: 1rem; background: #1e293b; border-radius: 0.5rem; transition: background 0.2s;} a:hover{background: #334155;} .container{max-width: 800px; margin: 0 auto;}</style></head><body><div class=\"container\"><h1>Marimo Public Gallery</h1>" > "$tmp_index"
+
+          # 1. Export changed notebooks
+          find /app/service/repo/notebooks -name "*.py" | sort | while read -r file; do
+            relpath="''${file#/app/service/repo/notebooks/}"
+            name="''${relpath%.py}"
+            
+            outdir="/app/public/$name"
+            mkdir -p "$outdir"
+            
+            # SMART BUILD: Only export if index.html is missing or source .py is newer
+            if [ ! -f "$outdir/index.html" ] || [ "$file" -nt "$outdir/index.html" ]; then
+              echo "Exporting $name..."
+              marimo export html-wasm "$file" -o "$outdir" --mode run
+              
+              # DEDUPLICATION: Copy newly generated assets to shared dir and remove local copy
+              if [ -d "$outdir/assets" ] && [ ! -L "$outdir/assets" ]; then
+                cp -ru "$outdir/assets"/* "$shared_assets/" 2>/dev/null || true
+                rm -rf "$outdir/assets"
+              fi
+            fi
+            
+            # Create a relative symlink pointing to the central shared assets folder
+            if [ ! -L "$outdir/assets" ]; then
+              rm -rf "$outdir/assets"
+              ln -s -r "$shared_assets" "$outdir/assets"
+            fi
+
+            echo "<a href=\"/$name/\">$name</a>" >> "$tmp_index"
+          done
+
+          echo "</div></body></html>" >> "$tmp_index"
+          mv "$tmp_index" /app/public/index.html
+
+          # 2. CLEANUP: Remove exported directories for deleted notebooks
+          find /app/public -name "index.html" | while read -r html_file; do
+            if [ "$html_file" = "/app/public/index.html" ]; then continue; fi
+            
+            dir=$(dirname "$html_file")
+            rel_dir="''${dir#/app/public/}"
+            source_py="/app/service/repo/notebooks/$rel_dir.py"
+            
+            if [ ! -f "$source_py" ]; then
+              echo "Removing deleted notebook export: $rel_dir"
+              rm -rf "$dir"
+            fi
+          done
+
+          # Clean empty parent directories
+          find /app/public -type d -empty -delete 2>/dev/null || true
+
+          chmod -R 755 /app/public
+        '
+    '';
+  };
+
+
+  # --- REAL-TIME WATCHER ---
+  systemd.services.marimo-public-watcher = {
+    description = "Watch Marimo notebooks and trigger WASM export";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
+    script = ''
+      # Uses inotify to instantly trigger an export when a file is saved or modified
+      ${pkgs.inotify-tools}/bin/inotifywait -m -r -e close_write,moved_to,create,delete ${notebooksRoot} | while read path action file; do
+        if [[ "$file" == *.py ]]; then
+          echo "Change detected in $file, triggering export..."
+          # Systemd automatically handles queueing if an export is already actively running
+          /run/current-system/sw/bin/systemctl start marimo-public-export.service
+        fi
+      done
+    '';
+    serviceConfig = {
+      Restart = "always";
+      RestartSec = "5s";
+    };
+  };
+
+
 }

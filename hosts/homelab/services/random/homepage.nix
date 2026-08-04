@@ -196,6 +196,10 @@ let
             description: Notebooks Python
             server: my-docker
             container: ${myConstants.services.marimo.containerName}
+        - Marimo Public:    
+            icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/marimo.svg
+            href: https://${myConstants.services.marimo-public.subdomain}.${myConstants.publicDomain}
+            description: Notebooks Python (WASM)
         - Firefox:
             icon: firefox.png
             href: https://${myConstants.services.firefox.subdomain}.${myConstants.publicDomain}

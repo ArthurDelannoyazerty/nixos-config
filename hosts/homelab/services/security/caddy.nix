@@ -116,6 +116,20 @@ in
         '';
       };
 
+      # --- MARIMO PUBLIC GALLERY ---
+      "http://${myConstants.services.marimo-public.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          
+          # Serve the static HTML/WASM files. No proxy, no backend.
+          root * ${myConstants.paths.servicesSSD}/marimo-public
+
+          encode zstd gzip
+
+          file_server
+        '';
+      };
+
       # --- FIREFOX ---
       "http://${myConstants.services.firefox.subdomain}.${domain}" = {
         extraConfig = ''

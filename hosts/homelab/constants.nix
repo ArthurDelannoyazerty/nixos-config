@@ -196,6 +196,9 @@ rec {
       version = "0.23.15-sql";
       containerName = "marimo-apps";
     };
+    marimo-public = {
+      subdomain = "marimo-public";
+    };
     n8n = {
       port = 5678;
       subdomain = "n8n";
