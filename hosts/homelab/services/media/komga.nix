@@ -6,6 +6,11 @@
 
     ports = [ "${toString myConstants.services.komga.port}:25600" ];
 
+    extraOptions = [
+      "--dns=1.1.1.1"
+      "--dns=8.8.8.8"
+    ];
+
     environmentFiles = [
       "${myConstants.paths.servicesSSD}/komga/secrets.env"
     ];
