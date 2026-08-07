@@ -370,7 +370,7 @@ rec {
     vikunja = {
       port = 3456;
       subdomain = "vikunja";
-      version = "2.4.0";
+      version = "2.5.0";
       containerName = "vikunja";
     };
     wanderer = {
