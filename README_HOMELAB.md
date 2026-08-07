@@ -748,7 +748,15 @@ sudo vim /var/lib/services/ariang/secrets.env
 ```
 
 
+## Obsidian2docmost
 
+```bash
+mkdir ~/projects
+cd ~/projects
+git clone https://github.com/ArthurDelannoyazerty/obsidian2docmost.git
+cd obsidian2docmost
+sudo docker build -t obsidian2docmost:latest .
+```
 
 
 # To add other services
