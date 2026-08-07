@@ -247,6 +247,12 @@ let
             description: GPX Viewer
             server: my-docker
             container: ${myConstants.services.wanderer.containerName}
+        - Obsidian2Docmost:
+            icon: mdi-file-swap # A nice vibe-coded icon
+            href: https://${myConstants.services.obsidian2docmost.subdomain}.${myConstants.publicDomain}
+            description: Migration Obsidian vers Docmost
+            server: my-docker
+            container: ${myConstants.services.obsidian2docmost.containerName}
 
 
     - Gestion Médias:

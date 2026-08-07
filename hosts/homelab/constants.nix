@@ -214,6 +214,12 @@ rec {
       subdomain = "nextcloud"; 
       version = "33-apache";
     };
+    obsidian2docmost = {
+      port = 8502;
+      subdomain = "obsidian2docmost";
+      version = "latest";
+      containerName = "obsidian2docmost";
+    };
     onlyoffice = {
       port = 8099;
       subdomain = "onlyoffice";

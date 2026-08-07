@@ -56,6 +56,7 @@
     ./services/random/local-finance.nix
     ./services/random/marimo.nix
     ./services/random/n8n.nix 
+    ./services/random/obsidian2docmost.nix
     ./services/random/quartz.nix  
     ./services/random/romm.nix      
     ./services/random/security-watchdog.nix

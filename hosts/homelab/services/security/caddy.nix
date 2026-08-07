@@ -106,6 +106,16 @@ in
         '';
       };
 
+      # --- OBSIDIAN TO DOCMOST ---
+      "http://${myConstants.services.obsidian2docmost.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          ${authentikMiddleware}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.obsidian2docmost.port}
+        '';
+      };
+
       # --- MARIMO APPS (read-only gallery) ---
       "http://${myConstants.services.marimo-apps.subdomain}.${domain}" = {
         extraConfig = ''
