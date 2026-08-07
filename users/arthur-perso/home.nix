@@ -83,6 +83,10 @@ in
 
     ludusavi
     rclone
+
+    heroic
+    cartridges
+    faugus-launcher
   ];
 
   /* -------------------------------------------------------------------------- */
