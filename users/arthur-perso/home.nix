@@ -85,8 +85,16 @@ in
     rclone
 
     heroic
-    cartridges
     faugus-launcher
+  
+    # Patched Cartridges (Fixes Python 3.13 label TypeError)
+    (cartridges.overrideAttrs (oldAttrs: {
+      postInstall = (oldAttrs.postInstall or "") + ''
+        substituteInPlace $out/lib/python*/site-packages/cartridges/window.py \
+          --replace-fail "label=games_no," "label=str(games_no),"
+      '';
+    }))
+
   ];
 
   /* -------------------------------------------------------------------------- */
