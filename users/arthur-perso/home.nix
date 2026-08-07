@@ -80,7 +80,40 @@ in
     rofi-pulse-select
 
     socat
+
+    ludusavi
+    rclone
   ];
+
+  /* -------------------------------------------------------------------------- */
+  /*                       AUTOMATED GAME SAVE BACKUPS                          */
+  /* -------------------------------------------------------------------------- */
+
+  # 1. The background task that runs the backup
+  systemd.user.services.ludusavi-backup = {
+    Unit = {
+      Description = "Automated Ludusavi Game Save Backup";
+    };
+    Service = {
+      Type = "oneshot";
+      # Runs ludusavi backup silently and pushes to Homelab via Rclone
+      ExecStart = "${pkgs.ludusavi}/bin/ludusavi backup --force";
+    };
+  };
+
+  # 2. The schedule (timer) that triggers the task
+  systemd.user.timers.ludusavi-backup = {
+    Unit = {
+      Description = "Timer for Automated Ludusavi Game Save Backup";
+    };
+    Timer = {
+      OnCalendar = "daily"; # Runs every hour (or change to "daily")
+      Persistent = true;     # If the PC was off during a scheduled run, run it on boot
+    };
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
+  };
 
   /* -------------------------------------------------------------------------- */
   /*                                SHELL CONFIGS                               */
