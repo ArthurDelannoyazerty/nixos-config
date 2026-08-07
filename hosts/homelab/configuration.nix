@@ -98,6 +98,10 @@
 
   console.keyMap = "fr";
 
+  # Force Docker to use public DNS so Tailscale MagicDNS doesn't break container resolution
+  virtualisation.docker.daemon.settings = {
+    dns = [ "1.1.1.1" "8.8.8.8" ];
+  };
 
   
   boot.kernelModules = [ 
