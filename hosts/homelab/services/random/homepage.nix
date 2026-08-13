@@ -207,7 +207,7 @@ let
             server: my-docker
             container: ${myConstants.services.firefox.containerName}
         - Finance:
-            icon: si-streamlit
+            icon: mdi-piggy-bank-outline
             href: https://${myConstants.services.finance.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.finance.port}
             description: Finances
