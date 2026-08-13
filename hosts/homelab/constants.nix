@@ -325,8 +325,8 @@ rec {
     };
     seerr = { 
       port = 5055; 
-      subdomain = "seer";
-      version = "latest";
+      subdomain = "seerr";
+      version = "v3.4.1";
       containerName = "seerr";
     };
     sonarr = { 
