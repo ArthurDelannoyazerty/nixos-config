@@ -169,7 +169,7 @@ rec {
     komga = {
       port = 8089;
       subdomain = "komga";
-      version = "1.25.0";
+      version = "1.26.3";
       containerName = "komga";
     };
     lidarr = { 
