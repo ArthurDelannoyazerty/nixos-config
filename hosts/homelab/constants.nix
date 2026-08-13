@@ -274,7 +274,7 @@ rec {
     qbittorrent = {
       port = 8095;
       subdomain = "qbittorrent";
-      version = "latest";
+      version = "5.2.3";
       containerName = "qbittorrent";
     };
     radarr = { 
