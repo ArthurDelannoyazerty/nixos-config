@@ -89,6 +89,7 @@ rec {
     finance = {
       port = 8501;
       subdomain = "finance";
+      version = "rebuild";
     };
     firefox = {
       port = 3011;
