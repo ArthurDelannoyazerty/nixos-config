@@ -302,17 +302,17 @@ let
               type: sonarr
               url: ${internalHost}:${toString myConstants.services.sonarr.port}
               key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
-        - Byparr:
-            icon: https://raw.githubusercontent.com/ThePhaseless/Byparr/557152ccdcf32025b77438ab51c93f58eb284980/icon/logo-byparr.svg
-            href: https://${myConstants.services.byparr.subdomain}.${myConstants.publicDomain}/docs
-            description: Cloudflare Bypass
-            server: my-docker
-            container: ${myConstants.services.byparr.containerName}
-        - Recyclarr:
-            icon: https://recyclarr.dev/img/recyclarr.png
-            description: Media Profiles 
-            server: my-docker
-            container: ${myConstants.services.recyclarr.containerName}
+        # - Byparr:
+        #     icon: https://raw.githubusercontent.com/ThePhaseless/Byparr/557152ccdcf32025b77438ab51c93f58eb284980/icon/logo-byparr.svg
+        #     href: https://${myConstants.services.byparr.subdomain}.${myConstants.publicDomain}/docs
+        #     description: Cloudflare Bypass
+        #     server: my-docker
+        #     container: ${myConstants.services.byparr.containerName}
+        # - Recyclarr:
+        #     icon: https://recyclarr.dev/img/recyclarr.png
+        #     description: Media Profiles 
+        #     server: my-docker
+        #     container: ${myConstants.services.recyclarr.containerName}
         - Cleanuparr:
             icon: https://raw.githubusercontent.com/Cleanuparr/Cleanuparr/refs/heads/main/Logo/256.png
             href: https://${myConstants.services.cleanuparr.subdomain}.${myConstants.publicDomain}
@@ -321,6 +321,28 @@ let
             container: ${myConstants.services.cleanuparr.containerName}
 
     - Monitoring:
+        - Grafana:
+            icon: grafana.png
+            href: https://${myConstants.services.grafana.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.grafana.port}
+            description: Server Dashboard
+        - Scrutiny:
+            icon: scrutiny.png
+            href: https://${myConstants.services.scrutiny.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.scrutiny.port}
+            description: Disks Health
+            widget:
+                type: scrutiny
+                url: ${internalHost}:${toString myConstants.services.scrutiny.port}
+        - Borgmatic Backups:
+            icon: mdi-database-check
+            href: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}/status/borg-backups
+            description: Nightly Backups
+            id: borg-backups
+            widget:
+                type: uptimekuma
+                url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
+                slug: borg-backups
         - Power Costs:
             description: Real-time Power
             icon: mdi-lightning-bolt
@@ -337,19 +359,21 @@ let
                   label: Monthly
                   format: float
                   prefix: "€"
-        - Scrutiny:
-            icon: scrutiny.png
-            href: https://${myConstants.services.scrutiny.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.scrutiny.port}
-            description: Disks Health
+        - Uptime Kuma:
+            icon: uptime-kuma.png
+            href: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}
+            siteMonitor: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
+            description: Services Uptime
             widget:
-                type: scrutiny
-                url: ${internalHost}:${toString myConstants.services.scrutiny.port}
-        - Grafana:
-            icon: grafana.png
-            href: https://${myConstants.services.grafana.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.grafana.port}
-            description: Server Dashboard
+                type: uptimekuma
+                url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
+                slug: default 
+            highlight:
+                down:
+                    numeric:
+                        - level: danger
+                          when: gt
+                          value: 0
         - What's Up Docker:
             icon: https://getwud.github.io/wud/assets/wud-logo.svg
             href: https://${myConstants.services.whats-up-docker.subdomain}.${myConstants.publicDomain}
@@ -367,30 +391,6 @@ let
             widget:
                 type: netdata
                 url: ${internalHost}:${toString myConstants.services.netdata.port}
-        - Uptime Kuma:
-            icon: uptime-kuma.png
-            href: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
-            description: Services Uptime
-            widget:
-                type: uptimekuma
-                url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
-                slug: default 
-            highlight:
-                down:
-                    numeric:
-                        - level: danger
-                          when: gt
-                          value: 0
-        - Borgmatic Backups:
-            icon: mdi-database-check
-            href: https://${myConstants.services.uptime-kuma.subdomain}.${myConstants.publicDomain}/status/borg-backups
-            description: Nightly Backups
-            id: borg-backups
-            widget:
-                type: uptimekuma
-                url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
-                slug: borg-backups
         - Scanopy:
             icon: https://scanopy.net/scanopy-logo-64.webp
             href: https://${myConstants.services.scanopy.subdomain}.${myConstants.publicDomain}
