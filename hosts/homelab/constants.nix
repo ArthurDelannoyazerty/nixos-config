@@ -332,7 +332,7 @@ rec {
     sonarr = { 
       port = 8989; 
       subdomain = "sonarr"; 
-      version = "latest";
+      version = "4.0.19";
       containerName = "sonarr";
     };
     suwayomi = {
