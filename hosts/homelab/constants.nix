@@ -31,7 +31,7 @@ rec {
       port = 8012;
       rpc-port = 6800;
       subdomain = "ariang";
-      version = "latest";
+      version = "1.3.14";
       containerName = "aria2-ariang";
     };
     authentik = {
