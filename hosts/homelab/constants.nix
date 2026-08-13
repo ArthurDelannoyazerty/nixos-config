@@ -139,7 +139,7 @@ rec {
     immich = {
       port = 2283;
       subdomain = "immich";
-      version = "v3.0.3";
+      version = "v3.1.0";
       containerName = "immich-server";
     };
     immich-db = {
@@ -153,7 +153,7 @@ rec {
     };
     immich-machine-learning = {
       port = 2283;
-      version = "v3.0.3";
+      version = "v3.1.0";
       containerName = "immich-machine-learning";
     };
     jellyfin = { 
