@@ -39,7 +39,6 @@
 
   # Add common gaming utilities to the system path
   environment.systemPackages = with pkgs; [
-    lutris      # Unified gaming launcher
     mangohud    # Performance overlay
     gamescope   # Micro-compositor for games
   ];
