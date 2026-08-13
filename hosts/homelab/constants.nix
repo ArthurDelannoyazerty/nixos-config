@@ -57,13 +57,13 @@ rec {
     byparr = {
       port = 8191;
       subdomain = "byparr";
-      version = "latest";
+      version = "3.0.3";
       containerName = "byparr";
     };
     cleanuparr = {
       port = 11011;
       subdomain = "cleanuparr";
-      version = "latest";
+      version = "2.10.5";
       containerName = "cleanuparr";
     };
     crafty-controller = {
