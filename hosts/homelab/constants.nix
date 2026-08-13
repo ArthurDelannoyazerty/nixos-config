@@ -282,7 +282,7 @@ rec {
       subdomain = "radarr";
     };
     recyclarr = {
-      version = "latest";
+      version = "8.7.1";
       containerName = "recyclarr";
     };
     romm = {
