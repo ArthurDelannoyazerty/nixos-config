@@ -334,38 +334,50 @@ in
         '';
       };
 
-      # --- NAVIDROME ---
+# --- NAVIDROME ---
       "http://${myConstants.services.navidrome.subdomain}.${domain}" = {
         extraConfig = ''
           log
           ${privateOnly}
 
-          # 1. Allow Subsonic API to bypass Authentik for external clients (like Feishin)
+          # 1. Handle CORS preflight (Allows Feishin to talk to Navidrome)
+          @options method OPTIONS
+          handle @options {
+            header Access-Control-Allow-Origin "https://${myConstants.services.feishin.subdomain}.${domain}"
+            header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+            header Access-Control-Allow-Headers "*"
+            header Access-Control-Max-Age "3600"
+            respond 204
+          }
+
+          # 2. Expose Subsonic APIs directly so Feishin / Mobile apps can log in natively
           handle /rest/* {
+            header Access-Control-Allow-Origin "https://${myConstants.services.feishin.subdomain}.${domain}"
             reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
           }
-          
-          # 2. Allow share links to bypass Authentik
           handle /share/* {
             reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
           }
 
-          # 3. Protect the rest of the Navidrome UI with Authentik
+          # 3. Protect the Navidrome Web UI with Authentik
           handle {
+            # Handle Authentik Outpost endpoint
             handle /outpost.goauthentik.io/* {
               reverse_proxy 172.17.0.1:${toString myConstants.services.authentik.port}
             }
 
+            # Forward Auth check
             forward_auth 127.0.0.1:${toString myConstants.services.authentik.port} {
               uri /outpost.goauthentik.io/auth/caddy
-              copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jw Remote-User Remote-Email Remote-Name Remote-Groups
+              copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid
+              trusted_proxies private_ranges
               header_up Host {host}
             }
             
             reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
           }
 
-          # Redirect to Login if Unauthorized (401)
+          # 4. Redirect to Login if Unauthorized (401)
           handle_errors {
             @401 expression {err.status_code} == 401
             handle @401 {
@@ -374,6 +386,7 @@ in
           }
         '';
       };
+      
 
       # --- KOMGA (Protected from direct public access) ---
       "http://${myConstants.services.komga.subdomain}.${domain}" = {
