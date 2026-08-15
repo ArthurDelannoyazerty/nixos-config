@@ -324,6 +324,57 @@ in
         '';
       };
 
+      # --- FEISHIN ---
+      "http://${myConstants.services.feishin.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          ${authentikMiddleware}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.feishin.port}
+        '';
+      };
+
+      # --- NAVIDROME ---
+      "http://${myConstants.services.navidrome.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+
+          # 1. Allow Subsonic API to bypass Authentik for external clients (like Feishin)
+          handle /rest/* {
+            reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
+          }
+          
+          # 2. Allow share links to bypass Authentik
+          handle /share/* {
+            reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
+          }
+
+          # 3. Protect the rest of the Navidrome UI with Authentik
+          handle {
+            handle /outpost.goauthentik.io/* {
+              reverse_proxy 172.17.0.1:${toString myConstants.services.authentik.port}
+            }
+
+            forward_auth 127.0.0.1:${toString myConstants.services.authentik.port} {
+              uri /outpost.goauthentik.io/auth/caddy
+              copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jw Remote-User Remote-Email Remote-Name Remote-Groups
+              header_up Host {host}
+            }
+            
+            reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
+          }
+
+          # Redirect to Login if Unauthorized (401)
+          handle_errors {
+            @401 expression {err.status_code} == 401
+            handle @401 {
+              redir https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/start?rd={request.uri}
+            }
+          }
+        '';
+      };
+
       # --- KOMGA (Protected from direct public access) ---
       "http://${myConstants.services.komga.subdomain}.${domain}" = {
         extraConfig = ''

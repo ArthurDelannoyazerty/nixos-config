@@ -18,6 +18,7 @@
     ./services/media/ariang.nix
     ./services/media/byparr.nix
     ./services/media/cleanuparr.nix
+    ./services/media/feishin.nix
     ./services/media/filebrowser-quantum.nix 
     ./services/media/immich.nix
     ./services/media/jellyfin.nix
@@ -31,6 +32,7 @@
     ./services/media/sonarr.nix
     ./services/media/suwayomi.nix
     ./services/media/tranga.nix
+    ./services/media/navidrome.nix
 
 
     /* ------------------------------- MONITORING ------------------------------- */

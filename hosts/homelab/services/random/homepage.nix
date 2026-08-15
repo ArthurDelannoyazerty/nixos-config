@@ -165,6 +165,12 @@ let
             #   username: "{{HOMEPAGE_VAR_KOMGA_USERNAME}}"
             #   password: "{{HOMEPAGE_VAR_KOMGA_PASSWORD}}"
             #   key: "{{HOMEPAGE_VAR_KOMGA_KEY}}"
+        - Feishin:
+            icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/feishin.png
+            href: https://${myConstants.services.feishin.subdomain}.${myConstants.publicDomain}
+            description: Lecteur Musique
+            server: my-docker
+            container: ${myConstants.services.feishin.containerName}
 
     - Authentification:
         - Authentik:
@@ -277,6 +283,18 @@ let
             description: Manga Downloader
             server: my-docker
             container: ${myConstants.services.tranga.containerName}
+        - Navidrome:
+            icon: navidrome.png
+            href: https://${myConstants.services.navidrome.subdomain}.${myConstants.publicDomain}
+            description: Backend Musique
+            server: my-docker
+            container: ${myConstants.services.navidrome.containerName}
+            # widget:
+            #     type: navidrome
+            #     url: ${internalHost}:${toString myConstants.services.navidrome.port}
+            #     user: "{{HOMEPAGE_VAR_NAVIDROME_USER}}"
+            #     token: "{{HOMEPAGE_VAR_NAVIDROME_TOKEN}}"
+            #     salt: "{{HOMEPAGE_VAR_NAVIDROME_SALT}}"
         - qBittorrent:
             icon: qbittorrent.png
             href: https://${myConstants.services.qbittorrent.subdomain}.${myConstants.publicDomain}

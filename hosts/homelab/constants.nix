@@ -76,6 +76,12 @@ rec {
       version = "4.33.0";
       containerName = "diun";
     };
+    feishin = {
+      port = 9180;
+      subdomain = "feishin";
+      version = "1.15.1";
+      containerName = "feishin";
+    };
     filebrowser-quantum = {
       port = 8088;
       subdomain = "filebrowser-quantum";
@@ -205,6 +211,12 @@ rec {
       subdomain = "n8n";
       version = "2.11.3";
       containerName = "n8n";
+    };
+    navidrome = {
+      port = 4533;
+      subdomain = "navidrome";
+      version = "0.63.2";
+      containerName = "navidrome";
     };
     netdata = {
       port = 19999;
