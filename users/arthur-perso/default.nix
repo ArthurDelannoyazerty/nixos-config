@@ -5,7 +5,7 @@
   users.users.arthur = {
     isNormalUser = true;
     description = "Arthur Delannoy";
-    extraGroups = [ "wheel" "networkmanager" "docker" "video" "audio" ]; 
+    extraGroups = [ "wheel" "networkmanager" "docker" "video" "audio" "input"]; 
     shell = pkgs.bash;
   };
 

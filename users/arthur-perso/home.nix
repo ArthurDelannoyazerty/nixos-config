@@ -22,6 +22,44 @@ let
       exec start-hyprland
     fi
   '' else "";
+
+
+  # -------------------------------------------------------------------------- #
+  # Custom Derivation for aw-watcher-input 
+  # -------------------------------------------------------------------------- #
+  aw-watcher-input = pkgs.python3Packages.buildPythonApplication rec {
+    pname = "aw-watcher-input";
+    version = "master";
+    format = "pyproject";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "ActivityWatch";
+      repo = "aw-watcher-input";
+      rev = "master";
+      # The correct hash based on your error log
+      hash = "sha256-T7RIzrv+WzA5gEUlU/0dR1Fl0b8zH8q/q80WMBIosPM=";
+    };
+
+    nativeBuildInputs = [ pkgs.python3Packages.poetry-core ];
+    
+    propagatedBuildInputs = with pkgs.python3Packages; [
+      aw-client
+      pynput
+    ] ++ [
+      pkgs.aw-watcher-afk
+    ];
+
+    # Remove the problematic dependency from the poetry manifest
+    postPatch = ''
+      sed -i '/aw-watcher-afk/d' pyproject.toml
+    '';
+
+    # Tell Nix to skip the strict runtime dependency check
+    dontCheckRuntimeDeps = true;
+    doCheck = false;
+  };
+
+
 in
 
 {
@@ -431,6 +469,15 @@ in
     force = true;
   };
 
+  xdg.desktopEntries.activitywatch = {
+    name = "ActivityWatch";
+    genericName = "Time Tracker";
+    exec = "xdg-open http://localhost:5600";
+    icon = "preferences-system-time";
+    comment = "View your ActivityWatch statistics";
+    categories = [ "Utility" ];
+  };
+
   # polkit daemon
   systemd.user.services.polkit-gnome-authentication-agent-1 = {
     Unit.Description = "polkit-gnome-authentication-agent-1";
@@ -443,5 +490,32 @@ in
       TimeoutStopSec = 10;
     };
   };
+
+
+
+
+  /* -------------------------------------------------------------------------- */
+  /*                                ACTIVITYWATCH                               */
+  /* -------------------------------------------------------------------------- */
+
+  services.activitywatch = {
+    enable = true;
+    # Configure explicitly which watchers should run in the background
+    watchers = {
+      # Replaces the default aw-watcher-window and aw-watcher-afk for Wayland
+      aw-awatcher = {
+        package = pkgs.awatcher;
+        executable = "awatcher";
+      };
+      
+      # Add our custom input watcher
+      aw-watcher-input = {
+        package = aw-watcher-input;
+        executable = "aw-watcher-input";
+      };
+    };
+  };
+
+
 
 }
