@@ -134,7 +134,7 @@ rec {
     homepage = {
       port = 3000;
       subdomain = "homepage";
-      version = "v1.13.2";
+      version = "v2.0.0";
       containerName = "homepage";
     };
     immich = {
