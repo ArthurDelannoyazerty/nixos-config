@@ -334,34 +334,23 @@ in
         '';
       };
 
-# --- NAVIDROME ---
+      # --- NAVIDROME ---
       "http://${myConstants.services.navidrome.subdomain}.${domain}" = {
         extraConfig = ''
           log
           ${privateOnly}
 
-          # 1. Handle CORS preflight (Allows Feishin to talk to Navidrome)
-          @options method OPTIONS
-          handle @options {
-            header Access-Control-Allow-Origin "https://${myConstants.services.feishin.subdomain}.${domain}"
-            header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-            header Access-Control-Allow-Headers "*"
-            header Access-Control-Max-Age "3600"
-            respond 204
-          }
-
-          # 2. Expose Subsonic APIs directly so Feishin / Mobile apps can log in natively
+          # 1. Expose Subsonic APIs & Share links directly (Navidrome manages CORS natively)
           handle /rest/* {
-            header Access-Control-Allow-Origin "https://${myConstants.services.feishin.subdomain}.${domain}"
             reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
           }
           handle /share/* {
             reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
           }
 
-          # 3. Protect the Navidrome Web UI with Authentik
+          # 2. Protect the Navidrome Web UI with Authentik SSO
           handle {
-            # Handle Authentik Outpost endpoint
+            # Authentik Outpost endpoint
             handle /outpost.goauthentik.io/* {
               reverse_proxy 172.17.0.1:${toString myConstants.services.authentik.port}
             }
@@ -377,7 +366,7 @@ in
             reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
           }
 
-          # 4. Redirect to Login if Unauthorized (401)
+          # 3. Redirect to login if unauthorized (401)
           handle_errors {
             @401 expression {err.status_code} == 401
             handle @401 {
@@ -385,8 +374,7 @@ in
             }
           }
         '';
-      };
-      
+      };      
 
       # --- KOMGA (Protected from direct public access) ---
       "http://${myConstants.services.komga.subdomain}.${domain}" = {
