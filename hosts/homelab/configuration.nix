@@ -23,9 +23,9 @@
     ./services/media/jellyfin.nix
     ./services/media/komga.nix
     ./services/media/onlyoffice.nix
-    # ./services/media/piped.nix
     ./services/media/prowlarr.nix
     ./services/media/qbittorrent.nix
+    ./services/media/radarr.nix
     ./services/media/recyclarr.nix
     ./services/media/seer.nix
     ./services/media/sonarr.nix

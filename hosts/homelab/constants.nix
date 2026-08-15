@@ -281,6 +281,8 @@ rec {
     radarr = { 
       port = 7878; 
       subdomain = "radarr";
+      version = "6.3.0";
+      containerName = "radarr";
     };
     recyclarr = {
       version = "8.7.1";

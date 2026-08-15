@@ -25,19 +25,17 @@ let
             reset_unmatched_scores:
               enabled: true
 
-
-    # radarr:
-    #   movies:
-    #     base_url: http://172.17.0.1:${toString myConstants.services.radarr.port}
-    #     api_key: !env_var RADARR_API_KEY
-    #     quality_definition:
-    #       type: movie
-    #     quality_profiles:
-    #       # Standard: HD Bluray + WEB (1080p)
-    #       # (For the French version [French MULTi.VO] HD Bluray + WEB, use trash_id: 2572ce3ea4eef1c19d59e0e20ed1cea7)
-    #       - trash_id: d1d67249d3890e49bc12e275d989a7e9 
-    #         reset_unmatched_scores:
-    #           enabled: true
+    radarr:
+      movies:
+        base_url: http://172.17.0.1:${toString myConstants.services.radarr.port}
+        api_key: !env_var RADARR_API_KEY
+        quality_definition:
+          type: movie
+        quality_profiles:
+          # French MULTi.VO (HD Bluray + WEB)
+          - trash_id: 2572ce3ea4eef1c19d59e0e20ed1cea7 
+            reset_unmatched_scores:
+              enabled: true
   '';
 
   # Location of the secure environment file where you will put your API Keys

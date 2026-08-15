@@ -314,6 +314,16 @@ in
         '';
       };
 
+      # --- RADARR (Protected from direct public access) ---
+      "http://${myConstants.services.radarr.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          ${authentikMiddleware}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.radarr.port}
+        '';
+      };
+
       # --- KOMGA (Protected from direct public access) ---
       "http://${myConstants.services.komga.subdomain}.${domain}" = {
         extraConfig = ''

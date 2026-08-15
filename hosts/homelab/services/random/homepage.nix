@@ -302,6 +302,16 @@ let
               type: sonarr
               url: ${internalHost}:${toString myConstants.services.sonarr.port}
               key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
+        - Radarr:
+            icon: radarr.png
+            href: https://${myConstants.services.radarr.subdomain}.${myConstants.publicDomain}
+            description: Movie Backend Downloader
+            server: my-docker
+            container: ${myConstants.services.radarr.containerName}
+            # widget:
+            #   type: radarr
+            #   url: ${internalHost}:${toString myConstants.services.radarr.port}
+            #   key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
         # - Byparr:
         #     icon: https://raw.githubusercontent.com/ThePhaseless/Byparr/557152ccdcf32025b77438ab51c93f58eb284980/icon/logo-byparr.svg
         #     href: https://${myConstants.services.byparr.subdomain}.${myConstants.publicDomain}/docs

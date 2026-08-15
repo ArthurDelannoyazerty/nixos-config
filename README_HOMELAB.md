@@ -674,7 +674,7 @@ sudo chmod 600 /var/lib/services/komga/secrets.env
 
 
 
-## Sonarr & Prowlarr
+## Sonarr & Prowlarr & Radarr 
 
 ```bash
 sudo docker stop prowlarr
