@@ -86,7 +86,7 @@ let
         - Immich: 
             icon: immich.png
             href: https://${myConstants.services.immich.subdomain}.${myConstants.publicDomain}
-            description: Archive Photos
+            description: Stockage Photos & Videos
             server: my-docker
             container: ${myConstants.services.immich.containerName}
             widget:
@@ -156,7 +156,7 @@ let
         - Komga:
             icon: komga.png
             href: https://${myConstants.services.komga.subdomain}.${myConstants.publicDomain}
-            description: Lecteur Manga
+            description: Lecteur BD/Manga/EBooks
             server: my-docker
             container: ${myConstants.services.komga.containerName}
             # widget:
@@ -170,7 +170,7 @@ let
         - Authentik:
             icon: authentik.png
             href: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
-            description: Authentification
+            description: Service d'Authentification
             server: my-docker
             container: ${myConstants.services.authentik.containerName}
             widget:
@@ -181,7 +181,7 @@ let
         - Log Out:
             icon: mdi-logout
             href: https://${myConstants.services.homepage.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/sign_out
-            description: Se Deconnecter
+            description: Se Déconnecter
 
     - Random:
         - Vikunja:
