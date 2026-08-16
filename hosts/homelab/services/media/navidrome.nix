@@ -12,6 +12,13 @@
       ND_SESSIONTIMEOUT = "24h";
       ND_BASEURL = "";
 
+      ND_UICOVERARTSIZE = "600";
+      ND_COVERARTQUALITY = "100";
+      ND_ENABLEWEBPENCODING = "true";
+
+      ND_IMAGECACHESIZE = "1GB";
+      ND_TRANSCODINGCACHESIZE = "1GB";
+
       # --- OIDC / SSO REVERSE PROXY AUTH ---
       # Match the header sent by Authentik's Caddy outpost
       ND_REVERSEPROXYUSERHEADER = "X-Authentik-Username";
