@@ -185,6 +185,11 @@ in
         POSTGRES_DB = "postgres";
         POSTGRES_USER = "postgres";
         POSTGRES_PASSWORD = "postgres_secret_password";
+
+        LOG_LEVEL = "INFO";
+        Logging__LogLevel__Default = "Information";
+        Logging__LogLevel__Microsoft = "Warning";
+        Logging__LogLevel__API = "Information";
       };
       volumes = [
         "${myConstants.paths.servicesSSD}/tranga/postgres:/var/lib/postgresql/data"
