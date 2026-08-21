@@ -15,7 +15,6 @@ let
     
     cardBlur: xl
     background:
-      image: "linear-gradient(to bottom right, #0f172a, #1e293b, #172554)"
       opacity: 100
 
     showStats: false  # hide docker container stats on service cards
@@ -456,6 +455,53 @@ let
 # 6. CUSTOM JS (The Joke Advertisement & Resilient Borgmatic Check)
   customJs = pkgs.writeText "custom.js" ''
     console.log("--- HOMEPAGE CUSTOM JS LOADED SUCCESSFULLY ---");
+
+        // --- Log Out Username Display ---
+    let cachedUsername = null;
+
+    async function updateAuthentikUsername() {
+        try {
+            // 1. Fetch NextAuth session
+            if (!cachedUsername) {
+                const response = await fetch('/api/auth/session');
+                if (response.ok) {
+                    const session = await response.json();
+                    cachedUsername = session?.user?.name || session?.user?.email || session?.user?.preferred_username;
+                    if (cachedUsername) {
+                        console.log("[Authentik Check] Found logged-in user:", cachedUsername);
+                    }
+                }
+            }
+
+            if (!cachedUsername) return;
+
+            const targetText = "Log Out (" + cachedUsername + ")";
+
+            // 2. Directly find the text node containing "Log Out" and update it
+            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+            let node;
+            while ((node = walker.nextNode())) {
+                const val = node.nodeValue.trim();
+                // Match "Log Out" or outdated "Log Out (...)"
+                if (val === "Log Out" || (val.startsWith("Log Out") && !val.includes(cachedUsername))) {
+                    node.nodeValue = targetText;
+                }
+            }
+        } catch (err) {
+            console.error("[Authentik User Check] Error:", err);
+        }
+    }
+
+    function initUserCheck() {
+        updateAuthentikUsername();
+        setInterval(updateAuthentikUsername, 1500);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initUserCheck);
+    } else {
+        initUserCheck();
+    }
 
     // --- Borgmatic Status Check ---
     function checkBorgmaticStatus() {
