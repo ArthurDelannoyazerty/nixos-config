@@ -81,7 +81,6 @@ in
         extraConfig = ''
           log
           ${privateOnly}
-          ${authentikMiddleware} # Inject the auth logic
           reverse_proxy 172.17.0.1:${toString myConstants.services.homepage.port}
         '';
       };

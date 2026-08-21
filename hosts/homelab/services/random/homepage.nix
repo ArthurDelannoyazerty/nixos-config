@@ -681,6 +681,12 @@ in
     environment = {
       HOMEPAGE_ALLOWED_HOSTS = "*"; 
       DOCKER_HOST = "tcp://172.17.0.1:2375";
+
+    # --- NEW OIDC SETTINGS ---
+      HOMEPAGE_AUTH_ENABLED = "true";
+      HOMEPAGE_OIDC_CLIENT_ID = "Bw1xFhvQ3bEmnz0TxshjNqpTrjSxMdhKbenxdtF2";
+      HOMEPAGE_OIDC_ISSUER = "https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/application/o/homepage/";
+      HOMEPAGE_EXTERNAL_URL = "https://${myConstants.services.homepage.subdomain}.${myConstants.publicDomain}";
     };
 
     environmentFiles = [

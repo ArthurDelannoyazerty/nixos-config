@@ -759,6 +759,19 @@ sudo docker build -t obsidian2docmost:latest .
 ```
 
 
+## Homepage
+
+```bash
+sudo vim /var/lib/homepage/secrets.env
+```
+
+```bash
+HOMEPAGE_OIDC_CLIENT_SECRET="<your-authentik-client-secret-here>"
+HOMEPAGE_AUTH_SECRET="PutARandomLongStringHereThatNobodyKnows!"
+```
+
+
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:
