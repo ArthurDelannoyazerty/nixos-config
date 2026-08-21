@@ -90,6 +90,7 @@ let
             server: my-docker
             container: ${myConstants.services.immich.containerName}
             widget:
+                refreshInterval: 10000 
                 type: immich
                 url: ${internalHost}:${toString myConstants.services.immich.port}
                 key: 1CcVvq9WjwqL1gL9j5O3qpbRI0nUCeNOscfAMK6HaYI
@@ -133,6 +134,7 @@ let
             server: my-docker
             container: ${myConstants.services.jellyfin.containerName}
             widget:
+              refreshInterval: 10000 
               type: jellyfin
               url: ${internalHost}:${toString myConstants.services.jellyfin.port}
               key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
@@ -144,6 +146,7 @@ let
             server: my-docker
             container: ${myConstants.services.seerr.containerName}
             widget:
+              refreshInterval: 10000 
               type: seerr
               url: https://${myConstants.services.seerr.subdomain}.${myConstants.publicDomain}
               key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
@@ -180,6 +183,7 @@ let
             server: my-docker
             container: ${myConstants.services.authentik.containerName}
             widget:
+              refreshInterval: 10000 
               type: authentik
               url: https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}
               key: ygODP16x2dZlpJGKpM2UB34nylQYBVHdnXsoXofrY3OWp8LzQl05ZDIYMwQk
@@ -235,6 +239,7 @@ let
             server: my-docker
             container: ${myConstants.services.romm.containerName}
             widget:
+              refreshInterval: 10000 
               type: romm
               url: ${internalHost}:${toString myConstants.services.romm.port}
         - Obsidian Notes:
@@ -302,6 +307,7 @@ let
             server: my-docker
             container: ${myConstants.services.qbittorrent.containerName}
             widget:
+              refreshInterval: 10000 
               type: qbittorrent
               url: ${internalHost}:${toString myConstants.services.qbittorrent.port}
         - Prowlarr:
@@ -317,6 +323,7 @@ let
             server: my-docker
             container: ${myConstants.services.sonarr.containerName}
             widget:
+              refreshInterval: 10000 
               type: sonarr
               url: ${internalHost}:${toString myConstants.services.sonarr.port}
               key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
@@ -360,6 +367,7 @@ let
             siteMonitor: ${internalHost}:${toString myConstants.services.scrutiny.port}
             description: Disks Health
             widget:
+                refreshInterval: 10000 
                 type: scrutiny
                 url: ${internalHost}:${toString myConstants.services.scrutiny.port}
         - Borgmatic Backups:
@@ -368,6 +376,7 @@ let
             description: Nightly Backups
             id: borg-backups
             widget:
+                refreshInterval: 10000 
                 type: uptimekuma
                 url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
                 slug: borg-backups
@@ -375,6 +384,7 @@ let
             description: Real-time Power
             icon: mdi-lightning-bolt
             widget:
+              refreshInterval: 10000 
               type: customapi
               url: ${internalHost}:${toString myConstants.services.power-monitor.port}
               refresh: 2000
@@ -393,6 +403,7 @@ let
             siteMonitor: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
             description: Services Uptime
             widget:
+                refreshInterval: 10000 
                 type: uptimekuma
                 url: ${internalHost}:${toString myConstants.services.uptime-kuma.port}
                 slug: default 
@@ -409,6 +420,7 @@ let
             server: my-docker
             container: ${myConstants.services.whats-up-docker.containerName}
             widget:
+                refreshInterval: 10000 
                 type: whatsupdocker
                 url: ${internalHost}:${toString myConstants.services.whats-up-docker.port}
         - Netdata:
@@ -416,9 +428,10 @@ let
             href: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}
             siteMonitor: ${internalHost}:${toString myConstants.services.netdata.port}
             description: Server Usage Monitoring
-            widget:
-                type: netdata
-                url: ${internalHost}:${toString myConstants.services.netdata.port}
+            # widget:
+            #     refreshInterval: 10000 
+            #     type: netdata
+            #     url: ${internalHost}:${toString myConstants.services.netdata.port}
         - Scanopy:
             icon: https://scanopy.net/scanopy-logo-64.webp
             href: https://${myConstants.services.scanopy.subdomain}.${myConstants.publicDomain}
