@@ -143,6 +143,32 @@ in
 
   ];
 
+  programs.mpv = {
+    enable = true;
+    
+    # Configuration principale de mpv
+    config = {
+      # Obligatoire pour utiliser uosc : désactiver l'interface par défaut
+      osc = false;
+      osd-bar = false;
+      border = false; # Optionnel mais recommandé pour uosc
+    };
+
+    # Installation des scripts via les paquets Nix
+    scripts = with pkgs.mpvScripts; [
+      uosc
+      thumbfast
+    ];
+
+    # Configuration spécifique des scripts (génère les fichiers script-opts)
+    scriptOpts = {
+      thumbfast = {
+        network = "yes"; # Active les miniatures pour les VOD Twitch/YouTube
+        hwdec = "yes";   # Utilise l'accélération matérielle pour la génération
+      };
+    };
+  };
+
   /* -------------------------------------------------------------------------- */
   /*                       AUTOMATED GAME SAVE BACKUPS                          */
   /* -------------------------------------------------------------------------- */

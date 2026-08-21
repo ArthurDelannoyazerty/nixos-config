@@ -93,7 +93,6 @@
     libnotify     # Desktop notifications
 
     imv     # image viewer
-    mpv     # video viewer
   ];
 
   environment.sessionVariables = {
