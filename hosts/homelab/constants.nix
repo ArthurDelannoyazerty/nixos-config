@@ -194,13 +194,13 @@ rec {
     marimo = {
       port = 2718;
       subdomain = "marimo";
-      version = "0.23.15-sql";
+      version = "0.24.0-sql";
       containerName = "marimo";
     };
     marimo-apps = {
       port = 2719;
       subdomain = "marimo-apps";
-      version = "0.23.15-sql";
+      version = "0.24.0-sql";
       containerName = "marimo-apps";
     };
     marimo-public = {

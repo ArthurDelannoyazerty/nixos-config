@@ -21,15 +21,20 @@ in
     "d ${stateRoot} 0750 1000 1000 -"
     "d ${stateRoot}/edit 0750 1000 1000 -"
     "d ${stateRoot}/apps 0750 1000 1000 -"
+    "d ${stateRoot}/tmp 0750 1000 1000 -"
     "d ${publicRoot} 0755 1000 1000 -" 
     "d ${sshRoot} 0700 1000 1000 -"
+
+    # Write the override rule to allow pyzmq versions to resolve cleanly
+    "f+ ${stateRoot}/edit/overrides.txt 0644 1000 1000 - pyzmq>=27.0.0"
+    "f+ ${stateRoot}/apps/overrides.txt 0644 1000 1000 - pyzmq>=27.0.0"
   ];
 
-  # Browser editor. Protect this hostname with an Authentik policy limited to your account.
+  # Browser editor (Full Sandboxing Enabled)
   virtualisation.oci-containers.containers.${myConstants.services.marimo.containerName} = {
     image = "ghcr.io/marimo-team/marimo:${myConstants.services.marimo.version}";
     user = "1000:1000";
-    workdir = "/app/notebooks";
+    workdir = "/workspace";
 
     cmd = [
       "marimo"
@@ -47,15 +52,28 @@ in
     environment = {
       HOME = "/app/state/home";
       XDG_CACHE_HOME = "/app/state/cache";
+      XDG_DATA_HOME = "/app/state/data";
       UV_CACHE_DIR = "/app/state/cache/uv";
       PYTHONPYCACHEPREFIX = "/app/state/pycache";
+      TMPDIR = "/app/state/tmp";
+
+      # Enable UV to download Python versions dynamically for each sandbox
+      UV_PYTHON_DOWNLOADS = "auto";
+      UV_PYTHON_PREFERENCE = "managed";
+      UV_PYTHON = "3.12"; # Standard target for compatibility with all wheels
+      UV_LINK_MODE = "copy";
+
+      UV_OVERRIDE = "/app/state/overrides.txt";
+      UV_NO_CONFIG = "true";
+
       MARIMO_IN_SECURE_ENVIRONMENT = "true";
       MARIMO_MANAGE_SCRIPT_METADATA = "true";
     };
 
     volumes = [
-      "${notebooksRoot}:/app/notebooks"
+      "${notebooksRoot}:/workspace"
       "${stateRoot}/edit:/app/state"
+      "${stateRoot}/tmp:/app/state/tmp"
     ];
 
     # Caddy runs on the host, so no LAN-facing container port is required.
@@ -64,11 +82,11 @@ in
     ];
   };
 
-  # Read-only gallery used by Obsidian/Quartz links.
+  # Read-only gallery
   virtualisation.oci-containers.containers.${myConstants.services.marimo-apps.containerName} = {
     image = "ghcr.io/marimo-team/marimo:${myConstants.services.marimo.version}";
     user = "1000:1000";
-    workdir = "/app/notebooks";
+    workdir = "/workspace";
 
     cmd = [
       "marimo"
@@ -87,14 +105,27 @@ in
     environment = {
       HOME = "/app/state/home";
       XDG_CACHE_HOME = "/app/state/cache";
+      XDG_DATA_HOME = "/app/state/data";
       UV_CACHE_DIR = "/app/state/cache/uv";
       PYTHONPYCACHEPREFIX = "/app/state/pycache";
+      TMPDIR = "/app/state/tmp";
+
+      UV_PYTHON_DOWNLOADS = "auto";
+      UV_PYTHON_PREFERENCE = "managed";
+      UV_PYTHON = "3.12";
+      UV_LINK_MODE = "copy";
+
+      # Tell UV to use our override file and ignore parent configs
+      UV_OVERRIDE = "/app/state/overrides.txt";
+      UV_NO_CONFIG = "true";
+
       MARIMO_IN_SECURE_ENVIRONMENT = "true";
     };
 
     volumes = [
-      "${notebooksRoot}:/app/notebooks:ro"
+      "${notebooksRoot}:/workspace:ro"
       "${stateRoot}/apps:/app/state"
+      "${stateRoot}/tmp:/app/state/tmp"
     ];
 
     ports = [
@@ -177,7 +208,7 @@ in
     };
     script = ''
       ${pkgs.docker}/bin/docker run --rm \
-        -v ${serviceRoot}:/app/service:ro \
+        -v ${serviceRoot}:/workspace/service:ro \
         -v ${publicRoot}:/app/public \
         -u "1000:1000" \
         ghcr.io/marimo-team/marimo:${myConstants.services.marimo.version} \
@@ -189,8 +220,8 @@ in
           echo "<!DOCTYPE html><html><head><title>Public Notebooks</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><style>body{font-family: sans-serif; margin: 2rem; background: #0f172a; color: #f8fafc;} h1{color: #38bdf8;} a{color: #e2e8f0; text-decoration: none; font-size: 1.2rem; display: block; margin: 0.5rem 0; padding: 1rem; background: #1e293b; border-radius: 0.5rem; transition: background 0.2s;} a:hover{background: #334155;} .container{max-width: 800px; margin: 0 auto;}</style></head><body><div class=\"container\"><h1>Marimo Public Gallery</h1>" > "$tmp_index"
 
           # 1. Export changed notebooks
-          find /app/service/repo/notebooks -name "*.py" | sort | while read -r file; do
-            relpath="''${file#/app/service/repo/notebooks/}"
+          find /workspace/service/repo/notebooks -name "*.py" | sort | while read -r file; do
+            relpath="''${file#/workspace/service/repo/notebooks/}"
             name="''${relpath%.py}"
             
             outdir="/app/public/$name"
@@ -226,7 +257,7 @@ in
             
             dir=$(dirname "$html_file")
             rel_dir="''${dir#/app/public/}"
-            source_py="/app/service/repo/notebooks/$rel_dir.py"
+            source_py="/workspace/service/repo/notebooks/$rel_dir.py"
             
             if [ ! -f "$source_py" ]; then
               echo "Removing deleted notebook export: $rel_dir"
