@@ -2,7 +2,7 @@
 
 {
   virtualisation.oci-containers.containers.${myConstants.services.navidrome-importer.containerName} = {
-    image = "ghcr.io/YOUR_GH_USERNAME/yt-navidrome:${myConstants.services.navidrome-importer.version}";
+    image = "ghcr.io/arthurdelannoyazerty/yt-navidrome:${myConstants.services.navidrome-importer.version}";
 
     # App listens on 8008 inside the image -> exposed as 8009 on the host
     ports = [ "0.0.0.0:${toString myConstants.services.navidrome-importer.port}:8008" ];
@@ -33,8 +33,5 @@
       "${myConstants.paths.disk4TB}/media/music:/data/library"
     ];
 
-    extraOptions = [
-      "--restart=unless-stopped"
-    ];
   };
 }

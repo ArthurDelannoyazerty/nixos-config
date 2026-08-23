@@ -342,14 +342,12 @@ let
             description: Music Importer
             server: my-docker
             container: ${myConstants.services.navidrome-importer.containerName}
-            siteMonitor: ${internalHost}:${toString myConstants.services.navidrome-importer.port}
         - Cobalt:
-            icon: mdi-cloud-download
+            icon: https://raw.githubusercontent.com/imputnet/cobalt/refs/heads/main/web/static/favicon.png
             href: https://${myConstants.services.cobalt.subdomain}.${myConstants.publicDomain}
             description: Moteur de secours téléchargement
             server: my-docker
             container: ${myConstants.services.cobalt.containerName}
-            siteMonitor: ${internalHost}:${toString myConstants.services.cobalt.port}
         # - Byparr:
         #     icon: https://raw.githubusercontent.com/ThePhaseless/Byparr/557152ccdcf32025b77438ab51c93f58eb284980/icon/logo-byparr.svg
         #     href: https://${myConstants.services.byparr.subdomain}.${myConstants.publicDomain}/docs

@@ -30,7 +30,6 @@
     extraOptions = [
       "--init"
       "--read-only"                 # official recommended hardening
-      "--restart=unless-stopped"
     ];
   };
 
@@ -44,7 +43,6 @@
 
     extraOptions = [
       "--init"
-      "--restart=unless-stopped"
     ];
   };
 }
