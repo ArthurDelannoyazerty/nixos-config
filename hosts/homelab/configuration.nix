@@ -17,6 +17,7 @@
     /* ---------------------------------- MEDIA --------------------------------- */
     ./services/media/ariang.nix
     ./services/media/byparr.nix
+    ./services/media/cobalt.nix
     ./services/media/cleanuparr.nix
     ./services/media/feishin.nix
     ./services/media/filebrowser-quantum.nix 
@@ -33,6 +34,7 @@
     ./services/media/suwayomi.nix
     ./services/media/tranga.nix
     ./services/media/navidrome.nix
+    ./services/media/navidrome-importer.nix
 
 
     /* ------------------------------- MONITORING ------------------------------- */
