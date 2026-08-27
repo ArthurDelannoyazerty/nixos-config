@@ -227,7 +227,7 @@ rec {
     navidrome-importer = {
       port = 8009;
       subdomain = "navidrome-importer";
-      version = "v0.0.5";
+      version = "v0.0.14";
       containerName = "yt-navidrome";
     };
     netdata = {
@@ -430,7 +430,7 @@ rec {
       containerName = "whats-up-docker";
     };
     yt-session-generator = {
-      port = 8086;                # bridge-only, never exposed publicly
+      port = 8186;                # bridge-only, never exposed publicly
       containerName = "yt-session-generator";
     };
 
