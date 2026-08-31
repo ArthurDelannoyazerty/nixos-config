@@ -117,6 +117,16 @@
     "iTCO_wdt" 
   ];
 
+  # Transcoding  
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      intel-media-driver # For Broadwell (5th gen) or newer (Your 8th gen uses this)
+      intel-vaapi-driver # (Optional) older but sometimes useful fallback
+      libvdpau-va-gl
+    ];
+  };
+
   /* -------------------------------------------------------------------------- */
   /*                                POWER OPTIONS                               */
   /* -------------------------------------------------------------------------- */

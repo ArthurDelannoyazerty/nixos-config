@@ -38,6 +38,10 @@
     # Container Management
     lazydocker    # Terminal UI for Docker (VERY useful)
     ctop          # Top-like interface for container metrics
+
+    # Media/GPU debugging
+    intel-gpu-tools
+    libva-utils
   ];
   
 }
