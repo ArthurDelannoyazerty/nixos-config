@@ -375,6 +375,26 @@ in
         '';
       };      
 
+      # --- COBALT API (downloader fallback; browser-visible status page) ---
+      "http://${myConstants.services.cobalt.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          ${authentikMiddleware}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.cobalt.port}
+        '';
+      };
+
+      # --- NAVIDROME IMPORTER (Playlist ingestion pipeline, Authentik-protected) ---
+      "http://${myConstants.services.navidrome-importer.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+          ${authentikMiddleware}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome-importer.port}
+        '';
+      };
+
       # --- KOMGA (Protected from direct public access) ---
       "http://${myConstants.services.komga.subdomain}.${domain}" = {
         extraConfig = ''

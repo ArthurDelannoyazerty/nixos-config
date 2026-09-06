@@ -771,6 +771,21 @@ HOMEPAGE_AUTH_SECRET="PutARandomLongStringHereThatNobodyKnows!"
 ```
 
 
+## Navidrome importer
+
+```bash
+sudo mkdir -p /var/lib/services/navidrome-importer
+sudo nano /var/lib/services/navidrome-importer/env
+# contents:
+# ACOUSTID_API_KEY=...
+# YT_API_KEY=...
+# SPOTIFY_CLIENT_ID=
+# SPOTIFY_CLIENT_SECRET=
+# DOWNLOAD_SLEEP_MIN=2
+# DOWNLOAD_SLEEP_MAX=6
+sudo chmod 600 /var/lib/services/navidrome-importer/env
+```
+
 
 # To add other services
 

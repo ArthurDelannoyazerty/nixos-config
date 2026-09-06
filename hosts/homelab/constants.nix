@@ -60,6 +60,12 @@ rec {
       version = "3.0.3";
       containerName = "byparr";
     };
+    cobalt = {
+      port = 9009;
+      subdomain = "cobalt";
+      version = "11.7.1";
+      containerName = "cobalt";
+    };
     cleanuparr = {
       port = 11011;
       subdomain = "cleanuparr";
@@ -218,6 +224,12 @@ rec {
       version = "0.63.2";
       containerName = "navidrome";
     };
+    navidrome-importer = {
+      port = 8009;
+      subdomain = "navidrome-importer";
+      version = "v0.0.14";
+      containerName = "yt-navidrome";
+    };
     netdata = {
       port = 19999;
       subdomain = "netdata";
@@ -303,7 +315,7 @@ rec {
     romm = {
       port = 8085;
       subdomain = "romm";
-      version = "5.1.0";
+      version = "5.2.0";
       containerName = "romm";
     };
     romm-db = {
@@ -416,6 +428,10 @@ rec {
       subdomain = "wud";
       version = "8.3.0";
       containerName = "whats-up-docker";
+    };
+    yt-session-generator = {
+      port = 8186;                # bridge-only, never exposed publicly
+      containerName = "yt-session-generator";
     };
 
 

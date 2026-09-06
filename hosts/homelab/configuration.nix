@@ -17,6 +17,7 @@
     /* ---------------------------------- MEDIA --------------------------------- */
     ./services/media/ariang.nix
     ./services/media/byparr.nix
+    ./services/media/cobalt.nix
     ./services/media/cleanuparr.nix
     ./services/media/feishin.nix
     ./services/media/filebrowser-quantum.nix 
@@ -33,6 +34,7 @@
     ./services/media/suwayomi.nix
     ./services/media/tranga.nix
     ./services/media/navidrome.nix
+    ./services/media/navidrome-importer.nix
 
 
     /* ------------------------------- MONITORING ------------------------------- */
@@ -114,6 +116,16 @@
     # Load the actual INTEL HARDWARE WATCHDOG
     "iTCO_wdt" 
   ];
+
+  # Transcoding  
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      intel-media-driver # For Broadwell (5th gen) or newer (Your 8th gen uses this)
+      intel-vaapi-driver # (Optional) older but sometimes useful fallback
+      libvdpau-va-gl
+    ];
+  };
 
   /* -------------------------------------------------------------------------- */
   /*                                POWER OPTIONS                               */

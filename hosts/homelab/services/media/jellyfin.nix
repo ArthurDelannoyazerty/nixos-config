@@ -3,6 +3,8 @@
 {
   systemd.tmpfiles.rules = [
     "d ${myConstants.paths.servicesSSD}/jellyfin 0755 1000 1000 -"
+    # Add uid, gid, and mode to the tmpfs options
+    "--tmpfs=/transcode:rw,noexec,nosuid,size=4G,uid=1000,gid=1000,mode=1777"
   ];
 
   virtualisation.oci-containers.containers."${myConstants.services.jellyfin.containerName}" = {
@@ -29,9 +31,10 @@
       "${myConstants.paths.disk4TB}/media:/data"
     ];
 
-    # CRITICAL FOR INTEL CPUs: Pass the integrated GPU to Jellyfin for Hardware Transcoding
+    # FOR INTEL CPUs: Pass the integrated GPU to Jellyfin for Hardware Transcoding
     extraOptions = [
       "--device=/dev/dri:/dev/dri"
+      "--tmpfs=/transcode:rw,noexec,nosuid,size=4G"       # This creates a virtual folder in RAM (up to 4GB size limit, which is plenty for temporary video segments)
     ];
   };
 }
