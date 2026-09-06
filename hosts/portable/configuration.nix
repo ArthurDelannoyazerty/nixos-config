@@ -13,10 +13,8 @@
     ../../modules/terminal
     ../../modules/dev
     ../../modules/hyprland
-    # ../../modules/gaming
-    # ../../modules/gaming/minecraft.nix
 
-    # users
+    # users (Applies your shared home.nix!)
     ../../users/arthur-perso/default.nix
   ];
 
@@ -47,12 +45,11 @@
 
   boot.loader.grub2-theme = {
     enable = true;
-    theme = "vimix";         # Choose between: "tela", "vimix", "stylish", or "whitesur"
-    footer = true;           # Displays a nice footer at the bottom
-    screen = "1080p";        # Choose resolution: "1080p", "2k", "4k", "ultrawide", or "ultrawide2k"
-    icon = "white";          # Choose icon style: "color", "white", or "whitesur"
+    theme = "vimix";
+    footer = true;
+    screen = "1080p";
+    icon = "white";
   };
-
 
   networking.hostName = "nixos-portable";
 
@@ -71,71 +68,89 @@
     ntfs3g      # For NTFS
     usbutils    # Useful for 'lsusb'
 
-    # File manager
-    # nautilus
-    
+    # ---------------------------------------------------------
+    # File manager: Synced with your perso config (Nemo)
+    # ---------------------------------------------------------
+    file-roller            # GNOME Archive manager (Extract zip/tar files directly)
+    ffmpegthumbnailer      # Video thumbnails
+    evince                 # PDF viewer (and provides PDF thumbnails)
+    libgsf                 # Office document thumbnails (Word, Excel)
+    webp-pixbuf-loader     # WebP image thumbnails
+    poppler                # PDF rendering
+    nemo-with-extensions 
+    nemo-preview      
+    adw-gtk3
+
+    # Hyprland utilities
     grim          # Image capture
     slurp         # Interactive selection
-    wf-recorder  # Video capture
+    wf-recorder   # Video capture
     jq            # JSON parser 
     wl-clipboard  # Clipboard support
     libnotify     # Desktop notifications
+    imv           # image viewer
 
-    imv     # image viewer
-    mpv     # video viewer
+    # Note: mpv is removed here because your home.nix installs it with custom scripts
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
     "electron-39.8.10"
   ];
 
+  # ---------------------------------------------------------
+  # Wayland Environment Variables (Cleaned of NVIDIA params)
+  # ---------------------------------------------------------
   environment.sessionVariables = {
-    # Fix for NVIDIA on Wayland
-    LIBVA_DRIVER_NAME = "nvidia";
-    GBM_BACKEND = "nvidia-drm";
-    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-    
     # Force Firefox to use Wayland mode
     MOZ_ENABLE_WAYLAND = "1";
-
     # Required for Electron apps (Discord, VS Code) to run natively on Wayland
     NIXOS_OZONE_WL = "1";
-
-    # Forces Firefox to use the NVIDIA backend for its internal compositor
-    NVD_BACKEND = "direct";
-    
-    # Ensure Firefox doesn't use the old GLX path
-    MOZ_DISABLE_RDD_SANDBOX = "1";
     EGL_PLATFORM = "wayland";
-    
-    # NVIDIA specific Wayland fixes
-    __GL_GSYNC_ALLOWED = "0";
-    __GL_VRR_ALLOWED = "0";
   };
-  boot.kernelParams = [ "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1" ];
 
-
-  programs.thunar = {
+  # ---------------------------------------------------------
+  # Power Management for Laptop Battery Life
+  # ---------------------------------------------------------
+  # TLP is an excellent, set-and-forget power management tool for Linux laptops.
+  services.tlp = {
     enable = true;
-    plugins = with pkgs.xfce; [
-      thunar-archive-plugin
-      thunar-volman
-    ];
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+    };
   };
-  services.tumbler.enable = true; # Thumbnail support
+  # Disable power-profiles-daemon as it conflicts with TLP
+  services.power-profiles-daemon.enable = false;
 
   services.tailscale.enable = true;
 
-  # nct6775 & coretemp for fans & temperature sensors
-  # wl for wifi card
-  boot.kernelModules = [ "nct6775" "coretemp" "wl" ];
+  # Removed "wl" (broadcom driver) and kept temp sensors
+  boot.kernelModules = [ "nct6775" "coretemp" ];
 
-  # Utility lib that can mount volumes
+  # Utility lib that can mount volumes & trigger mounts
   services.udisks2.enable = true;
-  # Lib that trigger th volume mount when a new volume is detected
   services.gvfs.enable = true;
 
   # Add support for common USB/SD card filesystems
   boot.supportedFilesystems = [ "ntfs" "exfat" ];
 
+  # ---------------------------------------------------------
+  # Flatpak & Bitwarden (Required for your home.nix SSH config)
+  # ---------------------------------------------------------
+  services.flatpak = {
+    enable = true;
+    remotes = [{ name = "flathub"; location = "https://dl.flathub.org/repo/flathub.flatpakrepo"; }];
+    packages = [ "com.bitwarden.desktop" ];
+    update.auto.enable = true;
+
+    overrides = {
+      "com.bitwarden.desktop" = {
+        Environment = {
+          BITWARDEN_SSH_AUTH_SOCK = "/home/arthur/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock";
+        };
+      };
+    };
+  };
 }
