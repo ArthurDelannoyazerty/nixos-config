@@ -10,6 +10,7 @@
     git       # Version control is non-negotiable
     # gcc       # C compiler, needed by many tools and libraries
     # gnumake   # The standard build tool
+    gh
 
     # --- Nix Language Support ---
     # nixpkgs-fmt # Formatter for your Nix code, helps keep it clean
