@@ -112,6 +112,8 @@ rec {
     forgejo = {
       port = 8083;
       subdomain = "forgejo";
+      version = "16.0.3";
+      containerName = "forgejo";
     };
     freshrss = {
       port = 8084;
