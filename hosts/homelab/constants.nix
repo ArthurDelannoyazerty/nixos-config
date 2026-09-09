@@ -172,7 +172,7 @@ rec {
     jellyfin = { 
       port = 8096; 
       subdomain = "jellyfin"; 
-      version = "10.11.11";
+      version = "version-12.0ubu2604";
       containerName = "jellyfin";
     };
     jellyseerr = { 
