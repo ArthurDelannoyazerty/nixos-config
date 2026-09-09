@@ -118,7 +118,7 @@ rec {
     freshrss = {
       port = 8084;
       subdomain = "freshrss";
-      version = "1.29.1";
+      version = "1.30.0";
       containerName = "freshrss";
     };
     glances = {
@@ -148,7 +148,7 @@ rec {
     homepage = {
       port = 3000;
       subdomain = "homepage";
-      version = "v2.1.2";
+      version = "v2.2.0";
       containerName = "homepage";
     };
     immich = {
@@ -428,7 +428,7 @@ rec {
     whats-up-docker = {
       port = 3005;
       subdomain = "wud";
-      version = "8.3.0";
+      version = "8.4.0";
       containerName = "whats-up-docker";
     };
     yt-session-generator = {
