@@ -93,7 +93,7 @@ ID=nix-devcontainer
 ID_LIKE=nixos
 OSRELEASE
     cat > "$out/etc/nix/nix.conf" <<'NIXCONF'
-experimental-features = nix-command flakes
+experimental-features = nix-command flakes read-only-local-store
 sandbox = false
 build-users-group =
 max-jobs = 2
