@@ -1,272 +1,166 @@
-{ pkgs, dotfilesInput, ... }:
+{ pkgs, nixpkgsInput, stream ? false, ... }:
 
 let
-  myPackages = with pkgs; [
-    # --- Base Utils ---
-    bashInteractive
-    coreutils
-    git
-    cacert
-    curl
-    wget
-    iana-etc
-    zip
-    unzip
-    openssh
-    jq
-    pkg-config
-    nix-tree
-    nil
-    gnutar
-    gzip
-    procps 
-    gnugrep
-    gnused
-    findutils
-    gawk
-    which
-    util-linux
-    glibc
-    binutils
-    stdenv.cc.cc.lib
-    dotnet-sdk
-    openssl
-    gnupg 
-    bubblewrap
-    strace
-    file
-    patchelf
-    
-    # --- Terminal Tools ---
-    atuin
-    btop
-    tree
-    nvitop
-    starship
-    htop
-    killall
-    duf
-    bat
-    eza
-    fzf
-    tldr
-    
-    # --- Dev Tools ---
-    vim
-    python3
-    nodejs
-    gnumake
-    gcc
-    ripgrep
-    fd
-    nix
-    uv
-    docker
-    tailscale
+  inherit (pkgs) lib;
+  mkScript = name: source: pkgs.writeShellScriptBin name (builtins.readFile source);
 
-    # --- Geospatial & Data MVP dependencies ---
-    gdal
-    geos
-    proj
-    libspatialindex
-    sqlite
+  entrypoint = mkScript "devcontainer-entrypoint" ./scripts/entrypoint.sh;
+  seedNix = mkScript "devcontainer-seed-nix" ./scripts/seed-nix.sh;
+  syncDotfiles = mkScript "devcontainer-sync-dotfiles" ./scripts/sync-dotfiles.sh;
+  installExtensions = mkScript "devcontainer-install-extensions" ./scripts/install-extensions.sh;
+  doctor = mkScript "devcontainer-doctor" ./scripts/doctor.sh;
+  withGpuLibs = mkScript "devcontainer-with-gpu-libs" ./scripts/with-gpu-libs.sh;
+
+  # Daily-use tools. Larger toolchains can be installed into the persistent
+  # Nix profile or supplied by individual project flakes.
+  basePackages = with pkgs; [
+    bashInteractive coreutils findutils gnugrep gnused gawk
+    gnutar gzip bzip2 xz zip unzip which diffutils patch
+    procps psmisc util-linux iproute2 file less vim ncurses
+    gitMinimal git-lfs openssh curl cacert iana-etc rsync
+    nix nil uv python3 nodejs jq ripgrep fd patchelf
+    direnv nix-direnv bash-preexec
+    starship atuin tmux btop bat eza fzf tini
+    entrypoint seedNix syncDotfiles installExtensions doctor withGpuLibs
   ];
 
-  # This builds an environment that contains symlinks to all our packages.
-  nixProfile = pkgs.buildEnv {
-    name = "nix-profile";
-    paths = myPackages;
+  profile = pkgs.buildEnv {
+    name = "devcontainer-tools";
+    paths = basePackages;
+    pathsToLink = [ "/bin" "/share" ];
+    # Do not hide real collisions with ignoreCollisions = true.
   };
 
-  devSetup = pkgs.runCommand "dev-setup" { } ''
-    mkdir -p $out/etc
-    echo "root:x:0:0:root:/root:/bin/bash" > $out/etc/passwd
-    echo "arthur:x:999:999:Arthur:/home/arthur:/bin/bash" >> $out/etc/passwd
-    echo "root:x:0:" > $out/etc/group
-    echo "arthur:x:999:" >> $out/etc/group
-    echo "hosts: files dns" > $out/etc/nsswitch.conf
+  # Compatibility for foreign ELF binaries (VS Code Server, vendor CLIs).
+  # Not a general-purpose replacement for declaring project dependencies.
+  compatibilityLibraries = with pkgs; [
+    glibc stdenv.cc.cc.lib zlib openssl
+  ];
+  compatibilityPath = lib.makeLibraryPath compatibilityLibraries;
+  loader = pkgs.stdenv.cc.bintools.dynamicLinker;
+
+  registry = pkgs.writeText "devcontainer-registry.json" (builtins.toJSON {
+    version = 2;
+    flakes = [{
+      from = { type = "indirect"; id = "nixpkgs"; };
+      # Pin by revision WITHOUT embedding the entire nixpkgs source in the image.
+      to = {
+        type = "github";
+        owner = "NixOS";
+        repo = "nixpkgs";
+        rev = nixpkgsInput.rev;
+      };
+    }];
+  });
+
+  # Real directories at the root, with deliberately selected symlinks.
+  # Everything referenced by the image environment must be in this closure:
+  # the init container copies this one root and Nix discovers its dependencies.
+  root = pkgs.runCommand "devcontainer-root" { } ''
+    mkdir -p "$out"/{bin,etc/nix,etc/devcontainer,opt,lib,lib64,usr/bin,usr/lib,usr/lib64,usr/local/bin}
+    ln -s ${profile}/bin/* "$out/bin/"
+    if [ ! -e "$out/bin/sh" ]; then ln -s bash "$out/bin/sh"; fi
+    ln -s ${profile}/share "$out/share"
+    ln -s ${pkgs.coreutils}/bin/env "$out/usr/bin/env"
+    ln -s ${pkgs.bashInteractive}/bin/bash "$out/usr/bin/bash"
+    ln -s ${pkgs.bashInteractive}/bin/bash "$out/usr/bin/sh"
+    ln -s ${pkgs.glibc.bin}/bin/ldd "$out/bin/ldd"
+    # VS Code's prerequisite checker probes these exact paths when ldconfig
+    # is absent. Expose the real libraries; do not fake a NixOS ID or skip checks.
+    # Loading is still handled by nix-ld, not a broad global library symlink farm.
+    ln -s ${pkgs.glibc}/lib/libc.so.6 "$out/usr/lib/libc.so.6"
+    ln -s ${pkgs.stdenv.cc.cc.lib}/lib/libstdc++.so.6 "$out/usr/lib/libstdc++.so.6"
+    ln -s ${pkgs.nix-ld}/libexec/nix-ld "$out/lib64/ld-linux-x86-64.so.2"
+    ln -s ${pkgs.nix-ld}/libexec/nix-ld "$out/lib/ld-linux-x86-64.so.2"
+    ln -s ${pkgs.cacert}/etc/ssl "$out/etc/ssl"
+    ln -s ${pkgs.iana-etc}/etc/services "$out/etc/services"
+    ln -s ${pkgs.iana-etc}/etc/protocols "$out/etc/protocols"
+    ln -s ${registry} "$out/etc/nix/registry.json"
+
+    cat > "$out/etc/passwd" <<'PASSWD'
+root:x:0:0:root:/root:/bin/bash
+arthur:x:999:999:Arthur:/home/arthur:/bin/bash
+PASSWD
+    cat > "$out/etc/group" <<'GROUP'
+root:x:0:
+arthur:x:999:
+GROUP
+    printf 'passwd: files\ngroup: files\nhosts: files dns\n' > "$out/etc/nsswitch.conf"
+    printf '/bin/bash\n/bin/sh\n' > "$out/etc/shells"
+    cat > "$out/etc/os-release" <<'OSRELEASE'
+NAME="Nix development container"
+ID=nix-devcontainer
+ID_LIKE=nixos
+OSRELEASE
+    cat > "$out/etc/nix/nix.conf" <<'NIXCONF'
+experimental-features = nix-command flakes
+sandbox = false
+build-users-group =
+max-jobs = 2
+cores = 2
+auto-optimise-store = false
+# Disable the unpinned global registry; /etc/nix/registry.json remains active.
+flake-registry =
+NIXCONF
+    cat > "$out/etc/devcontainer/atuin.toml" <<'ATUIN'
+auto_sync = false
+update_check = false
+sync_address = ""
+style = "auto"
+inline_height = 16
+show_preview = true
+enter_accept = true
+ATUIN
+    printf 'source %s/share/nix-direnv/direnvrc\n' '${pkgs.nix-direnv}' > "$out/etc/devcontainer/direnvrc"
+    # Retain all runtime-library references in the copied / GC-rooted closure.
+    printf '%s\n' '${compatibilityPath}' '${loader}' > "$out/etc/devcontainer/compatibility-paths"
   '';
 
-  dotfilesLayer = pkgs.runCommand "dotfiles-layer" { } ''
-    mkdir -p $out/opt
-    cp -r ${dotfilesInput} $out/opt/dotfiles
-  '';
-
-  devContainerSetupScript = pkgs.writeScriptBin "setup_devcontainer.sh" ''
-    #!${pkgs.bash}/bin/bash
-    set -e
-    DOTFILES_DIR="/home/arthur/.dotfiles"
-    BACKUP_SOURCE="/opt/dotfiles"
-    MARKER_FILE="/home/arthur/.dotfiles_setup_complete"
-
-    # --- 1. Clone/Restore Dotfiles (Idempotent: Only if dir doesn't exist) ---
-    if [ ! -d "$DOTFILES_DIR" ]; then
-      echo "--- First run detected: Installing Dotfiles ---"
-      if git clone https://github.com/ArthurDelannoyazerty/dotfiles.git "$DOTFILES_DIR"; then
-        echo "Git clone successful."
-      else
-        echo "Git clone failed, using baked-in copy..."
-        cp -rL "$BACKUP_SOURCE" "$DOTFILES_DIR"
-        chmod -R +w "$DOTFILES_DIR"
-      fi
-    fi
-    
-    # --- 2. Run Setup Script (Idempotent: Only if marker file doesn't exist) ---
-    if [ ! -f "$MARKER_FILE" ]; then
-      if [ -f "$DOTFILES_DIR/setup.sh" ]; then
-        echo "Running setup.sh..."
-        # Run setup.sh. If it fails, script exits (set -e) and marker is NOT created.
-        sh "$DOTFILES_DIR/setup.sh"
-        echo "Setup complete."
-      fi
-      # Create marker so we don't run this next time
-      touch "$MARKER_FILE"
-    else
-      echo "Dotfiles setup already performed. Skipping."
-    fi
-
-    # ------------------------------ VSCODE SETUP ------------------------------ 
-
-    EXTENSION_FILE="$DOTFILES_DIR/codium/extensions.txt"
-    echo "--- VS Code Extension Installer ---"
-    
-    if ! command -v code &> /dev/null; then
-        echo "Warning: 'code' command not found. Skipping extension install."
-        # Don't exit 1 here, or the container might crashloop if just checking logs
-    else
-        if [ ! -f "$EXTENSION_FILE" ]; then
-            echo "Error: Extension list not found at $EXTENSION_FILE"
-        else
-            echo "Reading extensions from $EXTENSION_FILE..."
-            while IFS= read -r ext || [ -n "$ext" ]; do
-                [[ $ext =~ ^# ]] && continue
-                [[ -z $ext ]] && continue
-                
-                echo "Installing $ext..."
-                # Try/Catch the install so one failure doesn't stop the loop
-                code --install-extension "$ext" --force || echo "Failed to install $ext"
-            done < "$EXTENSION_FILE"
-            echo "--- Extension installation loop complete ---"
-        fi
-    fi
-
-    # --- 3. Execute Command (if arguments provided) ---
-    # This allows the script to still be used as a Docker Entrypoint
-    if [ "$#" -gt 0 ]; then
-      exec "$@"
-    fi
-  '';
-
-  atuinConfig = pkgs.writeTextDir "etc/atuin/config.toml" ''
-    ## Server config ##
-    auto_sync = false
-    update_check = false
-    sync_address = ""
-
-    ## UI Settings ##
-    style = "auto"
-    inline_height = 16
-    show_preview = true
-    
-    ## Behavior ##
-    enter_accept = true
-  '';
-
+  imageArguments = {
+    name = "nix-devcontainer";
+    tag = "latest";
+    contents = [ root ];
+    includeNixDB = true;
+    # Layer count is not a size guarantee; the default already handles sharing.
+    maxLayers = 100;
+    fakeRootCommands = ''
+      mkdir -p ./home/arthur ./tmp ./run
+      chown 999:999 ./home/arthur
+      chmod 0750 ./home/arthur
+      chmod 1777 ./tmp
+    '';
+    config = {
+      User = "999:999";
+      WorkingDir = "/home/arthur";
+      Entrypoint = [ "/bin/tini" "-g" "--" "/bin/devcontainer-entrypoint" ];
+      Cmd = [ "/bin/sleep" "infinity" ];
+      Env = [
+        "USER=arthur"
+        "LOGNAME=arthur"
+        "HOME=/home/arthur"
+        "SHELL=/bin/bash"
+        "PATH=/home/arthur/.local/bin:/home/arthur/.nix-profile/bin:/home/arthur/.local/state/nix/profile/bin:/home/arthur/.local/state/nix/profiles/profile/bin:/bin:/usr/bin:/usr/local/bin"
+        "XDG_CONFIG_HOME=/home/arthur/.config"
+        "XDG_CACHE_HOME=/home/arthur/.cache"
+        "XDG_STATE_HOME=/home/arthur/.local/state"
+        "XDG_DATA_HOME=/home/arthur/.local/share"
+        "XDG_RUNTIME_DIR=/tmp/runtime-999"
+        "HISTFILE=/home/arthur/.bash_history"
+        "LANG=C.UTF-8"
+        "LC_ALL=C.UTF-8"
+        "SSL_CERT_FILE=/etc/ssl/certs/ca-bundle.crt"
+        "GIT_SSL_CAINFO=/etc/ssl/certs/ca-bundle.crt"
+        "NIX_REMOTE=local"
+        "NIX_PATH=nixpkgs=flake:nixpkgs"
+        "NPM_CONFIG_PREFIX=/home/arthur/.local"
+        "UV_LINK_MODE=copy"
+        "TERMINFO_DIRS=${pkgs.ncurses}/share/terminfo"
+        "NIX_LD=${loader}"
+        "NIX_LD_LIBRARY_PATH=${compatibilityPath}:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/lib/x86_64-linux-gnu:/usr/lib64"
+        "DEVCONTAINER_ROOT=${root}"
+      ];
+    };
+  };
 in
-pkgs.dockerTools.buildLayeredImage {
-  name = "nix-devcontainer";
-  tag = "latest";
-
-  contents = with pkgs; [
-    devSetup
-    dotfilesLayer
-    devContainerSetupScript
-    atuinConfig
-    nixProfile
-  ] ++ myPackages;
-
-  fakeRootCommands = ''
-    mkdir -p ./home/arthur
-    mkdir -p ./tmp
-    mkdir -p ./usr/bin
-
-    # --- 1. CLEANUP ---
-    rm -rf ./lib ./lib64 ./usr/lib64
-    rm -f ./bin/ldconfig ./sbin/ldconfig ./usr/sbin/ldconfig
-
-    # --- 2. FHS DIRECTORY STRUCTURE ---
-    mkdir -p ./usr/lib ./usr/bin ./sbin ./usr/sbin ./bin ./etc
-    
-    ln -sf usr/lib lib
-    ln -sf usr/lib lib64
-    ln -sf lib usr/lib64
-
-    # --- 3. CONFIGURE LDCONFIG ---
-    echo "/usr/lib" > ./etc/ld.so.conf
-    
-
-    cat <<EOF > ./bin/ldconfig
-#!/bin/sh
-exec ${pkgs.glibc.bin}/bin/ldconfig -C /etc/ld.so.cache "\$@"
-EOF
-    chmod +x ./bin/ldconfig
-    
-    ln -sf ../bin/ldconfig ./sbin/ldconfig
-    ln -sf ../bin/ldconfig ./usr/sbin/ldconfig
-
-    # --- 4. POPULATE LIBRARIES ---
-    ln -sf ${pkgs.coreutils}/bin/env ./usr/bin/env
-    ln -sf ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 ./usr/lib/ld-linux-x86-64.so.2
-
-    ln -sf ${pkgs.bashInteractive}/bin/bash ./bin/bash
-    ln -sf ${pkgs.bashInteractive}/bin/bash ./bin/sh
-    ln -sf ${pkgs.bashInteractive}/bin/bash ./usr/bin/bash
-
-    find ${pkgs.stdenv.cc.cc.lib} -name "libstdc++.so.6*" -exec ln -sf {} ./usr/lib/ \;
-    find ${pkgs.glibc}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
-    find ${pkgs.stdenv.cc.cc.lib} -name "libgcc_s.so.1" -exec ln -sf {} ./usr/lib/ \;
-    find ${pkgs.openssl.out}/lib -name "*.so*" -exec ln -sf {} ./usr/lib/ \;
-    
-    ${pkgs.glibc.bin}/bin/ldconfig -r . -f /etc/ld.so.conf -C /etc/ld.so.cache || echo "Cache gen warning"
-
-
-    # --- 5. CONFIGURE NIX ---
-    # This disables Nix's own build sandbox only.
-    # It does not affect Codex's Linux sandbox, which uses bubblewrap.
-    mkdir -p ./etc/nix
-    echo "sandbox = false" > ./etc/nix/nix.conf
-    echo "experimental-features = nix-command flakes" >> ./etc/nix/nix.conf
-
-    # Permissions setup
-    chown -R 999:999 ./home/arthur
-    chown -R 999:999 ./tmp
-    chmod 755 ./home/arthur
-    chmod 1777 ./tmp
-  '';
-
-  config = {
-    User = "arthur";
-    WorkingDir = "/home/arthur";
-    Entrypoint = [ "/bin/setup_devcontainer.sh" ];
-    Cmd = [ "/bin/bash" ];
-    
-    Env = [
-      "USER=arthur"
-      "HOME=/home/arthur"
-      "HISTFILE=/home/arthur/.bash_history"
-      "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-      "GIT_SSL_CAINFO=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-      "PATH=/home/arthur/.local/bin:${nixProfile}/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin"
-      "NPM_CONFIG_PREFIX=/home/arthur/.local"
-      "LANG=C.UTF-8"
-      "LC_ALL=C.UTF-8"
-      "ATUIN_CONFIG_DIR=/etc/atuin" 
-      # Ensures Python modules built by `uv` discover libraries at runtime
-      "LD_LIBRARY_PATH=${nixProfile}/lib:/usr/lib"
-      # Expose paths so compilers find C-extensions during building
-      "PKG_CONFIG_PATH=${nixProfile}/lib/pkgconfig:${nixProfile}/share/pkgconfig"
-      "C_INCLUDE_PATH=${nixProfile}/include"
-      "CPLUS_INCLUDE_PATH=${nixProfile}/include"
-    ];
-  };
-}
+assert pkgs.stdenv.hostPlatform.system == "x86_64-linux";
+(if stream then pkgs.dockerTools.streamLayeredImage else pkgs.dockerTools.buildLayeredImage) imageArguments
