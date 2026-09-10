@@ -1,16 +1,9 @@
 # Devcontainer
 
-Workspace Nix non-root (`arthur`, UID/GID 999) pour VS Code + Kubernetes.
+Non-root Nix workspace (`arthur`, UID/GID 999) for VS Code + Kubernetes.
 
-Le `$HOME` et `/nix` sont persistants. Les outils ponctuels peuvent donc être installés sans reconstruire l'image.
+`$HOME` and `/nix` are persistent, so tools can be installed without rebuilding the image.
 
-```bash
-# Temporaire
-nix shell nixpkgs#just
-
-# Persistant
-nix profile install nixpkgs#just
-```
 
 ## Files
 
@@ -30,28 +23,31 @@ hosts/devcontainer/
     └── deployment-gpu.yaml
 ```
 
-`default.nix` construit l'image. `seed-nix.sh` initialise le `/nix` persistant. `entrypoint.sh` prépare le workspace et synchronise les dotfiles. `doctor.sh` vérifie rapidement l'environnement.
+`default.nix` builds the image.
+`seed-nix.sh` initializes the persistent `/nix` store.
+`entrypoint.sh` prepares the workspace and updates the dotfiles.
+`doctor.sh` performs basic environment checks.
 
-Les dotfiles sont automatiquement clonés/mis à jour depuis:`https://github.com/ArthurDelannoyazerty/dotfiles` Ils vivent dans `~/dotfiles`et ne sont pas inclus dans l'image.
+Dotfiles are automatically cloned/updated from `https://github.com/ArthurDelannoyazerty/dotfiles`. They live in `~/dotfiles` and are not included in this repository.
 
-Après la première connexion VS Code:
+After the first VS Code connection:
 
 ```bash
 devcontainer-install-extensions
 ```
 
-La commande utilise `~/dotfiles/code/extensions.txt` et peut être relancée sans problème.
+This installs extensions from `~/dotfiles/code/extensions.txt` and can safely be rerun.
 
-Si `setup.sh` du repo dotfiles change ses liens:
-
-```bash
-bash ~/dotfiles/setup.sh
-```
-
-Update dotfiles :
+Update dotfiles manually:
 
 ```bash
 devcontainer-sync-dotfiles
+```
+
+If `setup.sh` changes its symlink configuration:
+
+```bash
+bash ~/dotfiles/setup.sh
 ```
 
 Diagnostic:
@@ -60,32 +56,40 @@ Diagnostic:
 devcontainer-doctor
 ```
 
-# Available nix commands
-
-Because the container has a persistent writable `/nix`, the useful Nix workflow is quite broad.
+## Useful Nix commands
 
 ```bash
-# For temporary use
+# Temporary environment
 nix shell nixpkgs#htop
 
-# For executing command without entering the shell
+# Run a command without entering a shell
 nix shell nixpkgs#jq -c jq --version
 
-# To install something permanently
+# Install into the persistent user profile
 nix profile install nixpkgs#htop
 
-# To see what is installed
+# List installed profile packages
 nix profile list
 
-# To remove something
+# Remove a profile package
 nix profile remove htop
 ```
 
+For projects providing a Nix flake:
 
+```bash
+nix develop
+```
 
-# Deployement
+Do not use `nixos-rebuild` or `systemctl`: this is a Nix-based container, not a booted NixOS system.
 
-> Anyone entering the pod as `arthur` has access to everything readable/writable by `arthur`. The Kubernetes security context protects the cluster, not the contents of Arthur's home directory.
+## Deployment
 
-Deploy using the `.yaml` files in `./hosts/devcontainer/k8s` 
+> Anyone entering the pod as `arthur` has access to everything readable/writable by `arthur`. The Kubernetes security context protects the cluster/node, not Arthur's home directory.
 
+Deploy **one** of the manifests in `hosts/devcontainer/k8s/`:
+
+* `deployment-minimal.yaml`: generic workspace.
+* `deployment-gpu.yaml`: NVIDIA GPU workspace.
+
+Do not run both simultaneously: they use the same persistent home and Nix store.
