@@ -93,3 +93,10 @@ Deploy **one** of the manifests in `hosts/devcontainer/k8s/`:
 * `deployment-gpu.yaml`: NVIDIA GPU workspace.
 
 Do not run both simultaneously: they use the same persistent home and Nix store.
+
+
+## VSCode connection
+
+- Use the kubernetes and the devcontainer extensions
+- Be sure to have a kubeconfig file from the k8s cluster (windows location: `C:\Users\USER\.kube\config` or `C:\profils\USER\.kube\rancher-local.yaml`) (Check `echo %KUBECONFIG%` to see what VSCode use)
+- 
