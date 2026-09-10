@@ -367,7 +367,7 @@ rec {
     suwayomi = {
       port = 4567;
       subdomain = "suwayomi";
-      version = "v2.2.2100";
+      version = "v2.3.2360";
       containerName = "suwayomi";
     };
     stirling-pdf = {
