@@ -1,55 +1,39 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: devcontainer-arthur
+  namespace: dev-backend
 
 spec:
-  serviceName: devcontainer-arthur
   replicas: 1
-  revisionHistoryLimit: 3
 
-  persistentVolumeClaimRetentionPolicy:
-    whenDeleted: Retain
-    whenScaled: Retain
+  strategy:
+    type: Recreate
 
   selector:
     matchLabels:
-      app.kubernetes.io/name: devcontainer-arthur
+      app: devcontainer-arthur
 
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: devcontainer-arthur
+        app: devcontainer-arthur
 
     spec:
       automountServiceAccountToken: false
-
-      runtimeClassName: nvidia
 
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
         runAsGroup: 999
         fsGroup: 999
-        fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
-
-      tolerations:
-        - effect: NoSchedule
-          key: project
-          operator: Equal
-          value: ia
-
-        - effect: NoSchedule
-          key: gpu
-          operator: Equal
-          value: h200
 
       initContainers:
         - name: seed-nix
           image: ghcr.io/arthurdelannoyazerty/nix-devcontainer:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
           command:
             - /bin/devcontainer-seed-nix
@@ -64,24 +48,15 @@ spec:
                 - ALL
 
           volumeMounts:
-            - name: nix
+            - name: home
               mountPath: /persist
-
             - name: tmp
               mountPath: /tmp
 
       containers:
         - name: workspace
           image: ghcr.io/arthurdelannoyazerty/nix-devcontainer:latest
-          imagePullPolicy: IfNotPresent
-
-          env:
-            - name: NVIDIA_DRIVER_CAPABILITIES
-              value: compute,utility
-
-          resources:
-            limits:
-              nvidia.com/gpu: 1
+          imagePullPolicy: Always
 
           securityContext:
             allowPrivilegeEscalation: false
@@ -89,17 +64,8 @@ spec:
             capabilities:
               drop:
                 - ALL
-
-          volumeMounts:
-            - name: home
-              mountPath: /home/arthur
-
-            - name: nix
-              mountPath: /nix
-              subPath: nix
-
-            - name: tmp
-              mountPath: /tmp
+          
+          resources: 
 
           readinessProbe:
             exec:
@@ -108,7 +74,17 @@ spec:
                 - -f
                 - /tmp/devcontainer-ready
             periodSeconds: 5
-            timeoutSeconds: 2
+
+          volumeMounts:
+            - name: home
+              mountPath: /home/arthur
+
+            - name: home
+              mountPath: /nix
+              subPath: nix
+
+            - name: tmp
+              mountPath: /tmp
 
       volumes:
         - name: home
@@ -118,17 +94,3 @@ spec:
 
         - name: tmp
           emptyDir: {}
-
-  volumeClaimTemplates:
-    - metadata:
-        name: nix
-      spec:
-        accessModes:
-          - ReadWriteOnce
-
-        # Uncomment if your cluster has no default StorageClass:
-        # storageClassName: your-storage-class
-
-        resources:
-          requests:
-            storage: 30Gi

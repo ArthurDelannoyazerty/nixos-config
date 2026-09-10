@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devcontainer-arthur
+  namespace: dev-backend
+
+spec:
+  replicas: 1
+
+  strategy:
+    type: Recreate
+
+  selector:
+    matchLabels:
+      app: devcontainer-arthur
+
+  template:
+    metadata:
+      labels:
+        app: devcontainer-arthur
+
+    spec:
+      automountServiceAccountToken: false
+      runtimeClassName: nvidia
+
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+
+      tolerations:
+        - key: project
+          operator: Equal
+          value: ia
+          effect: NoSchedule
+
+        - key: gpu
+          operator: Equal
+          value: h200
+          effect: NoSchedule
+
+      initContainers:
+        - name: seed-nix
+          image: ghcr.io/arthurdelannoyazerty/nix-devcontainer:latest
+          imagePullPolicy: Always
+
+          command:
+            - /bin/devcontainer-seed-nix
+          args:
+            - /persist
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          volumeMounts:
+            - name: home
+              mountPath: /persist
+            - name: tmp
+              mountPath: /tmp
+
+      containers:
+        - name: workspace
+          image: ghcr.io/arthurdelannoyazerty/nix-devcontainer:latest
+          imagePullPolicy: Always
+
+          # env:
+          #   - name: NVIDIA_DRIVER_CAPABILITIES
+          #     value: compute,utility
+
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          readinessProbe:
+            exec:
+              command:
+                - /bin/test
+                - -f
+                - /tmp/devcontainer-ready
+            periodSeconds: 5
+
+          volumeMounts:
+            - name: home
+              mountPath: /home/arthur
+
+            - name: home
+              mountPath: /nix
+              subPath: nix
+
+            - name: tmp
+              mountPath: /tmp
+
+      volumes:
+        - name: home
+          hostPath:
+            path: /work/scratch/arthur
+            type: Directory
+
+        - name: tmp
+          emptyDir: {}
