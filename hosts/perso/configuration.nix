@@ -131,6 +131,20 @@
   boot.kernelModules = [ "nct6775" "coretemp" "wl" ];
 
 
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    open = false; 
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
+  };
+
+  services.xserver.deviceSection = ''
+    Option "Coolbits" "4"
+  '';
+
+
   # Wifi
   # Tell NixOS to permit unfree packages and specific insecure dependencies
   nixpkgs.config = {

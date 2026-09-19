@@ -13,8 +13,9 @@
     ../../modules/terminal
     ../../modules/dev
     ../../modules/hyprland
+    ../../modules/gaming
 
-    # users (Applies your shared home.nix!)
+    # users 
     ../../users/arthur-perso/default.nix
   ];
 
