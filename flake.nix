@@ -64,9 +64,15 @@
     in {
       # Devcontainer
       packages.${system} = {
-        devcontainer = import ./hosts/devcontainer/default.nix { 
+        devcontainer = import ./hosts/devcontainer/default.nix {
           inherit pkgs;
-          dotfilesInput = inputs.dotfiles; 
+          nixpkgsInput = inputs.nixpkgs;
+        };
+
+        devcontainer-stream = import ./hosts/devcontainer/default.nix {
+          inherit pkgs;
+          nixpkgsInput = inputs.nixpkgs;
+          stream = true;
         };
       };
 

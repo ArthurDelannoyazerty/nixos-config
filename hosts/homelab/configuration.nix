@@ -224,5 +224,8 @@
     size = 4096; # 4GB
   } ];
 
+  # WAL
+  networking.interfaces.eno1.wakeOnLan.enable = true;
+
   
 }

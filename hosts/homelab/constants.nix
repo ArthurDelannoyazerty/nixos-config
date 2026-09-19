@@ -112,11 +112,13 @@ rec {
     forgejo = {
       port = 8083;
       subdomain = "forgejo";
+      version = "16.0.3";
+      containerName = "forgejo";
     };
     freshrss = {
       port = 8084;
       subdomain = "freshrss";
-      version = "1.29.1";
+      version = "1.30.0";
       containerName = "freshrss";
     };
     glances = {
@@ -146,7 +148,7 @@ rec {
     homepage = {
       port = 3000;
       subdomain = "homepage";
-      version = "v2.1.2";
+      version = "v2.2.0";
       containerName = "homepage";
     };
     immich = {
@@ -172,7 +174,7 @@ rec {
     jellyfin = { 
       port = 8096; 
       subdomain = "jellyfin"; 
-      version = "10.11.11";
+      version = "version-12.0ubu2604";
       containerName = "jellyfin";
     };
     jellyseerr = { 
@@ -365,7 +367,7 @@ rec {
     suwayomi = {
       port = 4567;
       subdomain = "suwayomi";
-      version = "v2.2.2100";
+      version = "v2.3.2360";
       containerName = "suwayomi";
     };
     stirling-pdf = {
@@ -403,7 +405,7 @@ rec {
     vikunja = {
       port = 3456;
       subdomain = "vikunja";
-      version = "2.5.0";
+      version = "2.6.0";
       containerName = "vikunja";
     };
     wanderer = {
@@ -426,7 +428,7 @@ rec {
     whats-up-docker = {
       port = 3005;
       subdomain = "wud";
-      version = "8.3.0";
+      version = "8.4.0";
       containerName = "whats-up-docker";
     };
     yt-session-generator = {
