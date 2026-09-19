@@ -141,6 +141,8 @@ in
     chromaprint
     nodejs
 
+
+    motrix
   ];
 
   programs.mpv = {
