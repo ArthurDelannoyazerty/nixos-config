@@ -143,6 +143,9 @@ in
 
 
     motrix
+
+    # Celeste mod manager
+    (olympus.override { celesteWrapper = "steam-run"; })
   ];
 
   programs.mpv = {
