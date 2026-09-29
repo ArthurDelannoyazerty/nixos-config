@@ -14,13 +14,18 @@ if [[ ! -d "$DIR/.git" ]]; then
         exit 0
     fi
 
-    if git clone "$REPO" "$DIR"; then
-        # setup.sh uses Bash features, so execute it explicitly with bash.
-        bash "$DIR/setup.sh" || warn "setup.sh failed"
-    else
-        warn "clone failed; continuing without dotfiles"
-    fi
+    git clone "$REPO" "$DIR" ||
+        {
+            warn "clone failed; continuing without dotfiles"
+            exit 0
+        }
 else
     git -C "$DIR" pull --ff-only ||
         warn "update failed; continuing with existing dotfiles"
+fi
+
+# setup.sh is idempotent, so run it after both clone and update.
+if [[ -f "$DIR/setup.sh" ]]; then
+    bash "$DIR/setup.sh" ||
+        warn "setup.sh failed"
 fi
