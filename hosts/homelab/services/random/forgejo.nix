@@ -1,10 +1,15 @@
 { config, pkgs, myConstants, ... }:
 
+let
+  envFile = "${myConstants.paths.servicesSSD}/forgejo/secrets.env";
+in
 {
   virtualisation.oci-containers.containers."${myConstants.services.forgejo.containerName}" = {
     image = "codeberg.org/forgejo/forgejo:${myConstants.services.forgejo.version}";
     
     ports = [ (myConstants.bind myConstants.services.forgejo.port) ];
+
+    environmentFiles = [ envFile ];
 
     environment = {
       USER_UID = "1000";
