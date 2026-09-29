@@ -59,6 +59,18 @@
     iw
     iwd
     jq
+
+    btop
+    tree
+    nvitop
+    starship
+    htop
+    killall
+    duf
+    bat 
+    eza  
+    fzf 
+    tldr
   ];
 
   programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];

@@ -10,7 +10,6 @@
     # modules
     ../../modules/nixos/base.nix
     ../../modules/nixos/sound.nix
-    ../../modules/terminal
     ../../modules/dev
     ../../modules/hyprland
     ../../modules/gaming

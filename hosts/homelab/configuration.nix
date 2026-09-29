@@ -11,7 +11,6 @@
     ../../modules/nixos/base.nix
     ../../modules/nixos/server.nix
 
-    ../../modules/terminal
     ../../modules/dev
 
     /* ---------------------------------- MEDIA --------------------------------- */
