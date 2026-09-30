@@ -227,7 +227,7 @@ let
             server: my-docker
             container: ${myConstants.services.forgejo.containerName}
         - LiteLLM:
-            icon: litellm.png
+            icon: sh-litellm.svg
             href: https://${myConstants.services.litellm.subdomain}.${myConstants.publicDomain}
             description: LLM Gateway
             server: my-docker
