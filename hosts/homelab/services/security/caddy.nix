@@ -103,7 +103,7 @@ in
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.marimo.port}
         '';
-      };\
+      };
 
       # --- LITELLM ---
       "http://${myConstants.services.litellm.subdomain}.${domain}" = {

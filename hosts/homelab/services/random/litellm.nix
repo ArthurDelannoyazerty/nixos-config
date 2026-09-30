@@ -7,6 +7,7 @@ let
 
     general_settings:
       master_key: os.environ/LITELLM_MASTER_KEY
+      disable_env_credential_login: true
   '';
 in
 {
@@ -51,6 +52,8 @@ in
       GENERIC_TOKEN_ENDPOINT = "https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/application/o/token/";
       GENERIC_USERINFO_ENDPOINT = "https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/application/o/userinfo/";
       GENERIC_SCOPE = "openid profile email";
+
+      AUTO_REDIRECT_UI_LOGIN_TO_SSO="true";
 
       # Use OIDC's stable account identifier.
       GENERIC_USER_ID_ATTRIBUTE = "sub";

@@ -223,8 +223,15 @@ let
         - Forgejo:
             icon: forgejo.png
             href: https://${myConstants.services.forgejo.subdomain}.${myConstants.publicDomain}
-            siteMonitor: ${internalHost}:${toString myConstants.services.forgejo.port}
             description: Forge Git
+            server: my-docker
+            container: ${myConstants.services.forgejo.containerName}
+        - LiteLLM:
+            icon: litellm.png
+            href: https://${myConstants.services.litellm.subdomain}.${myConstants.publicDomain}
+            description: LLM Gateway
+            server: my-docker
+            container: ${myConstants.services.litellm.containerName}
         - n8n:
             icon: n8n.png
             href: https://${myConstants.services.n8n.subdomain}.${myConstants.publicDomain}

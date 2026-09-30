@@ -56,7 +56,7 @@
     ./services/random/forgejo.nix 
     ./services/random/freshrss.nix
     ./services/random/homepage.nix
-    ./services/monitoring/litellm.nix
+    ./services/random/litellm.nix
     ./services/random/local-finance.nix
     ./services/random/marimo.nix
     ./services/random/n8n.nix 
