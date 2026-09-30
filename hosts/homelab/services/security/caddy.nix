@@ -103,6 +103,22 @@ in
           ${authentikMiddleware}
           reverse_proxy 127.0.0.1:${toString myConstants.services.marimo.port}
         '';
+      };\
+
+      # --- LITELLM ---
+      "http://${myConstants.services.litellm.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+          ${privateOnly}
+
+          # Native LiteLLM OIDC -> Authentik.
+          reverse_proxy 127.0.0.1:${toString myConstants.services.litellm.port} {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto https
+          }
+        '';
       };
 
       # --- OBSIDIAN TO DOCMOST ---

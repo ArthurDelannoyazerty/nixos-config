@@ -191,6 +191,16 @@ rec {
       port = 8686; 
       subdomain = "lidarr"; 
     };
+    litellm = {
+      port = 4000;
+      subdomain = "litellm";
+      version = "v1.103.1";
+      containerName = "litellm";
+    };
+    litellm-db = {
+      version = "16";
+      containerName = "litellm-db";
+    };
     lldap = {
       port = 3890;
       html-port = 17171;

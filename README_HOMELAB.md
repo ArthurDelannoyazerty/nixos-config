@@ -787,6 +787,31 @@ sudo chmod 600 /var/lib/services/navidrome-importer/env
 ```
 
 
+
+# LiteLLM
+
+`/var/lib/services/litellm/postgres.env`
+
+```bash
+POSTGRES_USER=litellm
+POSTGRES_PASSWORD=<long-random-url-safe-password>
+POSTGRES_DB=litellm
+```
+
+`/var/lib/services/litellm/litellm.env`
+
+```bash
+DATABASE_URL=postgresql://litellm:<same-password>@litellm-db:5432/litellm
+
+LITELLM_MASTER_KEY=sk-<random-secret>
+LITELLM_SALT_KEY=sk-<random-secret>
+
+GENERIC_CLIENT_ID=<authentik-client-id>
+GENERIC_CLIENT_SECRET=<authentik-client-secret>
+```
+
+
+
 # To add other services
 
 1. Add an entry in `modules/constants.nix`:
