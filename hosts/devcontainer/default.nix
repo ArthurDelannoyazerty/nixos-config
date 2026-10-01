@@ -4,7 +4,7 @@ let
   inherit (pkgs) lib;
 
   unstablePkgs = import nixpkgsUnstableInput {
-      inherit system;
+      inherit pkgs.stdenv.hostPlatform.system;
     };
 
   mkScript = name: source: pkgs.writeShellScriptBin name (builtins.readFile source);
