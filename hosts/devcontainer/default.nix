@@ -19,17 +19,77 @@ let
   # Daily-use tools. Larger toolchains can be installed into the persistent
   # Nix profile or supplied by individual project flakes.
   basePackages = with pkgs; [
-    bashInteractive coreutils findutils gnugrep gnused gawk
-    gnutar gzip bzip2 xz zip unzip which diffutils patch
-    procps psmisc util-linux iproute2 file less vim ncurses
-    gitMinimal git-lfs openssh curl cacert iana-etc rsync
-    nix nil uv python3 nodejs jq ripgrep fd patchelf
-    direnv nix-direnv bash-preexec
-    starship atuin tmux btop bat eza fzf tini
-    entrypoint seedNix syncDotfiles installExtensions doctor withGpuLibs
-    opencode 
+      # POSIX / shell essentials
+  bashInteractive
+  coreutils findutils gnugrep gnused gawk
+  gnutar gzip bzip2 xz zip unzip
+  which diffutils patch
+  procps psmisc util-linux
+  file less vim ncurses
 
-    unstablePkgs.marimo
+  # Networking / debugging
+  iproute2
+  iputils
+  dnsutils
+  netcat-openbsd
+  socat
+  lsof
+  openssh
+  curl
+  cacert
+  iana-etc
+  rsync
+
+  # Git
+  gitMinimal
+  git-lfs
+
+  # Development infrastructure
+  nix
+  nil
+  uv
+  python3
+  nodejs
+  patchelf
+
+  # Data / structured text
+  jq
+  yq-go
+  sqlite
+
+  # Navigation / inspection
+  ripgrep
+  fd
+  tree
+  bat
+  eza
+  fzf
+
+  # Shell environment
+  direnv
+  nix-direnv
+  bash-preexec
+  starship
+  atuin
+  tmux
+  btop
+
+  # Container init
+  tini
+
+  # Your tooling
+  entrypoint
+  seedNix
+  syncDotfiles
+  installExtensions
+  doctor
+  withGpuLibs
+  nvitop
+  rclone
+
+  opencode
+
+  unstablePkgs.marimo
   ];
 
   profile = pkgs.buildEnv {
