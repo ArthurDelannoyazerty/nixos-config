@@ -2,9 +2,9 @@
   description = "My NixOS Configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
-
-    nix-flatpak.url = "github:gmodena/nix-flatpak";
+    nixpkgs.url          = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nix-flatpak.url      = "github:gmodena/nix-flatpak";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
@@ -67,14 +67,17 @@
         devcontainer = import ./hosts/devcontainer/default.nix {
           inherit pkgs;
           nixpkgsInput = inputs.nixpkgs;
+          nixpkgsUnstableInput = inputs.nixpkgs-unstable;
         };
 
         devcontainer-stream = import ./hosts/devcontainer/default.nix {
           inherit pkgs;
           nixpkgsInput = inputs.nixpkgs;
+          nixpkgsUnstableInput = inputs.nixpkgs-unstable;
           stream = true;
         };
       };
+
 
       nixosConfigurations = {
         "nixos-perso" = nixpkgs.lib.nixosSystem {
@@ -116,6 +119,7 @@
           ];
         };
         
+
         "nixos-homelab" = nixpkgs.lib.nixosSystem {
          system = "x86_64-linux";
           specialArgs = { 

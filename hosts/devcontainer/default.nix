@@ -1,7 +1,12 @@
-{ pkgs, nixpkgsInput, stream ? false, ... }:
+{ pkgs, nixpkgsInput, nixpkgsUnstableInput, stream ? false, ... }:
 
 let
   inherit (pkgs) lib;
+
+  unstablePkgs = import nixpkgsUnstableInput {
+      inherit system;
+    };
+
   mkScript = name: source: pkgs.writeShellScriptBin name (builtins.readFile source);
 
   entrypoint = mkScript "devcontainer-entrypoint" ./scripts/entrypoint.sh;
@@ -23,6 +28,8 @@ let
     starship atuin tmux btop bat eza fzf tini
     entrypoint seedNix syncDotfiles installExtensions doctor withGpuLibs
     opencode 
+
+    unstablePkgs.marimo
   ];
 
   profile = pkgs.buildEnv {
