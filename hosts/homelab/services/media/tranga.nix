@@ -209,6 +209,8 @@ in
         POSTGRES_HOST = myConstants.services.tranga-db.containerName;
         POSTGRES_USER = "postgres";
         POSTGRES_PASSWORD = "postgres_secret_password"; # Must match DB above
+
+        WORKER_TIMEOUT = "3600";
       };
 
       volumes = [

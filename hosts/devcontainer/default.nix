@@ -22,6 +22,7 @@ let
     direnv nix-direnv bash-preexec
     starship atuin tmux btop bat eza fzf tini
     entrypoint seedNix syncDotfiles installExtensions doctor withGpuLibs
+    opencode 
   ];
 
   profile = pkgs.buildEnv {

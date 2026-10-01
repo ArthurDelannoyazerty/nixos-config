@@ -10,7 +10,6 @@
     # modules
     ../../modules/nixos/base.nix
     ../../modules/nixos/sound.nix
-    ../../modules/terminal
     ../../modules/dev
     ../../modules/hyprland
     ../../modules/gaming
@@ -129,6 +128,20 @@
   # nct6775 & coretemp for fans & temperature sensors
   # wl for wifi card
   boot.kernelModules = [ "nct6775" "coretemp" "wl" ];
+
+
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    open = false; 
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
+  };
+
+  services.xserver.deviceSection = ''
+    Option "Coolbits" "4"
+  '';
 
 
   # Wifi
