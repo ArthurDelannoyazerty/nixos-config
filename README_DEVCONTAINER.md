@@ -100,3 +100,19 @@ Do not run both simultaneously: they use the same persistent home and Nix store.
 - Use the kubernetes and the devcontainer extensions
 - Be sure to have a kubeconfig file from the k8s cluster (windows location: `C:\Users\USER\.kube\config` or `C:\profils\USER\.kube\rancher-local.yaml`) (Check `echo %KUBECONFIG%` to see what VSCode use)
 - 
+
+
+## Marimo
+
+```bash
+mkdir marimo-dir
+cd marimo-dir
+
+# Only once
+uv init
+uv add --dev "marimo[recommended]"
+
+uv run marimo edit
+```
+
+
