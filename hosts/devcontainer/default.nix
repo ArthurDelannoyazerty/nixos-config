@@ -73,6 +73,7 @@ let
   atuin
   tmux
   btop
+  tldr
 
   # Container init
   tini
