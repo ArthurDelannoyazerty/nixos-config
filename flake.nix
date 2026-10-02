@@ -11,7 +11,6 @@
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
-    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     grub2-themes.url = "github:vinceliuice/grub2-themes";
 
     dotfiles = {
@@ -38,7 +37,6 @@
       };
 
       commonOverlays = [
-        inputs.nix-vscode-extensions.overlays.default
         unstableOverlay
       ];
 
