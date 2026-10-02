@@ -266,7 +266,7 @@ in
 
   programs.vscode = {
     enable = true;
-    package = pkgs.vscode;
+    package = pkgs.unstable.vscode;
     mutableExtensionsDir = false;   # Nix controls the extensions
 
     profiles.default.extensions = (with marketplace;[

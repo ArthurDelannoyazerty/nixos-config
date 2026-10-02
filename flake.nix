@@ -29,6 +29,14 @@
   outputs = { self, nixpkgs, home-manager, nix-vscode-extensions, ... }@inputs:
     let
       system = "x86_64-linux";
+
+      overlay-unstable = final: prev: {
+        unstable = import inputs.nixpkgs-unstable {
+          inherit (prev) system;
+          config.allowUnfree = true;
+        };
+      };
+
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
@@ -91,7 +99,10 @@
           modules = [ 
             ./hosts/perso/configuration.nix
             {
-              nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
+              nixpkgs.overlays = [ 
+                nix-vscode-extensions.overlays.default 
+                overlay-unstable
+              ];
             }
             inputs.grub2-themes.nixosModules.default
             inputs.nix-flatpak.nixosModules.nix-flatpak
