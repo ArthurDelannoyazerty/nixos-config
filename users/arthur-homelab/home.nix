@@ -1,58 +1,55 @@
 {pkgs, config, inputs, dotfilesDir, isLocal, osConfig, ...}:
 
 let
+  /* --------------------------------- Helpers -------------------------------- */
   link = path:
-  if isLocal then
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/${path}"
-  else
-    "${inputs.dotfiles}/${path}";
+    if isLocal then
+      config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/${path}"
+    else
+      "${inputs.dotfiles}/${path}";
 
-  # Safely check if Hyprland is even declared before checking if it's enabled.
-  hyprlandAutoStart = if (osConfig.programs ? hyprland && osConfig.programs.hyprland.enable) then ''
-    # Start Hyprland automatically if in TTY1
-    if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-      exec Hyprland
-    fi
-  '' else "";
+  hyprlandAutoStart =
+    if (osConfig.programs ? hyprland && osConfig.programs.hyprland.enable) then ''
+      if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+        exec Hyprland
+      fi
+    ''
+    else
+      "";
+
 in
 
 {
-  # Let Home Manager manage itself
+  /* ------------------------------ Home Manager ------------------------------ */
   programs.home-manager.enable = true;
-  # This needs to be set for Home Manager to work correctly
-  home.stateVersion = "25.05";
 
-  # Set your home directory and username
-  home.username = "arthur";
-  home.homeDirectory = "/home/arthur";
+  home = {
+    username = "arthur";
+    homeDirectory = "/home/arthur";
+    stateVersion = "25.05";
 
-  # Packages to install in your user profile
-  home.packages = with pkgs;[
-    # Fonts
-    nerd-fonts.iosevka
-    nerd-fonts.iosevka-term
+    packages = with pkgs; [
+      # Fonts
+      nerd-fonts.iosevka
+      nerd-fonts.iosevka-term
 
-    # CLI Tools (Migrated from shell.nix)
-    btop
-    tree
-    nvitop
-    bash-preexec
+      bash-preexec
 
-    ffmpeg
-    chromaprint
+      # Media
+      ffmpeg
+      chromaprint
+    ];
+  };
 
-  ];
-
-  /* -------------------------------------------------------------------------- */
-  /*                                SHELL CONFIGS                               */
-  /* -------------------------------------------------------------------------- */
-
+  /* -------------------------------- Terminal -------------------------------- */
   programs.kitty = {
     enable = true;
+
     font = {
       name = "IosevkaTerm Nerd Font Mono";
       size = 12;
     };
+
     settings = {
       window_padding_width = 4;
       confirm_os_window_close = 0;
@@ -61,18 +58,16 @@ in
 
   programs.bash = {
     enable = true;
+
     initExtra = ''
-      # Insert the conditional Hyprland script here
       ${hyprlandAutoStart}
 
-      # Logic to choose the right path for bash sourcing
       if [ -f "${dotfilesDir}/bash/.bashrc" ]; then
         source "${dotfilesDir}/bash/.bashrc"
       elif [ -f "${inputs.dotfiles}/bash/.bashrc" ]; then
         source "${inputs.dotfiles}/bash/.bashrc"
       fi
 
-      # Append to history file immediately, don't overwrite it
       shopt -s histappend
     '';
   };
@@ -80,6 +75,7 @@ in
   programs.atuin = {
     enable = true;
     enableBashIntegration = true;
+
     settings = {
       auto_sync = false;
       update_check = false;
@@ -90,24 +86,13 @@ in
     };
   };
 
-  /* -------------------------------------------------------------------------- */
-  /*                                MISC CONFIGS                                */
-  /* -------------------------------------------------------------------------- */
 
-  # VSCode Link Overrides (If you ever SSH in and run a remote backend)
-  xdg.configFile."Code/User/settings.json" = {
-    source = link "codium/settings.json";
-    force  = true;
+  /* -------------------------------- Dotfiles -------------------------------- */
+  xdg.configFile = {
+    # Starship
+    "starship.toml" = {
+      source = link "starship/starship.toml";
+      force = true;
+    };
   };
-  xdg.configFile."Code/User/keybindings.json" = {
-    source = link "codium/keybindings.json";
-    force  = true;
-  };
-
-  # Starship
-  xdg.configFile."starship.toml" = {
-    source = link "starship/starship.toml";
-    force = true;
-  };
-
 }

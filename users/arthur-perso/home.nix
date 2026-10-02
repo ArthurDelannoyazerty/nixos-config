@@ -96,10 +96,6 @@ in
       crosspipe
       motrix
 
-      # CLI
-      btop
-      tree
-      nvitop
       bash-preexec
 
       # Hyprland
