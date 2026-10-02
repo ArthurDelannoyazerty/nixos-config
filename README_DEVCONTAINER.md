@@ -104,15 +104,26 @@ Do not run both simultaneously: they use the same persistent home and Nix store.
 
 ## Marimo
 
+Once to install : 
 ```bash
-mkdir marimo-dir
-cd marimo-dir
+mkdir -p ~/marimo/marimo-dir
+mkdir -p ~/marimo/notebooks
+cd ~/marimo/marimo-dir
 
-# Only once
-uv init
-uv add --dev "marimo[recommended]"
-
-uv run marimo edit
+uv init --bare
+uv python pin 3.13
+uv add --managed-python "marimo[recommended]"
 ```
 
+To update : 
+```bash
+cd ~/marimo/marimo-dir
+uv lock --upgrade-package marimo
+uv sync
+```
 
+To run : 
+```bash
+cd ~/marimo/marimo-dir
+uv run marimo edit --sandbox ~/marimo/notebooks/
+```

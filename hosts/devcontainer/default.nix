@@ -48,7 +48,7 @@ let
   nix
   nil
   uv
-  python3
+  python3 # Only for system package, the rest is handled via uv
   nodejs
   patchelf
 
@@ -90,7 +90,6 @@ let
 
   opencode
 
-  unstablePkgs.marimo
   ];
 
   profile = pkgs.buildEnv {
