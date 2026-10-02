@@ -1,25 +1,25 @@
 {pkgs, config, inputs, dotfilesDir, isLocal, osConfig, ...}:
 
 let
+  /* --------------------------------- Helpers -------------------------------- */
   link = path:
-  if isLocal then
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/${path}"
-  else
-    "${inputs.dotfiles}/${path}";
+    if isLocal then
+      config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/${path}"
+    else
+      "${inputs.dotfiles}/${path}";
 
-  # Define the auto-start script conditionally.
-  # Safely check if Hyprland is even declared before checking if it's enabled.
-  hyprlandAutoStart = if (osConfig.programs ? hyprland && osConfig.programs.hyprland.enable) then ''
-    # Start Hyprland automatically if in TTY1
-    if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-      exec start-hyprland
-    fi
-  '' else "";
+  # Auto-start if in TTY
+  hyprlandAutoStart =
+    if (osConfig.programs ? hyprland && osConfig.programs.hyprland.enable) then ''
+      if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+        exec start-hyprland
+      fi
+    ''
+    else
+      "";
 
 
-  # -------------------------------------------------------------------------- #
-  # Custom Derivation for aw-watcher-input 
-  # -------------------------------------------------------------------------- #
+  /* ----------------------------- Custom packages ---------------------------- */
   aw-watcher-input = pkgs.python3Packages.buildPythonApplication rec {
     pname = "aw-watcher-input";
     version = "master";
@@ -29,12 +29,11 @@ let
       owner = "ActivityWatch";
       repo = "aw-watcher-input";
       rev = "master";
-      # The correct hash based on your error log
       hash = "sha256-T7RIzrv+WzA5gEUlU/0dR1Fl0b8zH8q/q80WMBIosPM=";
     };
 
-    nativeBuildInputs = [ pkgs.python3Packages.poetry-core ];
-    
+    nativeBuildInputs = [pkgs.python3Packages.poetry-core];
+
     propagatedBuildInputs = with pkgs.python3Packages; [
       aw-client
       pynput
@@ -42,171 +41,109 @@ let
       pkgs.aw-watcher-afk
     ];
 
-    # Remove the problematic dependency from the poetry manifest
+    # aw-watcher-afk is provided explicitly above.
     postPatch = ''
       sed -i '/aw-watcher-afk/d' pyproject.toml
     '';
 
-    # Tell Nix to skip the strict runtime dependency check
     dontCheckRuntimeDeps = true;
     doCheck = false;
   };
 
-
 in
 
 {
-  # Let Home Manager manage itself
+  /* ------------------------------ Home Manager ------------------------------ */
   programs.home-manager.enable = true;
-  # This needs to be set for Home Manager to work correctly
-  home.stateVersion = "25.05";
 
-  # Set your home directory and username
-  home.username = "arthur";
-  home.homeDirectory = "/home/arthur";
+  home = {
+    username = "arthur";
+    homeDirectory = "/home/arthur";
+    stateVersion = "25.05";
 
-  # Packages to install in your user profile
-  home.packages = with pkgs;[
-    # Fonts
-    nerd-fonts.iosevka
-    nerd-fonts.iosevka-term
-    inter
-
-    # Only Office fonts
-    corefonts
-    vista-fonts
-
-    papirus-icon-theme
-
-    brightnessctl    # For laptop brightness keys
-
-    swayosd     # On-screen display for brightness/volume changes 
-
-    reversal-icon-theme
-    tela-circle-icon-theme
-
-    obsidian
-    tailscale
-    onlyoffice-desktopeditors
-    kdePackages.kdenlive
-
-    baobab
-
-    crosspipe
-
-    # CLI Tools (Migrated from shell.nix)
-    btop
-    tree
-    nvitop
-    bash-preexec
-
-    # hyprland
-    awww
-    matugen
-    adwaita-icon-theme
-
-    imagemagick
-
-    rofi-network-manager
-    rofi-pulse-select
-
-    socat
-
-    ludusavi
-    rclone
-
-    heroic
-    faugus-launcher
-  
-    # Patched Cartridges (Fixes Python 3.13 label TypeError)
-    (cartridges.overrideAttrs (oldAttrs: {
-      postInstall = (oldAttrs.postInstall or "") + ''
-        substituteInPlace $out/lib/python*/site-packages/cartridges/window.py \
-          --replace-fail "label=games_no," "label=str(games_no),"
-      '';
-    }))
-
-    lumafly
-
-
-    # yut-navidrome
-    ffmpeg
-    chromaprint
-    nodejs
-
-
-    motrix
-
-    # Celeste mod manager
-    (olympus.override { celesteWrapper = "steam-run"; })
-  ];
-
-  programs.mpv = {
-    enable = true;
-    
-    # Configuration principale de mpv
-    config = {
-      # Obligatoire pour utiliser uosc : désactiver l'interface par défaut
-      osc = false;
-      osd-bar = false;
-      border = false; # Optionnel mais recommandé pour uosc
+    sessionVariables = {
+      SSH_AUTH_SOCK = "/home/arthur/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock";
     };
 
-    # Installation des scripts via les paquets Nix
-    scripts = with pkgs.mpvScripts; [
-      uosc
-      thumbfast
+    packages = with pkgs; [
+      # Fonts
+      nerd-fonts.iosevka
+      nerd-fonts.iosevka-term
+      inter
+      corefonts
+      vista-fonts
+
+      # Themes / desktop
+      papirus-icon-theme
+      reversal-icon-theme
+      tela-circle-icon-theme
+      adwaita-icon-theme
+
+      # Desktop utilities
+      brightnessctl
+      swayosd
+      baobab
+      imagemagick
+      rofi-network-manager
+      rofi-pulse-select
+      socat
+
+      # Applications
+      obsidian
+      tailscale
+      onlyoffice-desktopeditors
+      kdePackages.kdenlive
+      crosspipe
+      motrix
+
+      # CLI
+      btop
+      tree
+      nvitop
+      bash-preexec
+
+      # Hyprland
+      awww
+      matugen
+
+      # Game / launcher tools
+      ludusavi
+      rclone
+      heroic
+      faugus-launcher
+
+      # Patched Cartridges
+      (cartridges.overrideAttrs (oldAttrs: {
+        postInstall = (oldAttrs.postInstall or "") + ''
+          substituteInPlace $out/lib/python*/site-packages/cartridges/window.py \
+            --replace-fail "label=games_no," "label=str(games_no),"
+        '';
+      }))
+
+      lumafly
+
+      # Media
+      ffmpeg
+      chromaprint
+      nodejs
+
+      # Celeste mod manager
+      (olympus.override {
+        celesteWrapper = "steam-run";
+      })
     ];
-
-    # Configuration spécifique des scripts (génère les fichiers script-opts)
-    scriptOpts = {
-      thumbfast = {
-        network = "yes"; # Active les miniatures pour les VOD Twitch/YouTube
-        hwdec = "yes";   # Utilise l'accélération matérielle pour la génération
-      };
-    };
   };
 
-  /* -------------------------------------------------------------------------- */
-  /*                       AUTOMATED GAME SAVE BACKUPS                          */
-  /* -------------------------------------------------------------------------- */
 
-  # 1. The background task that runs the backup
-  systemd.user.services.ludusavi-backup = {
-    Unit = {
-      Description = "Automated Ludusavi Game Save Backup";
-    };
-    Service = {
-      Type = "oneshot";
-      # Runs ludusavi backup silently and pushes to Homelab via Rclone
-      ExecStart = "${pkgs.ludusavi}/bin/ludusavi backup --force";
-    };
-  };
-
-  # 2. The schedule (timer) that triggers the task
-  systemd.user.timers.ludusavi-backup = {
-    Unit = {
-      Description = "Timer for Automated Ludusavi Game Save Backup";
-    };
-    Timer = {
-      OnCalendar = "daily"; # Runs every hour (or change to "daily")
-      Persistent = true;     # If the PC was off during a scheduled run, run it on boot
-    };
-    Install = {
-      WantedBy = [ "timers.target" ];
-    };
-  };
-
-  /* -------------------------------------------------------------------------- */
-  /*                                SHELL CONFIGS                               */
-  /* -------------------------------------------------------------------------- */
-
+  /* ---------------------------- Shell / terminal ---------------------------- */
   programs.kitty = {
     enable = true;
+
     font = {
       name = "IosevkaTerm Nerd Font Mono";
       size = 12;
     };
+
     settings = {
       window_padding_width = 4;
       confirm_os_window_close = 0;
@@ -215,29 +152,24 @@ in
 
   programs.bash = {
     enable = true;
+
     initExtra = ''
-      # Insert the conditional Hyprland script here
       ${hyprlandAutoStart}
 
-      # Logic to choose the right path for bash sourcing
       if [ -f "${dotfilesDir}/bash/.bashrc" ]; then
         source "${dotfilesDir}/bash/.bashrc"
       elif [ -f "${inputs.dotfiles}/bash/.bashrc" ]; then
         source "${inputs.dotfiles}/bash/.bashrc"
       fi
 
-      # Append to history file immediately, don't overwrite it
       shopt -s histappend
     '';
-  };
-
-  home.sessionVariables = {
-    SSH_AUTH_SOCK = "/home/arthur/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock";
   };
 
   programs.atuin = {
     enable = true;
     enableBashIntegration = true;
+
     settings = {
       auto_sync = false;
       update_check = false;
@@ -248,14 +180,29 @@ in
     };
   };
 
-  # Dunst notification daemon
-  services.dunst = {
-    enable = true;
-  };
 
-  /* -------------------------------------------------------------------------- */
-  /*                                   VSCODE                                   */
-  /* -------------------------------------------------------------------------- */
+  /* ------------------------------ Applications ------------------------------ */
+  programs.mpv = {
+    enable = true;
+
+    config = {
+      osc = false;
+      osd-bar = false;
+      border = false;
+    };
+
+    scripts = with pkgs.mpvScripts; [
+      uosc
+      thumbfast
+    ];
+
+    scriptOpts = {
+      thumbfast = {
+        network = "yes";
+        hwdec = "yes";
+      };
+    };
+  };
 
   programs.vscode = {
     enable = true;
@@ -264,27 +211,11 @@ in
   };
 
 
-
-  services.swayosd.enable = true;
-
-  /* -------------------------------------------------------------------------- */
-  /*                               DOTFILES LINKS                               */
-  /* -------------------------------------------------------------------------- */
-
-  # Starship dotfiles link
-  xdg.configFile."starship.toml" = {
-    source = link "starship/starship.toml";
-    force = true;
-  };
-
-  /* -------------------------------------------------------------------------- */
-  /*                                 UI / DESKTOP                               */
-  /* -------------------------------------------------------------------------- */
-
-  # Hyprland cursor
+  /* --------------------------------- Desktop -------------------------------- */
   home.pointerCursor = {
     gtk.enable = true;
     x11.enable = true;
+
     name = "Bibata-Modern-Ice";
     package = pkgs.bibata-cursors;
     size = 24;
@@ -292,32 +223,25 @@ in
 
   gtk = {
     enable = true;
+
     iconTheme = {
-      name = "Tela-circle-dark"; 
+      name = "Tela-circle-dark";
       package = pkgs.tela-circle-icon-theme;
     };
+
     theme = {
       name = "adw-gtk3-dark";
       package = pkgs.adw-gtk3;
     };
-    # Silence the warning & let GTK4 apps use native Libadwaita
+
+    # Let GTK4 applications use native Libadwaita.
     gtk4.theme = null;
   };
 
   qt = {
     enable = true;
-    platformTheme.name = "qtct"; # This tells Nix to handle the integration
-    style.name = "kvantum";      # Kvantum is generally the best for Hyprland aesthetics
-  };
-
-  services.easyeffects.enable = true;
-
-  xdg.mimeApps = {
-    enable = true;
-    defaultApplications = {
-      "inode/directory" = [ "nemo.desktop" ];
-      "application/x-gnome-saved-search" = [ "nemo.desktop" ];
-    };
+    platformTheme.name = "qtct";
+    style.name = "kvantum";
   };
 
   dconf.settings = {
@@ -326,119 +250,66 @@ in
     };
   };
 
-  # Hide rofi menu items
-  xdg.desktopEntries = {
-    htop = { name = "htop"; noDisplay = true; };
-    btop = { name = "btop"; noDisplay = true; };
-    nvtop = { name = "nvtop"; noDisplay = true; };
-    kvantummanager = { name = "Kvantum Manager"; noDisplay = true; };
-    "nixos-manual" = { name = "NixOS Manual"; noDisplay = true; };
-    qt5ct = { name = "Qt5 Settings"; noDisplay = true; };
-    qt6ct = { name = "Qt6 Settings"; noDisplay = true; };
-    rofi = { name = "Rofi"; exec = "rofi"; noDisplay = true; };
-    "rofi-theme-selector" = { name = "Rofi Theme Selector"; exec = "rofi-theme-selector"; noDisplay = true; };
+
+  /* -------------------------------- Services -------------------------------- */
+  services.dunst.enable = true;
+  services.swayosd.enable = true;
+  services.easyeffects.enable = true;
+
+  services.activitywatch = {
+    enable = true;
+
+    watchers = {
+      # Wayland replacement for the standard window / AFK watchers.
+      aw-awatcher = {
+        package = pkgs.awatcher;
+        executable = "awatcher";
+      };
+
+      aw-watcher-input = {
+        package = aw-watcher-input;
+        executable = "aw-watcher-input";
+      };
+    };
   };
 
+  
+  /* ----------------------- Automated game save backups ---------------------- */
+  systemd.user.services.ludusavi-backup = {
+    Unit = {
+      Description = "Automated Ludusavi Game Save Backup";
+    };
 
-  # Modular hyprland conf
-  xdg.configFile."hypr/hyprland.conf" = {
-    source = link "hyprland/hyprland.conf";
-    force = true;
-  };
-  xdg.configFile."hypr/conf" = {
-    source = link "hyprland/conf";
-    force = true;
-  };
-  xdg.configFile."hypr/capture.sh" = {
-    source = link "hyprland/capture.sh";
-    force = true;
-  };
-  xdg.configFile."hypr/slideshow.sh" = {
-    source = link "hyprland/slideshow.sh";
-    force = true;
-  };
-  xdg.configFile."hypr/layout_osd.sh" = {
-    source = link "hyprland/layout_osd.sh";
-    force = true;
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.ludusavi}/bin/ludusavi backup --force";
+    };
   };
 
+  systemd.user.timers.ludusavi-backup = {
+    Unit = {
+      Description = "Timer for Automated Ludusavi Game Save Backup";
+    };
 
-  xdg.configFile."hypr/hyprlock.conf" = {
-    source = link "hyprlock/hyprlock.conf";
-    force = true;
-  };
+    Timer = {
+      OnCalendar = "daily";
+      Persistent = true;
+    };
 
-  xdg.configFile."rofi/" = {
-    source = link "rofi/";
-    force = true;
-  };
-
-  # Waybar
-  xdg.configFile."waybar/config.jsonc" = {
-    source = link "waybar/config.jsonc";
-    force = true;
-  };
-  xdg.configFile."waybar/style.css" = {
-    source = link "waybar/style.css";
-    force = true;
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
   };
 
-  # Wlogout
-  xdg.configFile."wlogout/layout" = {
-    source = link "wlogout/layout";
-    force = true;
-  };
-  xdg.configFile."wlogout/layout-other" = {
-    source = link "wlogout/layout-other";
-    force = true;
-  };
-  xdg.configFile."wlogout/style.css" = {
-    source = link "wlogout/style.css";
-    force = true;
-  };
-  xdg.configFile."wlogout/launch.sh" = {
-    source = link "wlogout/launch.sh";
-    force = true;
-  };
-
-  xdg.configFile."matugen" = {
-    source = link "matugen";
-    force = true;
-  };
-
-  # Dunst
-  xdg.configFile."dunst/dunstrc" = {
-    source = link "dunst/dunstrc";
-    force = true;
-  };
-
-  xdg.configFile."swayosd/style.css" = {
-    source = link "swayosd/style.css";
-    force = true;
-  };
-  xdg.configFile."swayosd/config.toml" = {
-    source = link "swayosd/config.toml";
-    force = true;
-  };
-
-  xdg.configFile."kitty/kitty.conf" = {
-    source = link "kitty/kitty.conf";
-    force = true;
-  };
-
-  xdg.desktopEntries.activitywatch = {
-    name = "ActivityWatch";
-    genericName = "Time Tracker";
-    exec = "xdg-open http://localhost:5600";
-    icon = "preferences-system-time";
-    comment = "View your ActivityWatch statistics";
-    categories = [ "Utility" ];
-  };
-
-  # polkit daemon
+  
+  /* --------------------------------- Polkit --------------------------------- */
   systemd.user.services.polkit-gnome-authentication-agent-1 = {
     Unit.Description = "polkit-gnome-authentication-agent-1";
-    Install.WantedBy = [ "graphical-session.target" ];
+
+    Install.WantedBy = [
+      "graphical-session.target"
+    ];
+
     Service = {
       Type = "simple";
       ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
@@ -448,30 +319,140 @@ in
     };
   };
 
-
-
-  /* -------------------------------------------------------------------------- */
-  /*                                ACTIVITYWATCH                               */
-  /* -------------------------------------------------------------------------- */
-
-  services.activitywatch = {
+  /* ----------------------------------- XDG ---------------------------------- */
+  xdg.mimeApps = {
     enable = true;
-    # Configure explicitly which watchers should run in the background
-    watchers = {
-      # Replaces the default aw-watcher-window and aw-watcher-afk for Wayland
-      aw-awatcher = {
-        package = pkgs.awatcher;
-        executable = "awatcher";
-      };
-      
-      # Add our custom input watcher
-      aw-watcher-input = {
-        package = aw-watcher-input;
-        executable = "aw-watcher-input";
-      };
+
+    defaultApplications = {
+      "inode/directory" = [ "nemo.desktop" ];
+      "application/x-gnome-saved-search" = [ "nemo.desktop" ];
     };
   };
 
+    # Hide rofi menu items
+  xdg.desktopEntries = {
+    htop = {name = "htop";noDisplay = true;};
+    btop = {name = "btop";noDisplay = true;};
+    nvtop = {name = "nvtop";noDisplay = true;};
+    kvantummanager = {name = "Kvantum Manager";noDisplay = true;};
+    "nixos-manual" = {name = "NixOS Manual";noDisplay = true;};
+    qt5ct = {name = "Qt5 Settings";noDisplay = true;};
+    qt6ct = {name = "Qt6 Settings";noDisplay = true;};
+    rofi = {name = "Rofi";exec = "rofi";noDisplay = true;};
+    "rofi-theme-selector" = {name = "Rofi Theme Selector";exec = "rofi-theme-selector";noDisplay = true;};
+    activitywatch = {
+      name = "ActivityWatch";
+      genericName = "Time Tracker";
+      exec = "xdg-open http://localhost:5600";
+      icon = "preferences-system-time";
+      comment = "View your ActivityWatch statistics";
+      categories = [ "Utility" ];
+    };
+  };
 
+  /* -------------------------------- Dotfiles -------------------------------- */
+  xdg.configFile = {
+    # Shell
+    "starship.toml" = {
+      source = link "starship/starship.toml";
+      force = true;
+    };
 
+    "kitty/kitty.conf" = {
+      source = link "kitty/kitty.conf";
+      force = true;
+    };
+
+    # Hyprland
+    "hypr/hyprland.conf" = {
+      source = link "hyprland/hyprland.conf";
+      force = true;
+    };
+
+    "hypr/conf" = {
+      source = link "hyprland/conf";
+      force = true;
+    };
+
+    "hypr/capture.sh" = {
+      source = link "hyprland/capture.sh";
+      force = true;
+    };
+
+    "hypr/slideshow.sh" = {
+      source = link "hyprland/slideshow.sh";
+      force = true;
+    };
+
+    "hypr/layout_osd.sh" = {
+      source = link "hyprland/layout_osd.sh";
+      force = true;
+    };
+
+    "hypr/hyprlock.conf" = {
+      source = link "hyprlock/hyprlock.conf";
+      force = true;
+    };
+
+    # Rofi
+    "rofi/" = {
+      source = link "rofi/";
+      force = true;
+    };
+
+    # Waybar
+    "waybar/config.jsonc" = {
+      source = link "waybar/config.jsonc";
+      force = true;
+    };
+
+    "waybar/style.css" = {
+      source = link "waybar/style.css";
+      force = true;
+    };
+
+    # Wlogout
+    "wlogout/layout" = {
+      source = link "wlogout/layout";
+      force = true;
+    };
+
+    "wlogout/layout-other" = {
+      source = link "wlogout/layout-other";
+      force = true;
+    };
+
+    "wlogout/style.css" = {
+      source = link "wlogout/style.css";
+      force = true;
+    };
+
+    "wlogout/launch.sh" = {
+      source = link "wlogout/launch.sh";
+      force = true;
+    };
+
+    # Matugen
+    "matugen" = {
+      source = link "matugen";
+      force = true;
+    };
+
+    # Notifications
+    "dunst/dunstrc" = {
+      source = link "dunst/dunstrc";
+      force = true;
+    };
+
+    # SwayOSD
+    "swayosd/style.css" = {
+      source = link "swayosd/style.css";
+      force = true;
+    };
+
+    "swayosd/config.toml" = {
+      source = link "swayosd/config.toml";
+      force = true;
+    };
+  };
 }

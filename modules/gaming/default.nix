@@ -3,20 +3,13 @@
 { pkgs, config, ... }:
 
 {
-  # =========================================================================
-  # == GRAPHICS DRIVERS & 32-BIT SUPPORT
-  #    Essential for running most games via Steam/Proton.
-  # =========================================================================
-
+  # Graphics drivers
   hardware.graphics = {
       enable = true;
       enable32Bit = true;
   };
 
-  # =========================================================================
-  # == GAMING SOFTWARE & SERVICES
-  # =========================================================================
-
+  # Gaming softwares
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; 
