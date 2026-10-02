@@ -66,9 +66,6 @@ in
     };
 
     packages = with pkgs; [
-      # Fonts
-      nerd-fonts.iosevka
-      nerd-fonts.iosevka-term
       inter
       corefonts
       vista-fonts

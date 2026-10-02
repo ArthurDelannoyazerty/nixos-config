@@ -30,6 +30,7 @@
   environment.systemPackages = with pkgs; [
     git
     git-lfs
+    gh
     vim
     curl
     wget
@@ -71,6 +72,9 @@
     eza  
     fzf 
     tldr
+
+    nerd-fonts.iosevka
+    nerd-fonts.iosevka-term
   ];
 
   programs.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];

@@ -1,15 +1,7 @@
 { pkgs, ... }:
 
 {
-
   environment.systemPackages = with pkgs; [
-    #  Essentials
-    git
-    # gcc
-    # gnumake
-    gh      # Github
-
-    # Python
     python3 
     uv
     lazydocker
@@ -19,7 +11,7 @@
 
     # IA
     opencode
-    
+
   ];
 
   

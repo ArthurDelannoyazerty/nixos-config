@@ -29,10 +29,6 @@ in
     stateVersion = "25.05";
 
     packages = with pkgs; [
-      # Fonts
-      nerd-fonts.iosevka
-      nerd-fonts.iosevka-term
-
       bash-preexec
 
       # Media
