@@ -4,73 +4,74 @@
   inputs = {
     nixpkgs.url          = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nix-flatpak.url      = "github:gmodena/nix-flatpak";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+    grub2-themes.url = "github:vinceliuice/grub2-themes";
+
     dotfiles = {
       url = "github:ArthurDelannoyazerty/dotfiles";
-      flake = false;    # That repo doesn't have a flake.nix
+      flake = false;
     };
 
     local-finance = {
       url = "github:ArthurDelannoyazerty/local-finance";
       flake = false;
     };
-    
-    grub2-themes.url = "github:vinceliuice/grub2-themes";
-
-    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-vscode-extensions, ... }@inputs:
+  outputs = inputs@{ nixpkgs, ... }:
     let
       system = "x86_64-linux";
 
-      overlay-unstable = final: prev: {
+      /* ----------------------------- Global overlays ---------------------------- */
+      unstableOverlay = _final: _prev: {
         unstable = import inputs.nixpkgs-unstable {
-          inherit (prev) system;
+          inherit system;
           config.allowUnfree = true;
         };
       };
 
+      commonOverlays = [
+        inputs.nix-vscode-extensions.overlays.default
+        unstableOverlay
+      ];
+
+      # Same package set used by standalone flake packages.
       pkgs = import nixpkgs {
         inherit system;
+
         config.allowUnfree = true;
-        overlays = [ nix-vscode-extensions.overlays.default ];
+        overlays = commonOverlays;
       };
 
-      # --- Smart Dotfiles Logic ---
-      localDotfilesPath = "/home/arthur/dotfiles";
-      localDotfilesExists = 
-        let 
-          exists = builtins.pathExists localDotfilesPath;
-        in 
-          builtins.trace "Checking for local dotfiles at ${localDotfilesPath}: ${if exists then "FOUND" else "NOT FOUND"}" exists;
+      # Inject common overlays into every NixOS host.
+      overlaysModule = {
+        nixpkgs.overlays = commonOverlays;
+      };
 
-      # Choose the source based on the check (github or local)
-      dotfilesSrc = if localDotfilesExists
-        then (builtins.path { path = localDotfilesPath; name = "dotfiles-local"; })
-        else inputs.dotfiles;
-      
-      myConstants = import ./hosts/homelab/constants.nix;
-
-      # Define a reusable Lix module with the overlay
+      /* ----------------------------------- Lix ---------------------------------- */
       lixModule = { pkgs, ... }: {
         nix.package = pkgs.lixPackageSets.stable.lix;
+
         nixpkgs.overlays = [
-          (final: prev: {
+          (_final: prev: {
             inherit (prev.lixPackageSets.stable)
-              nixpkgs-review nix-eval-jobs nix-fast-build colmena;
+              nixpkgs-review
+              nix-eval-jobs
+              nix-fast-build
+              colmena;
           })
         ];
       };
-
-    in {
-      # Devcontainer
+    in
+    {
+      /* ------------------------------ Devcontainer ------------------------------ */
       packages.${system} = {
         devcontainer = import ./hosts/devcontainer/default.nix {
           inherit pkgs;
@@ -85,65 +86,49 @@
           stream = true;
         };
       };
-
-
+      
+      /* ---------------------------------- Hosts --------------------------------- */
       nixosConfigurations = {
-        "nixos-perso" = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { 
-            inherit inputs home-manager nix-vscode-extensions; 
-            dotfiles = inputs.dotfiles;
-            dotfilesDir = "/home/arthur/dotfiles";
-            isLocal = true;
+        /* ------------------------------- nixos-perso ------------------------------ */
+        nixos-perso = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = {
+            inherit inputs;
           };
-          modules = [ 
+          modules = [
             ./hosts/perso/configuration.nix
-            {
-              nixpkgs.overlays = [ 
-                nix-vscode-extensions.overlays.default 
-                overlay-unstable
-              ];
-            }
+            overlaysModule
+            lixModule
             inputs.grub2-themes.nixosModules.default
             inputs.nix-flatpak.nixosModules.nix-flatpak
-            lixModule
           ];
         };
 
-
-        "nixos-portable" = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { 
-            inherit inputs home-manager nix-vscode-extensions; 
-            dotfiles = inputs.dotfiles;
-            dotfilesDir = "/home/arthur/dotfiles";
-            isLocal = true;
+        /* ----------------------------- nixos-portable ----------------------------- */
+        nixos-portable = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = {
+            inherit inputs;
           };
-          modules = [ 
+          modules = [
             ./hosts/portable/configuration.nix
-            {
-              nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
-            }
-            inputs.grub2-themes.nixosModules.default
-            inputs.nix-flatpak.nixosModules.nix-flatpak 
+            overlaysModule
             lixModule
+            inputs.grub2-themes.nixosModules.default
+            inputs.nix-flatpak.nixosModules.nix-flatpak
           ];
         };
-        
 
-        "nixos-homelab" = nixpkgs.lib.nixosSystem {
-         system = "x86_64-linux";
-          specialArgs = { 
-            inherit inputs home-manager nix-vscode-extensions myConstants; 
-            dotfiles = inputs.dotfiles;               # Immutable GitHub repo
-            dotfilesDir = "/home/arthur/dotfiles"; 
-            isLocal = true;
+        /* ------------------------------ nixos-homelab ----------------------------- */
+        nixos-homelab = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = {
+            inherit inputs;
+            myConstants = import ./hosts/homelab/constants.nix;
           };
-          modules = [ 
+          modules = [
             ./hosts/homelab/configuration.nix
-            {
-              nixpkgs.overlays = [ nix-vscode-extensions.overlays.default ];
-            }
+            overlaysModule
             lixModule
           ];
         };

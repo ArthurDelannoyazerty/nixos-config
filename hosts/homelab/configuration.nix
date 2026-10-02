@@ -1,8 +1,8 @@
-{ pkgs, home-manager, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, myConstants, ... }:
+{ pkgs, config, inputs, myConstants, ... }:
 
 {
   imports = [
-    home-manager.nixosModules.home-manager    
+    inputs.home-manager.nixosModules.home-manager    
     
     /* -------------------------------- HARDWARE -------------------------------- */
     ./hardware-configuration.nix
@@ -87,7 +87,9 @@
     useUserPackages = true;
     backupFileExtension = "backup";
     extraSpecialArgs = {
-      inherit inputs dotfiles dotfilesDir isLocal nix-vscode-extensions;
+      inherit inputs;
+      dotfilesDir = "/home/arthur/dotfiles";
+      isLocal = true;
     };
   };
 

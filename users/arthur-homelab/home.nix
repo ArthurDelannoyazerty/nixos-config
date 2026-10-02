@@ -1,18 +1,11 @@
-{ pkgs, config, inputs, dotfiles, dotfilesDir, isLocal, nix-vscode-extensions, osConfig, ... }:
+{pkgs, config, inputs, dotfilesDir, isLocal, osConfig, ...}:
 
 let
-  # Define a helper function named 'link'
   link = path:
-    if isLocal then
-      # If local repo exists, use mkOutOfStoreSymlink (Mutuable / Editable)
-      # This points directly to /home/arthur/dotfiles/...
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/${path}"
-    else
-      # Otherwise, use the store copy (Immutable / Safe for new installs)
-      "${dotfiles}/${path}";
-
-  # Access the community extension marketplace
-  marketplace = pkgs.vscode-marketplace; 
+  if isLocal then
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/${path}"
+  else
+    "${inputs.dotfiles}/${path}";
 
   # Safely check if Hyprland is even declared before checking if it's enabled.
   hyprlandAutoStart = if (osConfig.programs ? hyprland && osConfig.programs.hyprland.enable) then ''
@@ -75,8 +68,8 @@ in
       # Logic to choose the right path for bash sourcing
       if [ -f "${dotfilesDir}/bash/.bashrc" ]; then
         source "${dotfilesDir}/bash/.bashrc"
-      elif [ -f "${dotfiles}/bash/.bashrc" ]; then
-        source "${dotfiles}/bash/.bashrc"
+      elif [ -f "${inputs.dotfiles}/bash/.bashrc" ]; then
+        source "${inputs.dotfiles}/bash/.bashrc"
       fi
 
       # Append to history file immediately, don't overwrite it
