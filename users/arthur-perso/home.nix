@@ -267,67 +267,7 @@ in
   programs.vscode = {
     enable = true;
     package = pkgs.unstable.vscode;
-    mutableExtensionsDir = false;   # Nix controls the extensions
-
-    profiles.default.extensions = (with marketplace;[
-      # === PYTHON ===
-      ms-python.python
-      ms-python.debugpy
-      ms-python.vscode-pylance
-      ms-python.vscode-python-envs
-      charliermarsh.ruff
-      njpwerner.autodocstring
-      njqdev.vscode-python-typehint
-      ms-toolsai.jupyter
-      ms-toolsai.jupyter-keymap
-      ms-toolsai.jupyter-renderers
-      ms-toolsai.vscode-jupyter-cell-tags
-      
-      # === AI ===
-      continue.continue
-      google.geminicodeassist
-
-      # === GIT ===
-      eamodio.gitlens
-      mhutchie.git-graph
-      ms-vscode.azure-repos
-
-      # === THEMES & ICONS ===
-      pkief.material-icon-theme
-      monokai.theme-monokai-pro-vscode
-      nicolaiverbaarschot.alabaster-variant-theme
-      tonsky.theme-alabaster
-      johnpapa.vscode-peacock
-      fxzer.theme-vitesse-dark-custom
-
-
-      # === TOOLS ===
-      esbenp.prettier-vscode
-      mechatroner.rainbow-csv
-      hediet.vscode-drawio
-      mermaidchart.vscode-mermaid-chart
-      jnoortheen.nix-ide
-      christian-kohler.path-intellisense
-      ritwickdey.liveserver
-      tomoki1207.pdf
-      stackbreak.comment-divider
-      torreysmith.copyfilepathandcontent
-      irongeek.vscode-env
-      emilast.logfilehighlighter
-      alexcvzz.vscode-sqlite
-      qwtel.sqlite-viewer
-      rioj7.command-variable
-      
-      # === MISC ===
-      codediagram.codediagram 
-      marketplace."076923".python-image-preview 
-    ]) ++ (with pkgs.vscode-extensions;[
-      # === REMOTE & SSH ===
-      ms-vscode-remote.remote-ssh
-      ms-vscode-remote.remote-ssh-edit
-      ms-vscode.remote-explorer
-      ms-vscode-remote.remote-containers
-    ]);
+    mutableExtensionsDir = true;
   };
 
 
@@ -337,19 +277,6 @@ in
   /* -------------------------------------------------------------------------- */
   /*                               DORFILES LINKS                               */
   /* -------------------------------------------------------------------------- */
-  # VSCode dotfiles Links
-  xdg.configFile."Code/User/settings.json" = {
-    source = link "code/settings.json";
-    force  = true;
-  };
-  xdg.configFile."Code/User/keybindings.json" = {
-    source = link "code/keybindings.json";
-    force  = true;
-  };
-  xdg.configFile."Code/User/launch.json" = {
-    source = link "code/launch.json";
-    force  = true;
-  };
 
   # Starship dotfiles link
   xdg.configFile."starship.toml" = {
