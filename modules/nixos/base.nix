@@ -60,6 +60,7 @@
     iw
     iwd
     jq
+    lazyjournal
 
     btop
     tree

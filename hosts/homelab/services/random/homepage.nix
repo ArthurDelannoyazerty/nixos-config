@@ -138,6 +138,7 @@ let
               url: ${internalHost}:${toString myConstants.services.jellyfin.port}
               key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
               enable_now_playing: true # Shows what people are currently watching
+              version: 2
         - Seerr:
             icon: https://raw.githubusercontent.com/seerr-team/seerr/refs/heads/develop/public/os_icon.svg
             href: https://${myConstants.services.seerr.subdomain}.${myConstants.publicDomain}
