@@ -65,6 +65,9 @@
     ripgrep
     nix-tree
     
+    lazyjournal
+
+    btop
     tree
     starship
     killall
