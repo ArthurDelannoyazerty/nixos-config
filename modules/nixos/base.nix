@@ -42,16 +42,18 @@
     coreutils
     findutils
     gnutar
-    gzip
     procps
     gnugrep
     which
     htop
+    btop
+    nvitop
     tldr
     dmidecode 
     lsof 
     unixtools.netstat
     hwinfo
+    gzip
     unzip
     unrar
     zip
@@ -60,18 +62,16 @@
     iw
     iwd
     jq
-
-    btop
+    ripgrep
+    nix-tree
+    
     tree
-    nvitop
     starship
-    htop
     killall
     duf
     bat 
     eza  
     fzf 
-    tldr
 
     nerd-fonts.iosevka
     nerd-fonts.iosevka-term
