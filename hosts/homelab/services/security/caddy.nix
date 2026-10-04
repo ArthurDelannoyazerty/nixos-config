@@ -109,14 +109,28 @@ in
       "http://${myConstants.services.litellm.subdomain}.${domain}" = {
         extraConfig = ''
           log
-          ${privateOnly}
 
-          # Native LiteLLM OIDC -> Authentik.
-          reverse_proxy 127.0.0.1:${toString myConstants.services.litellm.port} {
-            header_up Host {host}
-            header_up X-Real-IP {remote}
-            header_up X-Forwarded-For {remote}
-            header_up X-Forwarded-Proto https
+          # External OpenAI API routes (Auth enforced by LiteLLM via Bearer sk-... keys)
+          handle /v1/* {
+            reverse_proxy 127.0.0.1:${toString myConstants.services.litellm.port} {
+              header_up Host {host}
+              header_up X-Real-IP {remote}
+              header_up X-Forwarded-For {remote}
+              header_up X-Forwarded-Proto https
+            }
+          }
+
+          # Admin UI, /key/*, /model/*, /docs (Strictly locked to LAN & Tailscale)
+          handle {
+            ${privateOnly}
+
+            # Native LiteLLM OIDC -> Authentik.
+            reverse_proxy 127.0.0.1:${toString myConstants.services.litellm.port} {
+              header_up Host {host}
+              header_up X-Real-IP {remote}
+              header_up X-Forwarded-For {remote}
+              header_up X-Forwarded-Proto https
+            }
           }
         '';
       };
