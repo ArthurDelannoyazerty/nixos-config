@@ -289,12 +289,12 @@ let
             # widget:
             #   type: suwayomi
             #   url: ${internalHost}:${toString myConstants.services.suwayomi.port}
-        - Tranga: 
-            icon: mdi-book-open-page-variant
-            href: https://${myConstants.services.tranga.subdomain}.${myConstants.publicDomain}
-            description: Manga Downloader
-            server: my-docker
-            container: ${myConstants.services.tranga.containerName}
+        # - Tranga: 
+        #     icon: mdi-book-open-page-variant
+        #     href: https://${myConstants.services.tranga.subdomain}.${myConstants.publicDomain}
+        #     description: Manga Downloader
+        #     server: my-docker
+        #     container: ${myConstants.services.tranga.containerName}
         - Navidrome:
             icon: navidrome.png
             href: https://${myConstants.services.navidrome.subdomain}.${myConstants.publicDomain}
@@ -350,12 +350,12 @@ let
             description: Music Importer
             server: my-docker
             container: ${myConstants.services.navidrome-importer.containerName}
-        - Cobalt:
-            icon: https://raw.githubusercontent.com/imputnet/cobalt/refs/heads/main/web/static/favicon.png
-            href: https://${myConstants.services.cobalt-web.subdomain}.${myConstants.publicDomain}
-            description: Moteur de secours téléchargement
-            server: my-docker
-            container: ${myConstants.services.cobalt-web.containerName}
+        # - Cobalt:
+        #     icon: https://raw.githubusercontent.com/imputnet/cobalt/refs/heads/main/web/static/favicon.png
+        #     href: https://${myConstants.services.cobalt-web.subdomain}.${myConstants.publicDomain}
+        #     description: Moteur de secours téléchargement
+        #     server: my-docker
+        #     container: ${myConstants.services.cobalt-web.containerName}
         # - Byparr:
         #     icon: https://raw.githubusercontent.com/ThePhaseless/Byparr/557152ccdcf32025b77438ab51c93f58eb284980/icon/logo-byparr.svg
         #     href: https://${myConstants.services.byparr.subdomain}.${myConstants.publicDomain}/docs
