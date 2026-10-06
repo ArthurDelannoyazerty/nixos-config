@@ -60,11 +60,17 @@ rec {
       version = "3.0.3";
       containerName = "byparr";
     };
-    cobalt = {
+    cobalt-api = {
       port = 9009;
-      subdomain = "cobalt";
+      subdomain = "cobalt-api";
       version = "11.7.1";
-      containerName = "cobalt";
+      containerName = "cobalt-api";
+    };
+    cobalt-web = {
+      port = 9010;
+      subdomain = "cobalt";
+      version = "11.7";
+      containerName = "cobalt-web";
     };
     cleanuparr = {
       port = 11011;
@@ -442,8 +448,9 @@ rec {
       containerName = "whats-up-docker";
     };
     yt-session-generator = {
-      port = 8186;                # bridge-only, never exposed publicly
-      containerName = "yt-session-generator";
+      port = 4416;
+      containerName = "bgutil-pot-provider";
+      version = "2.0.1";
     };
 
 

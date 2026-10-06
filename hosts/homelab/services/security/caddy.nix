@@ -405,13 +405,48 @@ in
         '';
       };      
 
-      # --- COBALT API (downloader fallback; browser-visible status page) ---
-      "http://${myConstants.services.cobalt.subdomain}.${domain}" = {
+      # --- COBALT WEB UI (Protected by Authentik SSO + Cloudflare PIN) ---
+      "http://${myConstants.services.cobalt-web.subdomain}.${domain}" = {
         extraConfig = ''
           log
           ${privateOnly}
           ${authentikMiddleware}
-          reverse_proxy 172.17.0.1:${toString myConstants.services.cobalt.port}
+          reverse_proxy 172.17.0.1:${toString myConstants.services.cobalt-web.port}
+        '';
+      };
+
+      # --- COBALT API ---
+      "http://${myConstants.services.cobalt-api.subdomain}.${domain}" = {
+        extraConfig = ''
+          log
+
+          # 1. Allow the cryptographically signed tunnel stream (the video/audio download)
+          handle /tunnel* {
+            reverse_proxy 172.17.0.1:${toString myConstants.services.cobalt-api.port}
+          }
+
+          # 2. Allow CORS preflight requests from your browser
+          @options method OPTIONS
+          handle @options {
+            reverse_proxy 172.17.0.1:${toString myConstants.services.cobalt-api.port}
+          }
+
+          # 3. Allow AJAX requests originating from your Cobalt Web UI
+          @fromWebOrigin header Origin https://${myConstants.services.cobalt-web.subdomain}.${domain}
+          handle @fromWebOrigin {
+            reverse_proxy 172.17.0.1:${toString myConstants.services.cobalt-api.port}
+          }
+
+          # 4. Allow internal Docker network, host, LAN, & Tailscale (for navidrome-importer, etc.)
+          @fromInternal client_ip 127.0.0.1 172.16.0.0/12 192.168.0.0/16 10.0.0.0/8 100.64.0.0/10
+          handle @fromInternal {
+            reverse_proxy 172.17.0.1:${toString myConstants.services.cobalt-api.port}
+          }
+
+          # 5. Deny external bots trying to call POST / directly from scripts/curl
+          handle {
+            respond "Access Denied: Cobalt API is private" 403
+          }
         '';
       };
 

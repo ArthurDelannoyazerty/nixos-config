@@ -14,7 +14,7 @@
       NAVIDROME_LIB_DIR = "/data/library";
       LIBRARY_DB = "/data/library.db";
       YT_PLAYER_CLIENTS = "";          # empty = yt-dlp maintained defaults
-      COBALT_API_URL = "http://172.17.0.1:${toString myConstants.services.cobalt.port}";
+      COBALT_API_URL = "http://172.17.0.1:${toString myConstants.services.cobalt-api.port}";
       MAX_CONCURRENT_TRACKS = "3";
       SYNC_INTERVAL_HOURS = "6";       # auto-sync every 6h
     };

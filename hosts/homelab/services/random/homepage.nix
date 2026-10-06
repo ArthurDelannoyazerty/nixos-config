@@ -352,10 +352,10 @@ let
             container: ${myConstants.services.navidrome-importer.containerName}
         - Cobalt:
             icon: https://raw.githubusercontent.com/imputnet/cobalt/refs/heads/main/web/static/favicon.png
-            href: https://${myConstants.services.cobalt.subdomain}.${myConstants.publicDomain}
+            href: https://${myConstants.services.cobalt-web.subdomain}.${myConstants.publicDomain}
             description: Moteur de secours téléchargement
             server: my-docker
-            container: ${myConstants.services.cobalt.containerName}
+            container: ${myConstants.services.cobalt-web.containerName}
         # - Byparr:
         #     icon: https://raw.githubusercontent.com/ThePhaseless/Byparr/557152ccdcf32025b77438ab51c93f58eb284980/icon/logo-byparr.svg
         #     href: https://${myConstants.services.byparr.subdomain}.${myConstants.publicDomain}/docs
