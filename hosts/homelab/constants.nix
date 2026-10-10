@@ -245,7 +245,7 @@ rec {
     navidrome-importer = {
       port = 8009;
       subdomain = "navidrome-importer";
-      version = "v0.0.14";
+      version = "latest";
       containerName = "yt-navidrome";
     };
     netdata = {
@@ -447,13 +447,6 @@ rec {
       version = "8.4.0";
       containerName = "whats-up-docker";
     };
-    yt-session-generator = {
-      port = 4416;
-      containerName = "bgutil-pot-provider";
-      version = "2.0.1";
-    };
-
-
 
   };
 }

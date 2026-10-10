@@ -4,34 +4,57 @@
   virtualisation.oci-containers.containers.${myConstants.services.navidrome-importer.containerName} = {
     image = "ghcr.io/arthurdelannoyazerty/yt-navidrome:${myConstants.services.navidrome-importer.version}";
 
-    # App listens on 8008 inside the image -> exposed as 8009 on the host
-    ports = [ "0.0.0.0:${toString myConstants.services.navidrome-importer.port}:8008" ];
+    # App listens on 8008 inside the container.
+    ports = [
+      "0.0.0.0:${toString myConstants.services.navidrome-importer.port}:8008"
+    ];
 
-    # Explicit -e flags WIN over environmentFiles (--env-file), so these
-    # guarantee sane in-container paths even if the env file still has
-    # old relative "./navidrome_library" lines from the laptop days.
     environment = {
+      # Persistent application state.
+      # Contains ingestor.sqlite, per-user beets DBs, staging files,
+      # downloader runtimes, updater state, etc.
+      INGESTOR_STATE_DIR = "/data/state";
+
+      # Navidrome music library.
       NAVIDROME_LIB_DIR = "/data/library";
-      LIBRARY_DB = "/data/library.db";
-      YT_PLAYER_CLIENTS = "";          # empty = yt-dlp maintained defaults
-      COBALT_API_URL = "http://172.17.0.1:${toString myConstants.services.cobalt-api.port}";
-      MAX_CONCURRENT_TRACKS = "3";
-      SYNC_INTERVAL_HOURS = "6";       # auto-sync every 6h
+
+      # Empty = preserve yt-dlp's maintained/default player-client behavior.
+      YT_PLAYER_CLIENTS = "";
+
+      # Periodically re-sync monitored playlists.
+      # 0 disables source auto-sync.
+      SYNC_INTERVAL_HOURS = "6";
+
+      # Application-side YouTube API budget.
+      YT_DAILY_BUDGET = "9000";
+
+      # "source" preserves playlist order.
+      # Alternative: "discovery".
+      PLAYLIST_ORDER = "source";
+
+      # Nightly yt-dlp runtime update.
+      # This does NOT restart FastAPI.
+      YTDLP_UPDATE_ENABLED = "true";
+      YTDLP_UPDATE_TIME = "04:00";
+      TZ = "Europe/Paris";
     };
 
-    # Secrets (ACOUSTID_API_KEY, YT_API_KEY, SPOTIFY_*, DOWNLOAD_SLEEP_*, ...)
+    # Keep secrets and local downloader settings outside the Nix store.
     environmentFiles = [
       "/var/lib/services/navidrome-importer/env"
     ];
 
     volumes = [
-      # DB lives here (library.db + WAL files)
+      # Persistent application state:
+      # /data/state/ingestor.sqlite
+      # /data/state/beets/<user>/library.db
+      # /data/state/staging/
+      # /data/state/runtimes/
       "${myConstants.paths.servicesSSD}/navidrome-importer:/data"
 
-      # Downloaded music lands straight into Navidrome's library.
-      # Child mount wins over the parent /data mount.
+      # Downloaded/tagged music goes directly into Navidrome's library.
+      # This child bind mount overrides /data/library from the /data parent mount.
       "${myConstants.paths.disk4TB}/media/music:/data/library"
     ];
-
   };
 }
