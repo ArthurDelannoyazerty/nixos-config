@@ -91,7 +91,7 @@ rec {
     feishin = {
       port = 9180;
       subdomain = "feishin";
-      version = "1.15.1";
+      version = "1.17.0";
       containerName = "feishin";
     };
     filebrowser-quantum = {
