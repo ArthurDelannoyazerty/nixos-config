@@ -8,7 +8,7 @@
 
     environment = {
       SERVER_NAME = "Navidrome";
-      SERVER_TYPE = "subsonic"; 
+      SERVER_TYPE = "navidrome"; 
       SERVER_URL = "https://${myConstants.services.navidrome.subdomain}.${myConstants.publicDomain}";
       SERVER_LOCK = "false";
       PUID = "1000";
