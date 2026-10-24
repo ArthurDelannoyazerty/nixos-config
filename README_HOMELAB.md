@@ -811,6 +811,17 @@ GENERIC_CLIENT_SECRET=<authentik-client-secret>
 ```
 
 
+## What up docker (wud)
+
+sudo mkdir -p /var/lib/services/whats-up-docker
+sudo nano /var/lib/services/whats-up-docker/secrets.env
+
+WUD_AUTH_ADMIN_USER=admin
+WUD_AUTH_ADMIN_PASSWORD=YourSecurePasswordHere
+
+sudo chmod 600 /var/lib/services/whats-up-docker/secrets.env
+
+
 
 # To add other services
 

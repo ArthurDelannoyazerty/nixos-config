@@ -2,21 +2,24 @@
 
 let
   filebrowserConfig = pkgs.writeText "filebrowser-config.yaml" ''
-    server:
+    http:
       port: 80
-      database: "/home/filebrowser/data/database.db"
-      cacheDir: "/home/filebrowser/data/tmp"
       externalUrl: "https://${myConstants.services.filebrowser-quantum.subdomain}.${myConstants.publicDomain}"
       internalUrl: "http://172.17.0.1:${toString myConstants.services.filebrowser-quantum.port}"
+      trustProxyHeaders: true
+
+    server:
+      database:
+        path: "/home/filebrowser/data/database.sqlite"
+      cacheDir: "/home/filebrowser/data/tmp"
       
-      # Multiple sources configured natively in FileBrowser Quantum
       sources:
         - path: "/srv"
           name: "Personal Files"
           config:
             defaultEnabled: true
             createUserDir: true
-            defaultUserScope: "/" # Creates isolated /srv/personal/username folders
+            defaultUserScope: "/"
 
         - path: "/admin-view"
           name: "All Users (Admin View)"
@@ -26,40 +29,28 @@ let
         - path: "/media"
           name: "Media"
           config:
-            defaultEnabled: false # Invisible to standard users by default
+            defaultEnabled: false
 
         - path: "/minecraft"
           name: "Minecraft"
           config:
-            defaultEnabled: false # Invisible to standard users by default
+            defaultEnabled: false
 
         - path: "/immich"
           name: "Immich Photos"
           config:
-            defaultEnabled: false # Invisible to standard users by default
+            defaultEnabled: false
 
         - path: "/downloads"
           name: "Downloads"
           config:
-            defaultEnabled: false # Invisible to standard users by default
+            defaultEnabled: false
 
-        - path: "/old-hdd1-p1"
-          name: "Old Drive (Partition 1)"
-          config:
-            defaultEnabled: true
-
-        - path: "/old-hdd1-p2"
-          name: "Old Drive (Partition 2)"
-          config:
-            defaultEnabled: true
 
     integrations:
       office:
-        # Public URL for your browser to load the OnlyOffice frontend
         url: "https://${myConstants.services.onlyoffice.subdomain}.${myConstants.publicDomain}"
-        # Internal URL for Filebrowser backend to talk to OnlyOffice backend
         internalUrl: "http://172.17.0.1:${toString myConstants.services.onlyoffice.port}"
-        # The secret comes from the env file
 
     auth:
       tokenExpirationHours: 48
@@ -71,10 +62,9 @@ let
           issuerUrl: "https://${myConstants.services.authentik.subdomain}.${myConstants.publicDomain}/application/o/${myConstants.services.filebrowser-quantum.subdomain}/"
           scopes: "email openid profile groups"
           userIdentifier: "preferred_username"
-          createUser: true               # create user if it does not exist
-          adminGroup: "authentik Admins"  # users in this group automatically get admin privileges
+          createUser: true
+          adminGroup: "authentik Admins"
   '';
-
 in
 {
   # Ensure the necessary persistent directories exist before Docker starts

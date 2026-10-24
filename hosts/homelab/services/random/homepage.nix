@@ -433,15 +433,15 @@ let
                           when: gt
                           value: 0
         - What's Up Docker:
-            icon: https://getwud.github.io/wud/assets/wud-logo.svg
+            icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/whats-up-docker.svg
             href: https://${myConstants.services.whats-up-docker.subdomain}.${myConstants.publicDomain}
             description: Container Updates
             server: my-docker
             container: ${myConstants.services.whats-up-docker.containerName}
-            widget:
-                refreshInterval: 10000 
-                type: whatsupdocker
-                url: ${internalHost}:${toString myConstants.services.whats-up-docker.port}
+            # widget:
+            #     refreshInterval: 10000 
+            #     type: whatsupdocker
+            #     url: ${internalHost}:${toString myConstants.services.whats-up-docker.port}
         - Netdata:
             icon: netdata.png
             href: https://${myConstants.services.netdata.subdomain}.${myConstants.publicDomain}

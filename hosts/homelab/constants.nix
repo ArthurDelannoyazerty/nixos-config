@@ -97,12 +97,8 @@ rec {
     filebrowser-quantum = {
       port = 8088;
       subdomain = "filebrowser-quantum";
-      version = "1.5.0-stable";
+      version = "2.0.2-stable";
       containerName = "filebrowser-quantum";
-    };
-    filebrowser = {
-      port = 8081;
-      subdomain = "filebrowser";
     };
     finance = {
       port = 8501;
@@ -124,7 +120,7 @@ rec {
     freshrss = {
       port = 8084;
       subdomain = "freshrss";
-      version = "1.30.0";
+      version = "1.30.4";
       containerName = "freshrss";
     };
     glances = {
@@ -154,13 +150,13 @@ rec {
     homepage = {
       port = 3000;
       subdomain = "homepage";
-      version = "v2.4.0";
+      version = "v2.7.0";
       containerName = "homepage";
     };
     immich = {
       port = 2283;
       subdomain = "immich";
-      version = "v3.1.0";
+      version = "v3.3.5";
       containerName = "immich-server";
     };
     immich-db = {
@@ -174,7 +170,7 @@ rec {
     };
     immich-machine-learning = {
       port = 2283;
-      version = "v3.1.0";
+      version = "v3.3.5";
       containerName = "immich-machine-learning";
     };
     jellyfin = { 
@@ -190,7 +186,7 @@ rec {
     komga = {
       port = 8089;
       subdomain = "komga";
-      version = "1.28.1";
+      version = "1.29.1";
       containerName = "komga";
     };
     lidarr = { 
@@ -308,7 +304,7 @@ rec {
     prowlarr = { 
       port = 9696; 
       subdomain = "prowlarr"; 
-      version = "2.3.5";
+      version = "2.6.5";
       containerName = "prowlarr";
     };
     quartz = {
@@ -323,7 +319,7 @@ rec {
     radarr = { 
       port = 7878; 
       subdomain = "radarr";
-      version = "6.3.0";
+      version = "6.4.4";
       containerName = "radarr";
     };
     recyclarr = {
@@ -333,7 +329,7 @@ rec {
     romm = {
       port = 8085;
       subdomain = "romm";
-      version = "5.2.0";
+      version = "5.4.1";
       containerName = "romm";
     };
     romm-db = {
@@ -383,7 +379,7 @@ rec {
     suwayomi = {
       port = 4567;
       subdomain = "suwayomi";
-      version = "v2.3.2360";
+      version = "v2.4.2366";
       containerName = "suwayomi";
     };
     stirling-pdf = {
@@ -444,7 +440,7 @@ rec {
     whats-up-docker = {
       port = 3005;
       subdomain = "wud";
-      version = "8.4.0";
+      version = "9.5.0";
       containerName = "whats-up-docker";
     };
 

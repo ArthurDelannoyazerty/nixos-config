@@ -606,16 +606,6 @@ in
         '';
       };
 
-      # --- FILEBROWSER (Protected from direct public access) ---
-      "http://${myConstants.services.filebrowser.subdomain}.${domain}" = {
-        extraConfig = ''
-          log
-          ${privateOnly}
-          ${authentikMiddleware}
-          reverse_proxy 172.17.0.1:${toString myConstants.services.filebrowser.port}
-        '';
-      };
-
       # --- FILEBROWSER QUANTUM (Protected from direct public access) ---
       "http://${myConstants.services.filebrowser-quantum.subdomain}.${domain}" = {
         extraConfig = ''
