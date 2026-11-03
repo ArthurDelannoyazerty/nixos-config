@@ -51,6 +51,7 @@ let
   python3 # Only for system package, the rest is handled via uv
   nodejs
   patchelf
+  docker
 
   # Data / structured text
   jq
