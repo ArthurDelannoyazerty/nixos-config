@@ -16,6 +16,16 @@ let
   doctor = mkScript "devcontainer-doctor" ./scripts/doctor.sh;
   withGpuLibs = mkScript "devcontainer-with-gpu-libs" ./scripts/with-gpu-libs.sh;
 
+  opencodeFixed =
+    if unstablePkgs.opencode.version == "2.2.5" then
+      unstablePkgs.opencode.overrideAttrs (old: {
+        node_modules = old.node_modules.overrideAttrs (_: {
+          outputHash = "sha256-prx9dX7kUvs/E3zopkaPk5LXh3xJAy5sZeum/W8L7cA=";
+        });
+      })
+    else
+      unstablePkgs.opencode;
+
   # Daily-use tools. Larger toolchains can be installed into the persistent
   # Nix profile or supplied by individual project flakes.
   basePackages = with pkgs; [
@@ -89,7 +99,7 @@ let
   nvitop
   rclone
 
-  unstablePkgs.opencode
+  opencodeFixed
 
   ];
 
