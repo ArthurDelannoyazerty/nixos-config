@@ -88,7 +88,7 @@ let
   nvitop
   rclone
 
-  opencode
+  unstablePkgs.opencode
 
   ];
 
