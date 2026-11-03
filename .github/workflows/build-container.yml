@@ -1,9 +1,6 @@
 name: Build and Push DevContainer
 
-on:
-  schedule:
-    - cron: "0 4 * * *" # Every day at 04:00 UTC
-    
+on:    
   push:
     branches:
       - main
@@ -53,16 +50,6 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Refresh nixpkgs-unstable (CI only)
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-
-          nix flake update nixpkgs-unstable --refresh
-
-          echo "Using unstable revision:"
-          jq -r '.nodes["nixpkgs-unstable"].locked.rev' flake.lock
 
       - name: Cache Nix store
         uses: nix-community/cache-nix-action@v7
