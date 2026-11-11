@@ -12,11 +12,11 @@
       ND_SESSIONTIMEOUT = "24h";
       ND_BASEURL = "";
 
-      ND_UICOVERARTSIZE = "600";
-      ND_COVERARTQUALITY = "100";
+      ND_UICOVERARTSIZE = "500";
+      ND_COVERARTQUALITY = "75";    # ~85% bandwidth reduction
       ND_ENABLEWEBPENCODING = "true";
 
-      ND_IMAGECACHESIZE = "1GB";
+      ND_IMAGECACHESIZE = "5GB";
       ND_TRANSCODINGCACHESIZE = "1GB";
 
       # --- OIDC / SSO REVERSE PROXY AUTH ---
