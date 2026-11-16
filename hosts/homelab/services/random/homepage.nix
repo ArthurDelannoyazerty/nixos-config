@@ -274,27 +274,13 @@ let
 
 
     - Gestion Médias:
-        - AriaNg:
-            icon: https://play-lh.googleusercontent.com/c2cc3NnGBdVdH4JNaW4HXJLTDXFtSk9No0u2BJOV5ya3YlOrygE3JEdNOhd4Xf9pUPI=w240-h480-rw
-            href: https://${myConstants.services.ariang.subdomain}.${myConstants.publicDomain}
-            description: Download Manager
+
+        - Navidrome Importer:
+            icon: mdi-database-import
+            href: https://${myConstants.services.navidrome-importer.subdomain}.${myConstants.publicDomain}
+            description: Music Importer
             server: my-docker
-            container: ${myConstants.services.ariang.containerName}
-        - Suwayomi:
-            icon: suwayomi.png
-            href: https://${myConstants.services.suwayomi.subdomain}.${myConstants.publicDomain}
-            description: Manga Downloader
-            server: my-docker
-            container: ${myConstants.services.suwayomi.containerName}
-            # widget:
-            #   type: suwayomi
-            #   url: ${internalHost}:${toString myConstants.services.suwayomi.port}
-        # - Tranga: 
-        #     icon: mdi-book-open-page-variant
-        #     href: https://${myConstants.services.tranga.subdomain}.${myConstants.publicDomain}
-        #     description: Manga Downloader
-        #     server: my-docker
-        #     container: ${myConstants.services.tranga.containerName}
+            container: ${myConstants.services.navidrome-importer.containerName}
         - Navidrome:
             icon: navidrome.png
             href: https://${myConstants.services.navidrome.subdomain}.${myConstants.publicDomain}
@@ -307,6 +293,27 @@ let
             #     user: "{{HOMEPAGE_VAR_NAVIDROME_USER}}"
             #     token: "{{HOMEPAGE_VAR_NAVIDROME_TOKEN}}"
             #     salt: "{{HOMEPAGE_VAR_NAVIDROME_SALT}}"
+        - Suwayomi:
+            icon: suwayomi.png
+            href: https://${myConstants.services.suwayomi.subdomain}.${myConstants.publicDomain}
+            description: Manga Downloader
+            server: my-docker
+            container: ${myConstants.services.suwayomi.containerName}
+            # widget:
+            #   type: suwayomi
+            #   url: ${internalHost}:${toString myConstants.services.suwayomi.port}
+        - AriaNg:
+            icon: https://play-lh.googleusercontent.com/c2cc3NnGBdVdH4JNaW4HXJLTDXFtSk9No0u2BJOV5ya3YlOrygE3JEdNOhd4Xf9pUPI=w240-h480-rw
+            href: https://${myConstants.services.ariang.subdomain}.${myConstants.publicDomain}
+            description: Download Manager
+            server: my-docker
+            container: ${myConstants.services.ariang.containerName}
+        # - Tranga: 
+        #     icon: mdi-book-open-page-variant
+        #     href: https://${myConstants.services.tranga.subdomain}.${myConstants.publicDomain}
+        #     description: Manga Downloader
+        #     server: my-docker
+        #     container: ${myConstants.services.tranga.containerName}
         - qBittorrent:
             icon: qbittorrent.png
             href: https://${myConstants.services.qbittorrent.subdomain}.${myConstants.publicDomain}
@@ -317,12 +324,6 @@ let
               refreshInterval: 10000 
               type: qbittorrent
               url: ${internalHost}:${toString myConstants.services.qbittorrent.port}
-        - Prowlarr:
-            icon: prowlarr.png
-            href: https://${myConstants.services.prowlarr.subdomain}.${myConstants.publicDomain}
-            description: Indexers
-            server: my-docker
-            container: ${myConstants.services.prowlarr.containerName}
         - Sonarr:
             icon: sonarr.png
             href: https://${myConstants.services.sonarr.subdomain}.${myConstants.publicDomain}
@@ -344,12 +345,12 @@ let
             #   type: radarr
             #   url: ${internalHost}:${toString myConstants.services.radarr.port}
             #   key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
-        - Navidrome Importer:
-            icon: mdi-database-import
-            href: https://${myConstants.services.navidrome-importer.subdomain}.${myConstants.publicDomain}
-            description: Music Importer
+        - Prowlarr:
+            icon: prowlarr.png
+            href: https://${myConstants.services.prowlarr.subdomain}.${myConstants.publicDomain}
+            description: Indexers
             server: my-docker
-            container: ${myConstants.services.navidrome-importer.containerName}
+            container: ${myConstants.services.prowlarr.containerName}
         # - Cobalt:
         #     icon: https://raw.githubusercontent.com/imputnet/cobalt/refs/heads/main/web/static/favicon.png
         #     href: https://${myConstants.services.cobalt-web.subdomain}.${myConstants.publicDomain}
