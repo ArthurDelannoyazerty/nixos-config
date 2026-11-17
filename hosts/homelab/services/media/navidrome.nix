@@ -7,6 +7,9 @@
     ports = [ (myConstants.bind myConstants.services.navidrome.port) ];
 
     environment = {
+      # Default music folder 
+      ND_MUSICFOLDER = "/music/shared";
+
       ND_SCANSCHEDULE = "1h";
       ND_LOGLEVEL = "info";
       ND_SESSIONTIMEOUT = "24h";
@@ -23,6 +26,7 @@
       # Match the header sent by Authentik's Caddy outpost
       ND_REVERSEPROXYUSERHEADER = "X-Authentik-Username";
       ND_REVERSEPROXYWHITELIST = "0.0.0.0/0";
+      ND_EXTAUTH_LOGOUTURL = "https://${myConstants.services.navidrome.subdomain}.${myConstants.publicDomain}/outpost.goauthentik.io/sign_out";
     };
 
     volumes = [
