@@ -369,11 +369,12 @@ in
           log
           ${privateOnly}
 
-          # 1. Expose Subsonic APIs & Share links directly (Navidrome manages CORS natively)
-          handle /rest/* {
-            reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
-          }
-          handle /share/* {
+          # 1. Expose Subsonic APIs, Navidrome native API (for Feishin), & Share links directly
+          @navidromeDirect path /rest/* /share/* /auth/login /api/*
+          handle @navidromeDirect {
+            # IMPORTANT: Strip auth headers so clients cannot spoof SSO headers on bypassed routes
+            request_header -X-Authentik-*
+            request_header -Remote-User
             reverse_proxy 172.17.0.1:${toString myConstants.services.navidrome.port}
           }
 
@@ -403,7 +404,7 @@ in
             }
           }
         '';
-      };      
+      };    
 
       # --- COBALT WEB UI (Protected by Authentik SSO + Cloudflare PIN) ---
       "http://${myConstants.services.cobalt-web.subdomain}.${domain}" = {
